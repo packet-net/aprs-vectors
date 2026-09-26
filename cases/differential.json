@@ -1,0 +1,559 @@
+{
+  "cases": [
+    {
+      "id": "differential/q-construct-lower-case",
+      "description": "A q-construct's third letter may be lower case: the APRS-IS q-construct algorithm defines qAr and qAo beside qAR and qAO, all four for packets an IGate heard on RF. Packet.Aprs read them; aprs-rs missed them on 13,000 packets.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "JA1KWV-11>APTT4,WIDE1-1,WIDE2-1,qAr,JA1KWV-1:>test with TT4+ADS-WS1"},
+      "expect": {
+        "header": {"source": "JA1KWV-11", "destination": "APTT4", "path": ["WIDE1-1", "WIDE2-1", "qAr", "JA1KWV-1"], "q_construct": {"construct": "qAr", "station": "JA1KWV-1"}},
+        "data": {"type": "status", "text": "test with TT4+ADS-WS1"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/telemetry-sequence-past-999",
+      "description": "A telemetry sequence number of five digits, with decimal and empty analog values. Any length of letters and digits is a sequence; aprs-rs took more than three characters for a defect on 13,000 packets.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["telemetry-sequence-numbers-are-not-3-characters"],
+      "input": {"tnc2": "BH2WAV-7>APRS2,WIDE1-1,TCPIP*,qAS,BH2WAV:T#51752,108.0,230.0,100,385,,10000000"},
+      "expect": {
+        "header": {"source": "BH2WAV-7", "destination": "APRS2", "path": ["WIDE1-1*", "TCPIP*", "qAS", "BH2WAV"], "q_construct": {"construct": "qAS", "station": "BH2WAV"}},
+        "data": {"type": "telemetry", "sequence": "51752", "analog": [108.0, 230.0, 100, 385, null], "bits": "10000000"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/telemetry-trailing-empty-value",
+      "description": "Telemetry values end at a comma or the end of the field, so a trailing comma leaves one more empty (null) value: 132, null, null. Too few values, and no bits, is a tolerated invalid-telemetry.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "VE7MHW-5>APZ131,TCPIP*,qAS,VE7MHW:T#173,132,,"},
+      "expect": {
+        "header": {"source": "VE7MHW-5", "destination": "APZ131", "path": ["TCPIP*", "qAS", "VE7MHW"], "q_construct": {"construct": "qAS", "station": "VE7MHW"}},
+        "data": {"type": "telemetry", "sequence": "173", "analog": [132, null, null]},
+        "diagnostics": ["warning:invalid-telemetry"]
+      },
+      "strict": {"rejected_by": "invalid-telemetry"},
+      "reencode": "refused"
+    },
+    {
+      "id": "differential/telemetry-sequence-with-a-space",
+      "description": "A telemetry sequence that is not letters and digits (190 187): not a telemetry report, an invalid-telemetry error rather than a tolerated defect.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["telemetry-sequence-numbers-are-not-3-characters"],
+      "input": {"tnc2": "OK0DJ-1>APMI06,OK0BR-1*,WIDE2-1,qAR,OK0BPT-1:T#190 187,097,028,065,000,00000000"},
+      "expect": {
+        "header": {"source": "OK0DJ-1", "destination": "APMI06", "path": ["OK0BR-1*", "WIDE2-1", "qAR", "OK0BPT-1"], "q_construct": {"construct": "qAR", "station": "OK0BPT-1"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-telemetry"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "differential/telemetry-sequence-empty",
+      "description": "T#, then a comma straight away: an empty sequence, so not a telemetry report (invalid-telemetry, an error).",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["telemetry-sequence-numbers-are-not-3-characters"],
+      "input": {"tnc2": "NTRL>APMTCP,qAR,AE7AF:T#,175,015,002,094,000,00000000"},
+      "expect": {
+        "header": {"source": "NTRL", "destination": "APMTCP", "path": ["qAR", "AE7AF"], "q_construct": {"construct": "qAR", "station": "AE7AF"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-telemetry"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "differential/telemetry-sequence-without-comma",
+      "description": "T#1890000: no comma ends the sequence, so not a telemetry report (invalid-telemetry, an error).",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["telemetry-sequence-numbers-are-not-3-characters"],
+      "input": {"tnc2": "BVILLE>APOAR,K0X,qAR,AE7AF:T#1890000"},
+      "expect": {
+        "header": {"source": "BVILLE", "destination": "APOAR", "path": ["K0X", "qAR", "AE7AF"], "q_construct": {"construct": "qAR", "station": "AE7AF"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-telemetry"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "differential/frequency-tone-burst",
+      "description": "A repeater object whose voice frequency has a 1750 Hz tone burst and a range in km: 1750 R27k (APRS12c ch. 18). aprs-rs did not know the tone burst and left the fields in the comment.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "spec",
+      "input": {"tnc2": "DB0OX>APRS,TCPIP*,qAC,T2LAUSITZ:;ER-DB0OX *111111z5335.43NE00711.51E0438.700MHz 1750 R27k SvxLink DB0OX OV Norden I09"},
+      "expect": {
+        "header": {"source": "DB0OX", "destination": "APRS", "path": ["TCPIP*", "qAC", "T2LAUSITZ"], "q_construct": {"construct": "qAC", "station": "T2LAUSITZ"}},
+        "data": {"type": "object", "name": "ER-DB0OX", "timestamp": "111111z", "latitude": 53.5905, "longitude": 7.191833333333333, "symbol": "E0", "frequency": {"mhz": 438.7, "tone": "tone-burst", "range": 27, "range_km": true}, "comment": "SvxLink DB0OX OV Norden I09"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/frequency-tone-burst-narrow",
+      "description": "l750 (lower-case L) is the 1750 Hz tone burst, narrow (APRS12c ch. 18), here after PHG and a / delimiter, with an offset and a range.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "spec",
+      "input": {"tnc2": "DB0LHR>APSVX1,TCPIP*,qAC,T2CSNGRAD:;EL-DB0LHR*111111z4820.91N/00751.73ErPHG3260/439.400MHz l750 -076 R15k SvxLink by SM0SVX"},
+      "expect": {
+        "header": {"source": "DB0LHR", "destination": "APSVX1", "path": ["TCPIP*", "qAC", "T2CSNGRAD"], "q_construct": {"construct": "qAC", "station": "T2CSNGRAD"}},
+        "data": {"type": "object", "name": "EL-DB0LHR", "timestamp": "111111z", "latitude": 48.3485, "longitude": 7.862166666666667, "symbol": "/r", "phg": {"power": 3, "height": 2, "gain": 6, "directivity": 0}, "frequency": {"mhz": 439.4, "tone": "tone-burst", "offset_khz": -760, "range": 15, "range_km": true, "narrow": true}, "comment": "SvxLink by SM0SVX"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/mic-e-text-after-frequency",
+      "description": "After a voice frequency and its fields, one space is dropped, then (once everything else is lifted out) one leading delimiter; the rest of the spaces stay in the comment. aprs-rs skipped all of them.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "VK3ZAZ-15>S7T3V8,WIDE1-1,WIDE2-1,qAR,VK3RMV-1:`FY)l \u001C-/`438.487MHz Toff -700                 Western Districts_%"},
+      "expect": {
+        "header": {"source": "VK3ZAZ-15", "destination": "S7T3V8", "path": ["WIDE1-1", "WIDE2-1", "qAR", "VK3RMV-1"], "q_construct": {"construct": "qAR", "station": "VK3RMV-1"}},
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "`", "device_suffix": "_%", "latitude": -37.728, "longitude": 142.01883333333333, "symbol": "/-", "speed_knots": 0, "frequency": {"mhz": 438.487, "tone": "off", "offset_khz": -7000}, "comment": "               Western Districts"},
+        "device": {"vendor": "Yaesu", "model": "FTM-400DR"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`FY)l \u001C-/`438.487MHz Toff -700 /               Western Districts_%"
+    },
+    {
+      "id": "differential/text-after-frequency-and-altitude",
+      "description": "The /A= altitude is lifted out before a voice frequency is looked for at the start, so /144.800MHz/A=002169 gives both; one space after the frequency and one leading delimiter are dropped, and / QTH: IN80dj stays.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "EA4HQQ-7>APDR16,TCPIP*,qAC,T2SWEDEN:=4023.77N/00340.02W[075/000/144.800MHz/A=002169  / QTH: IN80dj"},
+      "expect": {
+        "header": {"source": "EA4HQQ-7", "destination": "APDR16", "path": ["TCPIP*", "qAC", "T2SWEDEN"], "q_construct": {"construct": "qAC", "station": "T2SWEDEN"}},
+        "data": {"type": "position", "messaging": true, "latitude": 40.396166666666666, "longitude": -3.667, "symbol": "/[", "course_degrees": 75, "speed_knots": 0, "altitude_feet": 2169, "frequency": {"mhz": 144.8}, "comment": "/ QTH: IN80dj"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "=4023.77N/00340.02W[075/000/A=002169144.800MHz // QTH: IN80dj"
+    },
+    {
+      "id": "differential/eqns-trailing-commas",
+      "description": "EQNS. with only the first three channels' coefficients and a run of empty entries after them: the list stops there (\"the list may stop at any field\", APRS12c ch. 13). aprs-rs took it for a malformed list and a plain message.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "spec",
+      "input": {"tnc2": "ED1ZAD-3>APMI01,TCPIP*,qAC,T2SPAIN::ED1ZAD-3 :EQNS.0,10,0,0,10,0,0,1,0,,,,,,"},
+      "expect": {
+        "header": {"source": "ED1ZAD-3", "destination": "APMI01", "path": ["TCPIP*", "qAC", "T2SPAIN"], "q_construct": {"construct": "qAC", "station": "T2SPAIN"}},
+        "data": {"type": "telemetry-coefficients", "addressee": "ED1ZAD-3", "coefficients": [0, 10, 0, 0, 10, 0, 0, 1, 0]}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": ":ED1ZAD-3 :EQNS.0,10,0,0,10,0,0,1,0"
+    },
+    {
+      "id": "differential/eqns-trailing-spaces",
+      "description": "EQNS. whose last coefficient is followed by spaces: they are padding, and the list stops (APRS12c ch. 13).",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "spec",
+      "input": {"tnc2": "TB1YZC-13>APRS,TCPIP*,qAC,T2SYDNEY::TB1YZC-13:EQNS.0,1,0,0,1,0,0,1,-150,0,0    "},
+      "expect": {
+        "header": {"source": "TB1YZC-13", "destination": "APRS", "path": ["TCPIP*", "qAC", "T2SYDNEY"], "q_construct": {"construct": "qAC", "station": "T2SYDNEY"}},
+        "data": {"type": "telemetry-coefficients", "addressee": "TB1YZC-13", "coefficients": [0, 1, 0, 0, 1, 0, 0, 1, -150, 0, 0]}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": ":TB1YZC-13:EQNS.0,1,0,0,1,0,0,1,-150,0,0"
+    },
+    {
+      "id": "differential/metadata-message-id",
+      "description": "PARM. sent as a numbered message keeps its message_id, as every other message does. aprs-rs dropped it.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "VA7RCV-15>APZMDM,WIDE1-1,WIDE2-2,qAO,VA7RCV-10::VA7RCV-15:PARM.Battery,Temp,Pressure,Humidity,Altitude{625"},
+      "expect": {
+        "header": {"source": "VA7RCV-15", "destination": "APZMDM", "path": ["WIDE1-1", "WIDE2-2", "qAO", "VA7RCV-10"], "q_construct": {"construct": "qAO", "station": "VA7RCV-10"}},
+        "data": {"type": "telemetry-names", "addressee": "VA7RCV-15", "names": ["Battery", "Temp", "Pressure", "Humidity", "Altitude"], "message_id": "625"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/weather-extra-field-then-more-fields",
+      "description": "An uncompressed weather report with c/s wind fields, then X01, a letter the spec does not define with two digits: an extra field, after which the fields go on (L010 is luminosity).",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "KG4JYA-11>APDW18,TCPIP*,qAC,T2QUEBEC:!3947.92N/07509.75W_c002s008g010t072r000p000P000h44b01005X01L010"},
+      "expect": {
+        "header": {"source": "KG4JYA-11", "destination": "APDW18", "path": ["TCPIP*", "qAC", "T2QUEBEC"], "q_construct": {"construct": "qAC", "station": "T2QUEBEC"}},
+        "data": {"type": "position", "latitude": 39.79866666666667, "longitude": -75.1625, "symbol": "/_", "weather": {"wind_direction_degrees": 2, "wind_speed_mph": 8, "wind_gust_mph": 10, "temperature_f": 72, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0, "humidity_percent": 44, "pressure_mbar": 100.5, "luminosity_w_m2": 10, "extra": [{"letter": "X", "value": "01"}]}},
+        "diagnostics": ["warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "wind-fields-instead-of-extension"},
+      "reencode": "equivalent",
+      "canonical_info": "!3947.92N/07509.75W_002/008g010t072r000p000P000h44b01005L010X01"
+    },
+    {
+      "id": "differential/weather-extra-field-negative",
+      "description": "v-01 at the end of a weather report: an extra field (a letter the spec does not define, then digits, dots or - ending in a digit), which an encoder writes back as it came.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "IK3SVW-3>APEWX,WIDE2-3,qAR,IR3EO-11:!4540.62N/01212.52E_000/000g000t057r000b10200h70v-01"},
+      "expect": {
+        "header": {"source": "IK3SVW-3", "destination": "APEWX", "path": ["WIDE2-3", "qAR", "IR3EO-11"], "q_construct": {"construct": "qAR", "station": "IR3EO-11"}},
+        "data": {"type": "position", "latitude": 45.677, "longitude": 12.208666666666666, "symbol": "/_", "weather": {"wind_direction_degrees": 0, "wind_speed_mph": 0, "wind_gust_mph": 0, "temperature_f": 57, "rain_1h_in": 0, "humidity_percent": 70, "pressure_mbar": 1020, "extra": [{"letter": "v", "value": "-01"}]}}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4540.62N/01212.52E_000/000g000t057r000h70b10200v-01"
+    },
+    {
+      "id": "differential/weather-letter-and-digits-at-the-end",
+      "description": "v31 at the end of a weather report is an extra field, not a software type and unit: a unit is not all digits.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "EUGENE>APRS,TCPIP*,qAC,FIRST:@251345z4406.47N/12308.93W_254/007g011t063r000P011p058h78b10202v31"},
+      "expect": {
+        "header": {"source": "EUGENE", "destination": "APRS", "path": ["TCPIP*", "qAC", "FIRST"], "q_construct": {"construct": "qAC", "station": "FIRST"}},
+        "data": {"type": "position", "timestamp": "251345z", "messaging": true, "latitude": 44.10783333333333, "longitude": -123.14883333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 254, "wind_speed_mph": 7, "wind_gust_mph": 11, "temperature_f": 63, "rain_1h_in": 0, "rain_24h_in": 0.58, "rain_midnight_in": 0.11, "humidity_percent": 78, "pressure_mbar": 1020.2, "extra": [{"letter": "v", "value": "31"}]}}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "@251345z4406.47N/12308.93W_254/007g011t063r000p058P011h78b10202v31"
+    },
+    {
+      "id": "differential/weather-c-after-wind-ends-fields",
+      "description": "A c field after the DDD/SSS wind extension is out of place: the fields end there, and the rest (c043s007g...t047h75b10360Yasnoe nebo) is weather-comment text. aprs-rs read on.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "R8AHC-W5>APRS,TCPIP*,qAS,R8AHC:@252055z5603.17N/05935.54E_043/007c043s007g...t047h75b10360Yasnoe nebo"},
+      "expect": {
+        "header": {"source": "R8AHC-W5", "destination": "APRS", "path": ["TCPIP*", "qAS", "R8AHC"], "q_construct": {"construct": "qAS", "station": "R8AHC"}},
+        "data": {"type": "position", "timestamp": "252055z", "messaging": true, "latitude": 56.05283333333333, "longitude": 59.592333333333336, "symbol": "/_", "weather": {"wind_direction_degrees": 43, "wind_speed_mph": 7}, "comment": "c043s007g...t047h75b10360Yasnoe nebo"},
+        "diagnostics": ["warning:incomplete-weather", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "incomplete-weather"},
+      "reencode": "refused"
+    },
+    {
+      "id": "differential/weather-repeated-field-ends-fields",
+      "description": "A positionless weather report ending t2k: t was already read, so the fields end there, and t2k is the software type and unit.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "N2XP-2>APTW14,TOMRVR*,WIDE1*,WIDE2-1,qAR,W2SRH:_09251912c090s005g007t061r003p000P006h73b10139t2k"},
+      "expect": {
+        "header": {"source": "N2XP-2", "destination": "APTW14", "path": ["TOMRVR*", "WIDE1*", "WIDE2-1", "qAR", "W2SRH"], "q_construct": {"construct": "qAR", "station": "W2SRH"}},
+        "data": {"type": "weather", "timestamp": "09251912", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 7, "temperature_f": 61, "rain_1h_in": 0.03, "rain_24h_in": 0, "rain_midnight_in": 0.06, "humidity_percent": 73, "pressure_mbar": 1013.9, "software": "t", "unit": "2k"}},
+        "diagnostics": ["warning:multiple-used-markers", "info:obsolete-format"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true},
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/weather-snowfall-keeps-its-width",
+      "description": "s00/ where the wind extension should be: a snowfall value takes its fixed width unless it is unknown (dots), so s00 is not a field, and without wind, gust or temperature the rest is weather-comment text.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "HP1UPR-15>WX51,WIDE1-1,WIDE2-1,qAS,HP1UPR-2:=0738.95N/08024.67W_s00/g000t075r000p000h99b.....*27 WX_Canajagua 15.1V"},
+      "expect": {
+        "header": {"source": "HP1UPR-15", "destination": "WX51", "path": ["WIDE1-1", "WIDE2-1", "qAS", "HP1UPR-2"], "q_construct": {"construct": "qAS", "station": "HP1UPR-2"}},
+        "data": {"type": "position", "messaging": true, "latitude": 7.649166666666667, "longitude": -80.41116666666667, "symbol": "/_", "weather": {}, "comment": "s00/g000t075r000p000h99b.....*27 WX_Canajagua 15.1V"},
+        "diagnostics": ["warning:incomplete-weather", "warning:incomplete-weather", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "incomplete-weather"},
+      "reencode": "refused"
+    },
+    {
+      "id": "differential/wind-extension-unknown-replaces-cs",
+      "description": "A compressed weather position whose cs bytes read 52 degrees at 0.3 mph, then .../... saying the wind is unknown: the extension is the wind.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["wind-after-a-compressed-weather-position"],
+      "input": {"tnc2": "DL3APY-11>APRS,qAO,DL3APY-10:!/4_@>Q?Y`_.&H.../...g...t066r...p...P...h38b10286Tracker-wx"},
+      "expect": {
+        "header": {"source": "DL3APY-11", "destination": "APRS", "path": ["qAO", "DL3APY-10"], "q_construct": {"construct": "qAO", "station": "DL3APY-10"}},
+        "data": {"type": "position", "latitude": 51.0577356231919, "longitude": 11.24447793009665, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "digipeater-conversion"}, "weather": {"temperature_f": 66, "humidity_percent": 38, "pressure_mbar": 1028.6}, "comment": "Tracker-wx"},
+        "diagnostics": ["warning:wind-extension-after-compressed", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "wind-extension-after-compressed"},
+      "reencode": "refused"
+    },
+    {
+      "id": "differential/wind-extension-replaces-cs",
+      "description": "A compressed weather position whose cs bytes read 156 degrees at 1.15 mph, then 156/001: the extension is the wind, at its full precision.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["wind-after-a-compressed-weather-position"],
+      "input": {"tnc2": "NW6UP>APJYC1,WIDE1-1,qAO,KI6ZHD-6:@212049h/;Y6h/\\'(_H*C156/001g002t000r000p000P000h00b00000 SunnyvaleCA/IC-T7H+GP/DStar=xlx.nw6up.com"},
+      "expect": {
+        "header": {"source": "NW6UP", "destination": "APJYC1", "path": ["WIDE1-1", "qAO", "KI6ZHD-6"], "q_construct": {"construct": "qAO", "station": "KI6ZHD-6"}},
+        "data": {"type": "position", "timestamp": "212049h", "messaging": true, "latitude": 37.34262297664113, "longitude": -122.04057480980558, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 156, "wind_speed_mph": 1, "wind_gust_mph": 2, "temperature_f": 0, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0, "humidity_percent": 100, "pressure_mbar": 0}, "comment": "SunnyvaleCA/IC-T7H+GP/DStar=xlx.nw6up.com"},
+        "diagnostics": ["warning:wind-extension-after-compressed", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "wind-extension-after-compressed"},
+      "reencode": "refused"
+    },
+    {
+      "id": "differential/wind-fields-after-blank-cs",
+      "description": "A compressed weather position with blank cs bytes (a space as c), then c041s000 wind fields: read as the wind. Packet.Aprs ended the fields at the c and lost the report into the comment.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["wind-after-a-compressed-weather-position"],
+      "input": {"tnc2": "W0KJH-12>APLRG1,WIDE1-1,qAR,W0KJH-10:=L>+[C2IQy_ !Gc041s000g000t092r000p000h34b10181LoRa APRS"},
+      "expect": {
+        "header": {"source": "W0KJH-12", "destination": "APLRG1", "path": ["WIDE1-1", "qAR", "W0KJH-10"], "q_construct": {"construct": "qAR", "station": "W0KJH-10"}},
+        "data": {"type": "position", "messaging": true, "latitude": 32.399098512571996, "longitude": -110.9766043798533, "symbol": "L_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 41, "wind_speed_mph": 0, "wind_gust_mph": 0, "temperature_f": 92, "rain_1h_in": 0, "rain_24h_in": 0, "humidity_percent": 34, "pressure_mbar": 1018.1}, "comment": "LoRa APRS"},
+        "diagnostics": ["warning:wind-fields-instead-of-extension", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "wind-fields-instead-of-extension"},
+      "reencode": "refused"
+    },
+    {
+      "id": "differential/late-extension-only-without-extension",
+      "description": "A compressed position whose cs bytes carry a range, and PHG5330 later in the comment: a data extension is only looked for later in the text when none came first, so the PHG stays in the comment.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "KD4EDL-2>APDW18,W4IOJ-2,WIDE1*,qAR,WB4ROX-10:!S<-hw9_[]#{9GKD4EDL-2 Digi • Johnson City TN • PHG5330 • W1-1"},
+      "expect": {
+        "header": {"source": "KD4EDL-2", "destination": "APDW18", "path": ["W4IOJ-2*", "WIDE1*", "qAR", "WB4ROX-10"], "q_construct": {"construct": "qAR", "station": "WB4ROX-10"}},
+        "data": {"type": "position", "latitude": 36.30889989131747, "longitude": -82.31979964612549, "symbol": "S#", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "other-tracker"}, "range_miles": 12.682361474480235, "comment": "KD4EDL-2 Digi • Johnson City TN • PHG5330 • W1-1"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/dao-last-one-wins",
+      "description": "A garbled Mic-E status text that repeats !wXe!: the !DAO! is the last one in the comment (it belongs at the end), not the first.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "KJ0SHL>S4QURT,W6SCE-10*,WIDE2-1,qAR,KK6CKK-1:`.?{l#9k/'\"7.}|%9%O(,|!wXe!|3ÀÀ\u0000¦h¢ª¤¨`–”`¦\u0090˜à®lˆ\u00A0š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð`.?{l#9k/'\"7.}|%9%O(,|!wXe!|3"},
+      "expect": {
+        "header": {"source": "KJ0SHL", "destination": "S4QURT", "path": ["W6SCE-10*", "WIDE2-1", "qAR", "KK6CKK-1"], "q_construct": {"construct": "qAR", "station": "KK6CKK-1"}},
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "device_suffix": "|3", "latitude": 34.25410073260073, "longitude": -118.5992912087912, "symbol": "/k", "course_degrees": 329, "speed_knots": 0, "altitude_feet": 971.1286089238844, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 388, "analog": [410, 648]}, "comment": "|%9%O(,|!wXe!|3ÀÀ\u0000¦h¢ª¤¨`–”`¦\u0090˜à®lˆ\u00A0š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð`.?{l#9k/'\"7.}"},
+        "device": {"vendor": "Byonics", "model": "TinyTrak3"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/empty-addressee",
+      "description": "::ack816: a second colon straight after the first is an empty addressee, an invalid-message error, not an unpadded one.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "YO3SP-6>APRS,qAC,T2UKRAINE:::ack816"},
+      "expect": {
+        "header": {"source": "YO3SP-6", "destination": "APRS", "path": ["qAC", "T2UKRAINE"], "q_construct": {"construct": "qAC", "station": "T2UKRAINE"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-message"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "differential/object-shorter-than-header",
+      "description": "An object report shorter than ; and a 9-character name and * or _: truncated.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "V51RS>AP7ATA,TCPIP*,qAC,T2ERFURT:;*111111zr"},
+      "expect": {
+        "header": {"source": "V51RS", "destination": "AP7ATA", "path": ["TCPIP*", "qAC", "T2ERFURT"], "q_construct": {"construct": "qAC", "station": "T2ERFURT"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:truncated"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "differential/object-without-timestamp-garbage",
+      "description": "Seven bytes after an object's marker that do not look like a timestamp: object-without-timestamp, and the position is read straight after the marker.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "WNLINK>APWNK-1,qAR,AE7AF:;0*ON6ZQ>APN100,TCPIP*,qACND:;GW/SW-069z5137.345.59A actinned o1003 1"},
+      "expect": {
+        "header": {"source": "WNLINK", "destination": "APWNK-1", "path": ["qAR", "AE7AF"], "q_construct": {"construct": "qAR", "station": "AE7AF"}},
+        "data": {"type": "object", "name": "0", "latitude": 0.5079963037440365, "longitude": -63.84687314596536, "symbol": "O1", "compressed": true, "compression": {"fix": "old", "source": "gll", "origin": "reserved3"}, "course_degrees": 60, "speed_knots": 2.172169114198272, "comment": "TCPIP*,qACND:;GW/SW-069z5137.345.59A actinned o1003 1"},
+        "diagnostics": ["warning:object-name-not-padded", "warning:object-without-timestamp"]
+      },
+      "strict": {"rejected_by": "object-name-not-padded"},
+      "reencode": "refused"
+    },
+    {
+      "id": "differential/object-garbled-timestamp-no-position",
+      "description": "Garbage where an object's timestamp should be, with no position after it either way: not decoded.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "WINLI>APWL2K,TCPIP*,qAS,AE7AF:;W4S10*50130. W805.530M:11:06 GIFT.52.40:"},
+      "expect": {
+        "header": {"source": "WINLI", "destination": "APWL2K", "path": ["TCPIP*", "qAS", "AE7AF"], "q_construct": {"construct": "qAS", "station": "AE7AF"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["warning:object-name-not-padded", "warning:object-without-timestamp", "error:invalid-latitude"]
+      },
+      "strict": {"rejected_by": "object-name-not-padded"}
+    },
+    {
+      "id": "differential/directed-query-unknown-type",
+      "description": "?WX: an upper-case query type the spec does not define is still a directed query, which the recipient ignores.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "KD4HZL-11>APNOCT,WIDE1-1,WIDE2-1,qAR,KG4FZR-3::KG4EHH   :?WX"},
+      "expect": {
+        "header": {"source": "KD4HZL-11", "destination": "APNOCT", "path": ["WIDE1-1", "WIDE2-1", "qAR", "KG4FZR-3"], "q_construct": {"construct": "qAR", "station": "KG4FZR-3"}},
+        "data": {"type": "directed-query", "addressee": "KG4EHH", "query_type": "WX"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/not-a-query",
+      "description": "?Q followed by a backquote: not an upper-case query type then a space or the end, so a plain message, with no invalid-query info.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "SV9TNF-9>APIN22,WIDE1-1,WIDE2-1,qAO,SV9TNF::SV9TNF-11:?Q`"},
+      "expect": {
+        "header": {"source": "SV9TNF-9", "destination": "APIN22", "path": ["WIDE1-1", "WIDE2-1", "qAO", "SV9TNF"], "q_construct": {"construct": "qAO", "station": "SV9TNF"}},
+        "data": {"type": "message", "addressee": "SV9TNF-11", "text": "?Q`"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/nmea-longitude-degrees-digits",
+      "description": "$GPGGA with the longitude 1001.850: NMEA positions are ddmm.mm as a number, so this is 10 degrees 1.85 minutes, however many digits the degrees have. aprs-rs read 100 degrees.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "DJ3HZ-5>GPS30,DSTAR*,qAR,DB0NDR-B:$GPGGA,145941.00,5341.150,N,1001.850,E,1,3,0.0,10.0,M,,M,,*46"},
+      "expect": {
+        "header": {"source": "DJ3HZ-5", "destination": "GPS30", "path": ["DSTAR*", "qAR", "DB0NDR-B"], "q_construct": {"construct": "qAR", "station": "DB0NDR-B"}},
+        "data": {"type": "nmea", "sentence": "GPGGA,145941.00,5341.150,N,1001.850,E,1,3,0.0,10.0,M,,M,,*46", "has_checksum": true, "latitude": 53.68583333333333, "longitude": 10.030833333333334, "fix": "valid", "altitude_m": 10, "time": "14:59:41"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/nmea-without-fix",
+      "description": "$GPGGA before the receiver has a fix: empty position fields are left out, and the sentence still decodes.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "N9MEA-9>GPSMV,W9SM-1,WIDE1*,WIDE2-2,qAO,KB9OIV-2:$GPGGA,211114,,N,,E,0,00,,,M,,M,,*6B"},
+      "expect": {
+        "header": {"source": "N9MEA-9", "destination": "GPSMV", "path": ["W9SM-1*", "WIDE1*", "WIDE2-2", "qAO", "KB9OIV-2"], "q_construct": {"construct": "qAO", "station": "KB9OIV-2"}},
+        "data": {"type": "nmea", "sentence": "GPGGA,211114,,N,,E,0,00,,,M,,M,,*6B", "has_checksum": true, "fix": "invalid", "time": "21:11:14"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/capabilities-free-text-trimmed",
+      "description": "Free text sent as station capabilities: items are split at commas and trimmed, so the trailing space goes (free-text-capabilities, tolerated).",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "LU4ECL-4>ID,qAR,KD4WLE-7:<<< NODEAXIP / MAP LU4ECL-4 LU4ECL.ZAPTO.ORG UDP 10093 B >>> "},
+      "expect": {
+        "header": {"source": "LU4ECL-4", "destination": "ID", "path": ["qAR", "KD4WLE-7"], "q_construct": {"construct": "qAR", "station": "KD4WLE-7"}},
+        "data": {"type": "capabilities", "capabilities": [["<< NODEAXIP / MAP LU4ECL-4 LU4ECL.ZAPTO.ORG UDP 10093 B >>>"]]},
+        "diagnostics": ["warning:free-text-capabilities"]
+      },
+      "strict": {"rejected_by": "free-text-capabilities"},
+      "reencode": "refused"
+    },
+    {
+      "id": "differential/capabilities-token-with-space",
+      "description": "<IGATE MSG_CNT=264: the item splits at = into a token with a space in it and a value; the space makes it free text (free-text-capabilities, tolerated).",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "KA0GFC-3>APW284,TCPIP*,qAC,T2PERTH:<IGATE MSG_CNT=264"},
+      "expect": {
+        "header": {"source": "KA0GFC-3", "destination": "APW284", "path": ["TCPIP*", "qAC", "T2PERTH"], "q_construct": {"construct": "qAC", "station": "T2PERTH"}},
+        "data": {"type": "capabilities", "capabilities": [["IGATE MSG_CNT", "264"]]},
+        "diagnostics": ["warning:free-text-capabilities"]
+      },
+      "strict": {"rejected_by": "free-text-capabilities"},
+      "reencode": "refused"
+    },
+    {
+      "id": "differential/raw-weather-empty",
+      "description": "A Peet Bros * raw weather report with no data: the empty data is left out of the neutral form, as every empty string is.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "N2MPM-3>APW290,WIDE2-2,qAR,KB2EAR-13:*"},
+      "expect": {
+        "header": {"source": "N2MPM-3", "destination": "APW290", "path": ["WIDE2-2", "qAR", "KB2EAR-13"], "q_construct": {"construct": "qAR", "station": "KB2EAR-13"}},
+        "data": {"type": "raw-weather", "format": "peet-bros-star"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "differential/raw-weather-control-byte",
+      "description": "#v then a 0x1E control byte: raw weather station data is printable ASCII, so invalid-weather. Packet.Aprs accepted any ASCII.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "SP6DJE-7>UP0R33,SR9WXY*,WIDE1*,WIDE2-1,qAR,SR9KFZ:#v\u001E"},
+      "expect": {
+        "header": {"source": "SP6DJE-7", "destination": "UP0R33", "path": ["SR9WXY*", "WIDE1*", "WIDE2-1", "qAR", "SR9KFZ"], "q_construct": {"construct": "qAR", "station": "SR9KFZ"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["warning:multiple-used-markers", "info:obsolete-format", "error:invalid-weather"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "differential/mic-e-latitude-minutes-over-59",
+      "description": "The Mic-E destination SR9WXS gives latitude 32 degrees 97.83 minutes: invalid-mic-e-destination. Packet.Aprs decoded it to 33.63 degrees.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "WIDE1>SR9WXS,WIDE2-1,qAO,SP9ZCF-10:`/>+l \u001C-\\`145.225 Michat_"},
+      "expect": {
+        "header": {"source": "WIDE1", "destination": "SR9WXS", "path": ["WIDE2-1", "qAO", "SP9ZCF-10"], "q_construct": {"construct": "qAO", "station": "SP9ZCF-10"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-mic-e-destination"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "differential/latitude-checked-before-longitude",
+      "description": "A position whose latitude and longitude are both malformed reports the latitude, the first field that is wrong.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "WNLINK>APWL2K,WLNK-1,qAR,AE7AF:;NP3M*2581.  NW065570MHzRA FM y"},
+      "expect": {
+        "header": {"source": "WNLINK", "destination": "APWL2K", "path": ["WLNK-1", "qAR", "AE7AF"], "q_construct": {"construct": "qAR", "station": "AE7AF"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["warning:object-name-not-padded", "warning:object-without-timestamp", "error:invalid-latitude"]
+      },
+      "strict": {"rejected_by": "object-name-not-padded"}
+    },
+    {
+      "id": "differential/timestamp-missing-position-follows-dti",
+      "description": "A / report with no timestamp: a position straight after the DTI is tried first (here a compressed one, h being an overlay), before skipping seven bytes.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "WAIFI-3>APT3111-1,qAS,AE7AF:/h3852.5N/104112/0306161/acoma"},
+      "expect": {
+        "header": {"source": "WAIFI-3", "destination": "APT3111-1", "path": ["qAS", "AE7AF"], "q_construct": {"construct": "qAS", "station": "AE7AF"}},
+        "data": {"type": "position", "latitude": 53.886481888870804, "longitude": -127.67407842993127, "symbol": "71", "compressed": true, "compression": {"fix": "old", "source": "gga", "origin": "compressed"}, "altitude_feet": 15.882782885424335, "comment": "12/0306161/acoma"},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "!h3852.5N/104112/0306161/acoma"
+    },
+    {
+      "id": "differential/compressed-altitude-not-exact",
+      "description": "A compressed GGA position whose altitude comes from /A= in the comment: the cs bytes carry altitude only to 0.2%, so an encoder writes /A= too, and the data re-encodes equivalently.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "observed",
+      "input": {"tnc2": "TB3ACE-9>APTLVC,TB3ACE-13*,qAR,TB3ACE-13:=/:y_LUH-=>.11 /A=000223 [4S] Radyo Amatorlerine 73-88"},
+      "expect": {
+        "header": {"source": "TB3ACE-9", "destination": "APTLVC", "path": ["TB3ACE-13*", "qAR", "TB3ACE-13"], "q_construct": {"construct": "qAR", "station": "TB3ACE-13"}},
+        "data": {"type": "position", "messaging": true, "latitude": 38.61551062411072, "longitude": 27.440663015913856, "symbol": "/>", "compressed": true, "compression": {"fix": "old", "source": "gga", "origin": "compressed"}, "altitude_feet": 223, "comment": " [4S] Radyo Amatorlerine 73-88"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "=/:y_LUH-=>>d1/A=000223/ [4S] Radyo Amatorlerine 73-88"
+    }
+  ]
+}

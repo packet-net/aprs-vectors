@@ -10,7 +10,7 @@ The cases come from three places, and each says which:
 | `interpretation` | The spec is ambiguous, contradicts itself or is wrong here; the expected values follow a decision recorded in [`interpretations.md`](interpretations.md), linked from the case. | match them or document why not |
 | `observed` | A real packet from the APRS-IS feed; the expected values are what an implementation made of it when the case was recorded (Packet.Aprs, for every case so far), kept as a regression record. | treat a difference as a question, not a failure |
 
-About 250 cases cover every example packet printed in APRS12c and UAP, the encoder, and every defect a lenient decoder may tolerate; another 1,395 are real packets of every distinct shape seen on APRS-IS.
+About 250 cases cover every example packet printed in APRS12c and UAP, the encoder, and every defect a lenient decoder may tolerate; another 1,395 are real packets of every distinct shape seen on APRS-IS, and 40 more pin the rules on which two implementations disagreed over a whole capture.
 
 **Licence:** AGPL-3.0-or-later ([`LICENSE`](LICENSE)).
 
@@ -35,11 +35,12 @@ The submodule pins a commit, so new cases reach an implementation only when it m
 
 | File | What |
 |---|---|
-| `cases/*.json` | The cases, one file per area (`position`, `mic-e`, `message`, ...). Each file is `{"cases": [ ... ]}`. `deviations.json` holds the tolerated defects; `corpus.json` the real packets. |
+| `cases/*.json` | The cases, one file per area (`position`, `mic-e`, `message`, ...). Each file is `{"cases": [ ... ]}`. `deviations.json` holds the tolerated defects; `corpus.json` the real packets; `differential.json` the real packets on which two implementations disagreed, one for each rule that settled it. |
 | `codes.json` | Every diagnostic code a case can name, with its meaning and whether a lenient decoder may tolerate it. |
 | `schema.json` | JSON Schema (2020-12) for the case files. |
 | `interpretations.md` | The decisions taken where the spec is ambiguous, contradicts itself or is wrong. |
 | `tools/check.py` | Checks the files are well formed and consistent; CI runs it on every change. |
+| `tools/compare.py` | Compares two implementations' decodings of the same capture and buckets every disagreement (see [Comparing two implementations](#comparing-two-implementations)). |
 
 ## A case
 
@@ -131,9 +132,13 @@ These follow from the cases, but an implementation meets them before it meets th
 - **Text that is not UTF-8** is read as Latin-1, the whole field, with one `non-utf8-text` warning for the field.
 - **Numbers as sent.** Telemetry values and equation coefficients are compared as numbers, but `identical` re-encoding needs the text as sent (`073`, `190.0`, `.53`), so keep it.
 - **The order of checks.** When a packet has several defects, a strict decoder rejects it by the first one it meets; the cases expect structural checks (addressee, braces, fields) before the text's encoding.
-- **Weather.** A report with the weather station symbol (`_`, either table) is weather even with no fields. After the fields, 3-5 letters and digits and nothing else are the software type and unit; anything else is `weather-comment` text, from which telemetry and a `!DAO!` are still lifted, but not an altitude or a data extension. A letter the spec does not define followed by three or more digits is an `extra` field. A field one or more characters off its fixed width (`h7`, `t45`, `h100`, `b...`) is `non-standard-weather-field-width`.
-- **Comments.** Base-91 telemetry is only looked for between the last two `|`; a `/A=` altitude anywhere wins over a compressed or Mic-E one. After a voice frequency the text starts past any spaces and one `/`; its tone, offset and range fields each need a space before and a space or the end after.
-- **NMEA.** `sentence` is written without the `$`; `time` is `HH:MM:SS` with any fraction of a second kept, less trailing zeros.
+- **Weather.** A report with the weather station symbol (`_`, either table) is weather even with no fields. The fields are one contiguous run, which ends at the first thing that is not a field, at a field letter seen before, and at `c` once the wind is known. After the fields, a letter then a 2-4 character unit of letters, digits, `-` or `_` (not all digits), and nothing else, is the software type and unit; anything else is `weather-comment` text, from which telemetry and a `!DAO!` are still lifted, but not an altitude or a data extension. A letter the spec does not define followed by two or more digits, dots or `-`, ending in a digit, is an `extra` field. A field shorter than its fixed width, or one longer (`h7`, `t45`, `h100`, `b...`), is `non-standard-weather-field-width`; so is a fixed-width value that runs on into one more digit, which is read at the longer width. Wind after a compressed position follows [an interpretation](interpretations.md#wind-after-a-compressed-weather-position).
+- **Comments.** Structured elements are lifted out of a comment in this order, so that one is not taken for another: base-91 telemetry, only looked for between the last two `|`, and a `!DAO!`, the last one outside it; a `/A=` altitude anywhere, which wins over a compressed or Mic-E one; signpost or corridor braces, the first `{...}` holding 1-3 characters; a data extension later in the text, only when none came straight after the symbol (the first `PHG`, else the first `RNG`, else the first `DFS`); and a voice frequency at the start, after at most one space or `/`. A frequency's tone, offset and range fields each need a space before and a space or the end after, and one space after it is dropped. Last, one leading space or `/` is dropped from what is left. PHG and DFS height codes run from `0` on through the ASCII table to `~`, as the spec's height doubling allows.
+- **Telemetry.** A report's sequence is `MIC` or letters and digits up to a comma ([interpretation](interpretations.md#telemetry-sequence-numbers-are-not-3-characters)). Each value ends at a comma or the end of the field; an empty one is `null`, and one left by a trailing comma still counts. The eight bits are only read after all five values; fewer values, or no bits, is `invalid-telemetry`, tolerated, and anything after that is the comment. In `EQNS.`, trailing commas and spaces are the list stopping ("the list may stop at any field", APRS12c ch. 13), and a coefficient may have spaces around it and an exponent. Metadata sent as a numbered message keeps its `message_id`.
+- **Messages and queries.** A second `:` straight after the first is not an unpadded addressee but an empty one: `invalid-message`. Text starting `?` and an upper-case type the spec does not define (`?WX`) is still a directed query, which the recipient ignores; a known type in lower case, a message ID, or a target that is not one callsign makes it a plain message with an `invalid-query` info.
+- **Timestamps that are not there.** A `/` or `@` report whose timestamp is not 6 digits then `z`, `/` or `h` is read with the position straight after the DTI if that decodes, else after seven bytes (`malformed-timestamp`, tolerated). An object's seven timestamp bytes that look like one (six digits, or ending `z`, `/` or `h`) but are not, with a whole position report after them, are `malformed-timestamp`; otherwise the object has `object-without-timestamp` and its position starts straight after the name. An object report shorter than 11 bytes is `truncated`. An item's `!` or `_` is looked for from the fourth byte on, so a name has at least three characters.
+- **Raw data.** Raw weather station data is printable ASCII, or `invalid-weather`.
+- **NMEA.** `sentence` is written without the `$`; `time` is `HH:MM:SS` with any fraction of a second kept, less trailing zeros. A position is `ddmm.mm`, `dddmm.mm` as a number, so the hundreds are degrees whatever the number of digits. A field that does not parse (a position before the receiver has a fix, say) is left out; the sentence is still decoded.
 
 ### Enumerations
 
@@ -147,7 +152,7 @@ These follow from the cases, but an implementation meets them before it meets th
 | `storm.type` | `tropical-storm`, `hurricane`, `tropical-depression` |
 | `mic_e_message` | `off-duty`, `en-route`, `in-service`, `returning`, `committed`, `special`, `priority`, `custom0`-`custom6`, `emergency`, `unknown` |
 | `dao.precision` | `none`, `thousandths`, `base91` |
-| `frequency.tone` | `off`, `tone`, `ctcss`, `dcs` |
+| `frequency.tone` | `off`, `tone`, `ctcss`, `dcs`, `tone-burst` (`1750`, with no `tone_value`) |
 | `raw-weather` `format` | `peet-bros-hash`, `peet-bros-star`, `ultimeter-packet`, `ultimeter-logging` |
 | `unrecognized` `reason` | `empty`, `not-aprs`, `reserved-data-type`, `malformed` |
 
@@ -164,8 +169,8 @@ Every decoded `data` has `type`. Positions, Mic-E reports, objects and items sha
 | `message` | `addressee`, `text`, `message_id`, `reply_ack` |
 | `ack` / `reject` | `addressee`, `acked_id` / `rejected_id`, `reply_ack` |
 | `bulletin`, `nws-bulletin` | `addressee`, `text`, `message_id` |
-| `telemetry-names` / `-units` / `-coefficients` | `addressee`, `names` / `units` / `coefficients` |
-| `telemetry-bits` | `addressee`, `bits`, `project` |
+| `telemetry-names` / `-units` / `-coefficients` | `addressee`, `names` / `units` / `coefficients`, `message_id` |
+| `telemetry-bits` | `addressee`, `bits`, `project`, `message_id` |
 | `directed-query` | `addressee`, `query_type`, `target` |
 | `status` | `timestamp`, `locator`, `symbol`, `beam` (`heading_code`, `power_code`), `text` |
 | `telemetry` | `sequence` (as sent), `analog` (numbers, `null` for an empty channel), `bits`, `comment` |
@@ -223,3 +228,19 @@ dotnet run --project tools/Packet.Aprs.Corpus -c Release -- vectors from-samples
 ```
 
 `curate` picks one or two packets of every distinct shape; `from-samples` adds the ones not already in the file after the existing cases, which keep their ids. When Packet.Aprs changes on purpose, `vectors refresh <files>` works out every observed case again, so the change can be reviewed as a diff.
+
+## Comparing two implementations
+
+The cases say what a decoder should make of a packet of every shape they cover. To find what they do not cover, run two implementations over a whole capture and compare them packet by packet. Each writes one JSON object per packet, in order, with its lenient and strict results in the neutral form and how the lenient data re-encodes (`identical`, `equivalent`, `refused`, `fails`, or `none` when nothing was decoded):
+
+```sh
+# packet.net: extract the capture once, as one hex-encoded TNC2 line per line, and decode it
+dotnet run --project tools/Packet.Aprs.Corpus -c Release -- diff lines ~/aprs-corpus lines.hex.gz
+dotnet run --project tools/Packet.Aprs.Corpus -c Release -- diff dump lines.hex.gz cs.jsonl.gz
+# aprs-rs: decode the same lines
+cargo run --release --example diff_dump -- lines.hex.gz rs.jsonl.gz
+# here: bucket the disagreements
+python3 tools/compare.py cs.jsonl.gz rs.jsonl.gz --names C# Rust --lines lines.hex.gz --json summary.json
+```
+
+`compare.py` needs only Python's standard library. It groups disagreements by which fields and diagnostics differ, with a count and example packets for each, and exits 1 if there are any. When one side re-encodes byte for byte and the other only equivalently, both round-trip and the encoders merely write different bytes; that is reported as an encoder choice, not a disagreement. A new implementation needs only the dump: read the lines file, decode each line, and write the same JSON. Each rule a disagreement settles becomes a case in `differential.json`.
