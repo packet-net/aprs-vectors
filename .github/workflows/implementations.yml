@@ -53,3 +53,24 @@ jobs:
           global-json-file: packet.net/global.json
       - run: dotnet test tests/Packet.Aprs.Tests
         working-directory: packet.net
+
+  python:
+    name: packet-aprs (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: vectors-under-test
+      - uses: actions/checkout@v7
+        with:
+          repository: packet-net/aprs-py
+          path: aprs-py
+      - name: Use these vectors
+        run: |
+          rm -rf aprs-py/vectors
+          cp -r vectors-under-test aprs-py/vectors
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - run: pip install -e . pytest && python -m pytest -q tests/test_vectors.py
+        working-directory: aprs-py
