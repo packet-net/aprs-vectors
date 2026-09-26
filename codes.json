@@ -288,7 +288,7 @@
     },
     {
       "id": "wind-fields-instead-of-extension",
-      "meaning": "Wind sent as c/s fields in a position weather report instead of the DDD/SSS extension.",
+      "meaning": "Wind sent as c/s fields in a position weather report instead of the DDD/SSS extension, or after a compressed position whose cs bytes carry no wind.",
       "tolerable": true
     },
     {
