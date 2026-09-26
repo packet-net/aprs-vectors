@@ -85,6 +85,19 @@ APRS 1.2 reassigned `` ` `` and `'` after the symbol to "messaging capable" and 
 
 **Decision:** the sequence is `MIC` (with or without a comma after it) or letters and digits of any length up to the first comma, with no diagnostic. Anything else there (no comma, or other characters) is not a telemetry report: `invalid-telemetry`, an error.
 
+## NWS bulletins are addressed NWS- or NWS_
+
+- APRS12c ch. 14: National Weather Service bulletins are addressed `NWS-` followed by the severity (`NWS-WARN`, `NWS-ADVIS`).
+- aprs-is.net/wx: the compressed form of the same bulletins is addressed `NWS_`.
+
+**Decision:** an addressee starting `NWS-` or `NWS_` is an NWS bulletin; one that merely starts `NWS` (`NWSBOT`) is an ordinary message. An encoder refuses an NWS bulletin addressed any other way.
+
+## A capabilities report lists at least one capability
+
+- APRS12c ch. 15: a station capabilities report is `<` then a comma-separated list of `TOKEN` or `TOKEN=VALUE` items.
+
+**Decision:** empty items are skipped, and a report with no items left (`<`, or `< , ,`) is malformed: `invalid-capabilities`, an error. An encoder refuses a report with no capabilities.
+
 ## Where these decisions and Ham::APRS::FAP differ
 
 Found by comparing Packet.Aprs with FAP on the same 33,000 APRS-IS packets (see [packet.net's validation notes](https://github.com/packet-net/packet.net/blob/main/docs/aprs-validation.md#5-against-hamaprsfap)):

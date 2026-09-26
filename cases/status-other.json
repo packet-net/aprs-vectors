@@ -374,6 +374,45 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "capabilities/empty",
+      "description": "A capabilities report with nothing after the <: it lists no capabilities, so it is malformed.",
+      "source": "APRS12c ch. 15",
+      "authority": "interpretation",
+      "interpretations": ["a-capabilities-report-lists-at-least-one-capability"],
+      "input": {"info": "<"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-capabilities"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "capabilities/only-commas",
+      "description": "A capabilities report of empty items: once they are dropped it lists nothing, so it is malformed.",
+      "source": "APRS12c ch. 15",
+      "authority": "interpretation",
+      "interpretations": ["a-capabilities-report-lists-at-least-one-capability"],
+      "input": {"info": "< , ,"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-capabilities"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/time-fraction-trailing-zero",
+      "description": "An NMEA time with a fraction of a second ending in zero: the neutral form drops the trailing zero.",
+      "source": "APRS12c ch. 8",
+      "authority": "spec",
+      "input": {"info": "$GPGLL,2554.459,N,08020.187,W,154027.50,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,2554.459,N,08020.187,W,154027.50,A", "latitude": 25.907649999999997, "longitude": -80.33645, "fix": "valid", "time": "15:40:27.5"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

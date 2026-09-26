@@ -312,6 +312,32 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "message/nws-bulletin-underscore",
+      "description": "An NWS bulletin addressed NWS_ rather than NWS-, the form aprs-is.net gives for compressed NWS bulletins.",
+      "source": "aprs-is.net/wx",
+      "authority": "interpretation",
+      "interpretations": ["nws-bulletins-are-addressed-nws--or-nws_"],
+      "input": {"info": ":NWS_ADVIS:092010z,WIND,AR_ASHLEY"},
+      "expect": {
+        "data": {"type": "nws-bulletin", "addressee": "NWS_ADVIS", "text": "092010z,WIND,AR_ASHLEY"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "message/nws-without-a-separator-is-a-message",
+      "description": "An addressee that starts NWS with no - or _ after it is an ordinary message, not an NWS bulletin.",
+      "source": "APRS12c ch. 14",
+      "authority": "interpretation",
+      "interpretations": ["nws-bulletins-are-addressed-nws--or-nws_"],
+      "input": {"info": ":NWSBOT   :hello"},
+      "expect": {
+        "data": {"type": "message", "addressee": "NWSBOT", "text": "hello"}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }
