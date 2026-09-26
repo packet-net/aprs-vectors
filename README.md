@@ -19,6 +19,9 @@ About 250 cases cover every example packet printed in APRS12c and UAP, the encod
 | Implementation | Language | Repository | Package |
 |---|---|---|---|
 | Packet.Aprs | C# (.NET) | [packet-net/packet.net](https://github.com/packet-net/packet.net) | [NuGet `Packet.Aprs`](https://www.nuget.org/packages/Packet.Aprs) |
+| packet-aprs | Rust (`no_std` + `alloc`) | [packet-net/aprs-rs](https://github.com/packet-net/aprs-rs) | [crates.io `packet-aprs`](https://crates.io/crates/packet-aprs) |
+
+This repository's CI also runs each implementation against the vectors in every change, so a pull request shows which implementations already pass a new case. A failure there does not break an implementation, which only sees new cases when it moves its pin.
 
 To use the vectors, add this repository as a git submodule and point your test runner at `cases/` and `codes.json`:
 
@@ -112,6 +115,41 @@ The rules, which make absence meaningful: a field that is not listed must not be
 - Other numbers compare within 1e-9, relative to the larger magnitude (or absolute below 1). Implementations reach the same degrees by different arithmetic.
 - An implementation that does not produce some field should skip it, and knows it has not been tested on it.
 - An implementation with no lenient mode can run `strict` alone.
+
+### Checking a case
+
+- `strict: {"rejected_by": code}` means the decoder still returns a packet, with `data` `{"type": "unrecognized", "reason": "malformed"}` and `error:code` among its diagnostics. With `"header": true`, the header is rejected instead, and `error:code` is among the header's diagnostics. Other diagnostics may be there too.
+- `reencode: "identical"` compares against the input's information field without any trailing CR or LF, which is a tolerated defect rather than part of the data.
+- `reencode: "equivalent"` means the bytes written decode, leniently, to the same data with no warnings or errors. `canonical_info` is only what Packet.Aprs writes.
+- A tolerance check (turning off only the one tolerance a case used) applies to cases whose lenient diagnostics name exactly one tolerable code; it must give the `strict` result.
+
+### Rules the cases rely on
+
+These follow from the cases, but an implementation meets them before it meets the case, so they are spelled out here.
+
+- **Addresses.** On APRS-IS an address is 1-9 letters, digits or `-`. Anything else in a TNC2 header is `invalid-address`; a missing `>` or `:`, or an empty source, is `invalid-header`.
+- **Text that is not UTF-8** is read as Latin-1, the whole field, with one `non-utf8-text` warning for the field.
+- **Numbers as sent.** Telemetry values and equation coefficients are compared as numbers, but `identical` re-encoding needs the text as sent (`073`, `190.0`, `.53`), so keep it.
+- **The order of checks.** When a packet has several defects, a strict decoder rejects it by the first one it meets; the cases expect structural checks (addressee, braces, fields) before the text's encoding.
+- **Weather.** A report with the weather station symbol (`_`, either table) is weather even with no fields. After the fields, 3-5 letters and digits and nothing else are the software type and unit; anything else is `weather-comment` text, from which telemetry and a `!DAO!` are still lifted, but not an altitude or a data extension. A letter the spec does not define followed by three or more digits is an `extra` field. A field one or more characters off its fixed width (`h7`, `t45`, `h100`, `b...`) is `non-standard-weather-field-width`.
+- **Comments.** Base-91 telemetry is only looked for between the last two `|`; a `/A=` altitude anywhere wins over a compressed or Mic-E one. After a voice frequency the text starts past any spaces and one `/`; its tone, offset and range fields each need a space before and a space or the end after.
+- **NMEA.** `sentence` is written without the `$`; `time` is `HH:MM:SS` with any fraction of a second kept, less trailing zeros.
+
+### Enumerations
+
+| Field | Values |
+|---|---|
+| `compression.fix` | `old`, `current` |
+| `compression.source` | `other`, `gll`, `gga`, `rmc` |
+| `compression.origin` | `compressed`, `tnc-beacon-text`, `software`, `reserved3`, `kpc3`, `pico`, `other-tracker`, `digipeater-conversion` |
+| `area.shape` | `open-circle`, `line-down-right`, `open-ellipse`, `open-triangle`, `open-box`, `filled-circle`, `line-down-left`, `filled-ellipse`, `filled-triangle`, `filled-box` (codes 0-9) |
+| `area.color` | `black`, `blue`, `green`, `cyan`, `red`, `violet`, `yellow`, `gray` (codes `/0`-`/7`), then the same with `-low` (codes `/8`, `/9`, `10`-`15`) |
+| `storm.type` | `tropical-storm`, `hurricane`, `tropical-depression` |
+| `mic_e_message` | `off-duty`, `en-route`, `in-service`, `returning`, `committed`, `special`, `priority`, `custom0`-`custom6`, `emergency`, `unknown` |
+| `dao.precision` | `none`, `thousandths`, `base91` |
+| `frequency.tone` | `off`, `tone`, `ctcss`, `dcs` |
+| `raw-weather` `format` | `peet-bros-hash`, `peet-bros-star`, `ultimeter-packet`, `ultimeter-logging` |
+| `unrecognized` `reason` | `empty`, `not-aprs`, `reserved-data-type`, `malformed` |
 
 ### Fields by type
 

@@ -1,0 +1,55 @@
+name: implementations
+
+# Runs each implementation's own test suite against the vectors in this commit, in place of the
+# commit it pins, so a pull request shows which implementations already pass a new case. A
+# failure here does not break an implementation: it only sees new cases when it moves its pin.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    name: packet-aprs (Rust)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: vectors-under-test
+      - uses: actions/checkout@v7
+        with:
+          repository: packet-net/aprs-rs
+          path: aprs-rs
+      - name: Use these vectors
+        run: |
+          rm -rf aprs-rs/vectors
+          cp -r vectors-under-test aprs-rs/vectors
+      - uses: dtolnay/rust-toolchain@1.93.1
+      - run: cargo test --test vectors
+        working-directory: aprs-rs
+
+  csharp:
+    name: Packet.Aprs (C#)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: vectors-under-test
+      - uses: actions/checkout@v7
+        with:
+          repository: packet-net/packet.net
+          path: packet.net
+      - name: Use these vectors
+        run: |
+          rm -rf packet.net/spec/aprs
+          cp -r vectors-under-test packet.net/spec/aprs
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: packet.net/global.json
+      - run: dotnet test tests/Packet.Aprs.Tests
+        working-directory: packet.net
