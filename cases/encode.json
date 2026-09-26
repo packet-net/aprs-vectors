@@ -467,6 +467,16 @@
       "expect": {
         "refused": true
       }
+    },
+    {
+      "id": "encode/ambiguity-keeps-the-box-the-position-is-in",
+      "description": "An exact position sent with two digits of ambiguity: the blanked digits hide where it is within the minute, but the minute written is the one it is in (51.4543 is 51 degrees 27.258 minutes, so 27, not 26).",
+      "source": "APRS12c ch. 6",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 51.4543, "longitude": -0.9781, "ambiguity": 2, "symbol": "/-"}},
+      "expect": {
+        "info": "!5127.  N/00058.  W-"
+      }
     }
   ]
 }
