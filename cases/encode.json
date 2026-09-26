@@ -445,6 +445,28 @@
       "expect": {
         "refused": true
       }
+    },
+    {
+      "id": "encode/capabilities-with-none",
+      "description": "A capabilities report must list at least one capability.",
+      "source": "APRS12c ch. 15",
+      "authority": "interpretation",
+      "interpretations": ["a-capabilities-report-lists-at-least-one-capability"],
+      "input": {"encode": {"type": "capabilities", "capabilities": []}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/nws-bulletin-without-a-separator",
+      "description": "An NWS bulletin is addressed NWS- or NWS_; NWSBOT is not one.",
+      "source": "APRS12c ch. 14",
+      "authority": "interpretation",
+      "interpretations": ["nws-bulletins-are-addressed-nws--or-nws_"],
+      "input": {"encode": {"type": "nws-bulletin", "addressee": "NWSBOT", "text": "hello"}},
+      "expect": {
+        "refused": true
+      }
     }
   ]
 }
