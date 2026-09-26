@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   rust:
-    name: packet-aprs (Rust)
+    name: pdn-aprs (Rust)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -55,7 +55,7 @@ jobs:
         working-directory: packet.net
 
   python:
-    name: packet-aprs (Python)
+    name: pdn-aprs (Python)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
