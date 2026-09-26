@@ -19,8 +19,8 @@ About 250 cases cover every example packet printed in APRS12c and UAP, the encod
 | Implementation | Language | Repository | Package |
 |---|---|---|---|
 | Packet.Aprs | C# (.NET) | [packet-net/packet.net](https://github.com/packet-net/packet.net) | [NuGet `Packet.Aprs`](https://www.nuget.org/packages/Packet.Aprs) |
-| packet-aprs | Rust (`no_std` + `alloc`) | [packet-net/aprs-rs](https://github.com/packet-net/aprs-rs) | [crates.io `packet-aprs`](https://crates.io/crates/packet-aprs) |
-| packet-aprs | Python (3.10+) | [packet-net/aprs-py](https://github.com/packet-net/aprs-py) | [PyPI `packet-aprs`](https://pypi.org/project/packet-aprs/) |
+| pdn-aprs | Rust (`no_std` + `alloc`) | [packet-net/aprs-rs](https://github.com/packet-net/aprs-rs) | [crates.io `pdn-aprs`](https://crates.io/crates/pdn-aprs) |
+| pdn-aprs | Python (3.10+) | [packet-net/aprs-py](https://github.com/packet-net/aprs-py) | [PyPI `pdn-aprs`](https://pypi.org/project/pdn-aprs/) |
 
 This repository's CI also runs each implementation against the vectors in every change, so a pull request shows which implementations already pass a new case. A failure there does not break an implementation, which only sees new cases when it moves its pin.
 
