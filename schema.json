@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/packet-net/packet.net/blob/main/spec/aprs/schema.json",
+  "$id": "https://github.com/packet-net/aprs-vectors/blob/main/schema.json",
   "title": "APRS conformance vector file",
   "description": "A file of cases in spec/aprs/cases. See spec/aprs/README.md for what each key means and how to compare results.",
   "type": "object",

@@ -1,9 +1,9 @@
 {
-  "description": "Every diagnostic code the vectors use. A tolerable code is one a lenient decoder may accept with a warning (a strict decoder rejects it); the others are errors in both modes, or information only. The ids are Packet.Aprs's AprsDiagnosticCode names in kebab-case.",
+  "description": "Every diagnostic code the vectors use. A tolerable code is one a lenient decoder may accept with a warning (a strict decoder rejects it); the others are errors in both modes, or information only. Implementations map these ids to their own names; a new code is added here first.",
   "codes": [
     {
       "id": "invalid-header",
-      "meaning": "/// Stable identifiers for decoding diagnostics. Values are never renumbered; new codes are added /// at the end. /// </summary> public enum AprsDiagnosticCode { // ---- envelope /// <summary>The TNC2 header is not SOURCE>DEST[,PATH]:.",
+      "meaning": "The TNC2 header is not SOURCE>DEST[,PATH]:.",
       "tolerable": false
     },
     {

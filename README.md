@@ -1,18 +1,32 @@
 # APRS conformance vectors
 
-Language-neutral test cases for APRS decoders and encoders: what a packet means, what is wrong with it, and what a strict and a lenient decoder should each make of it. Any implementation in any language can run them. Packet.Aprs runs them as part of its own test suite (`tests/Packet.Aprs.Tests/Vectors/`), so they are kept honest against a real decoder on every build.
+Language-neutral test cases for APRS decoders and encoders: what a packet means, what is wrong with it, and what a strict and a lenient decoder should each make of it. Any implementation in any language can run them, and every implementation below consumes them the same way: as a git submodule, pinned to a commit, run by its own test suite on every build.
 
 The cases come from three places, and each says which:
 
-| Authority | Meaning | Other implementations should |
+| Authority | Meaning | An implementation should |
 |---|---|---|
 | `spec` | The expected values follow from the text of APRS12c or *Understanding APRS Packets* (UAP), usually a worked example printed there. | match them |
-| `interpretation` | The spec is ambiguous, contradicts itself or is wrong here; the expected values follow a decision recorded in [`docs/aprs-spec-interpretations.md`](../../docs/aprs-spec-interpretations.md), linked from the case. | match them or document why not |
-| `observed` | A real packet from the APRS-IS feed; the expected values are what Packet.Aprs does, kept as a regression record. | treat a difference as a question, not a failure |
+| `interpretation` | The spec is ambiguous, contradicts itself or is wrong here; the expected values follow a decision recorded in [`interpretations.md`](interpretations.md), linked from the case. | match them or document why not |
+| `observed` | A real packet from the APRS-IS feed; the expected values are what an implementation made of it when the case was recorded (Packet.Aprs, for every case so far), kept as a regression record. | treat a difference as a question, not a failure |
 
-About 250 cases cover every example packet printed in APRS12c and UAP, the encoder, and every defect a lenient decoder may tolerate; another 1,395 are real packets of every distinct shape seen on APRS-IS. The Packet.Aprs test suite is built on them: what it still checks in C# is only what these files deliberately leave out (values derived from other fields, and its own API).
+About 250 cases cover every example packet printed in APRS12c and UAP, the encoder, and every defect a lenient decoder may tolerate; another 1,395 are real packets of every distinct shape seen on APRS-IS.
 
-**Licence:** AGPL-3.0-or-later, the same as the rest of this repository.
+**Licence:** AGPL-3.0-or-later ([`LICENSE`](LICENSE)).
+
+## Implementations
+
+| Implementation | Language | Repository | Package |
+|---|---|---|---|
+| Packet.Aprs | C# (.NET) | [packet-net/packet.net](https://github.com/packet-net/packet.net) | [NuGet `Packet.Aprs`](https://www.nuget.org/packages/Packet.Aprs) |
+
+To use the vectors, add this repository as a git submodule and point your test runner at `cases/` and `codes.json`:
+
+```sh
+git submodule add https://github.com/packet-net/aprs-vectors vectors
+```
+
+The submodule pins a commit, so new cases reach an implementation only when it moves the pin on, and its own CI shows whether it still passes. Dependabot's `gitsubmodule` ecosystem can open that pull request.
 
 ## Files
 
@@ -21,6 +35,8 @@ About 250 cases cover every example packet printed in APRS12c and UAP, the encod
 | `cases/*.json` | The cases, one file per area (`position`, `mic-e`, `message`, ...). Each file is `{"cases": [ ... ]}`. `deviations.json` holds the tolerated defects; `corpus.json` the real packets. |
 | `codes.json` | Every diagnostic code a case can name, with its meaning and whether a lenient decoder may tolerate it. |
 | `schema.json` | JSON Schema (2020-12) for the case files. |
+| `interpretations.md` | The decisions taken where the spec is ambiguous, contradicts itself or is wrong. |
+| `tools/check.py` | Checks the files are well formed and consistent; CI runs it on every change. |
 
 ## A case
 
@@ -47,7 +63,7 @@ About 250 cases cover every example packet printed in APRS12c and UAP, the encod
 | `description` | yes | One sentence saying why the case exists. |
 | `source` | yes | Where the packet comes from: a spec section, a UAP section, or `APRS-IS <date>` for the live feed. |
 | `authority` | yes | `spec`, `interpretation` or `observed` (above). |
-| `interpretations` | no | Headings in `docs/aprs-spec-interpretations.md` (as GitHub anchors) that the expected values depend on. |
+| `interpretations` | no | Headings in [`interpretations.md`](interpretations.md) (as GitHub anchors) that the expected values depend on. |
 | `input` | yes | What to decode, or with `encode`, what to encode (below). |
 | `expect` | yes | The lenient decoder's result, or an encode case's result. |
 | `strict` | no | The strict decoder's result: `"same"` (the default), `{"rejected_by": code}` (add `"header": true` when the header is what fails), or a full `{"data", "diagnostics"}` when strict reads the packet differently without rejecting it. |
@@ -131,7 +147,7 @@ Positioned fields:
 
 | Field | Meaning |
 |---|---|
-| `latitude`, `longitude` | Degrees, north and east positive, with any `!DAO!` precision applied. An ambiguous position gives the centre of its box ([interpretation](../../docs/aprs-spec-interpretations.md#position-ambiguity-which-point-is-reported)). |
+| `latitude`, `longitude` | Degrees, north and east positive, with any `!DAO!` precision applied. An ambiguous position gives the centre of its box ([interpretation](interpretations.md#position-ambiguity-which-point-is-reported)). |
 | `ambiguity` | 1-4 digits blanked; absent for none. |
 | `symbol` | Table (or overlay) character and code, e.g. `/>`. |
 | `compressed`, `compression` | Compressed format, and its type byte: `fix` (`old`/`current`), `source` (`other`/`gll`/`gga`/`rmc`), `origin`. |
@@ -146,15 +162,22 @@ Positioned fields:
 
 ## Adding a case
 
-Write the `id`, `description`, `source`, `authority` and `input` by hand, then let Packet.Aprs work out the rest:
+Send a pull request here. Write the `id`, `description`, `source`, `authority` and `input` by hand; the expected values can be drafted by any implementation and then checked. For `spec` and `interpretation` cases, check every value against the document the case cites: an implementation's output is a draft, not the authority. Encode cases are written by hand in full. `python3 tools/check.py` must pass, and the case should fail in an implementation whose behaviour it describes is broken.
+
+A new diagnostic code goes in `codes.json` in the same pull request. A new interpretation goes in `interpretations.md`, and the cases that depend on it link to its heading.
+
+### Drafting with Packet.Aprs
+
+packet.net has this repository as a submodule at `spec/aprs`, and its corpus tool writes into it. From a packet.net checkout:
 
 ```sh
+git submodule update --init spec/aprs
 dotnet run --project tools/Packet.Aprs.Corpus -- vectors fill spec/aprs/cases/position.json
 ```
 
-`fill` completes every decode case that has no `expect` yet (`expect`, `strict`, `reencode`), and leaves the others alone. For `spec` and `interpretation` cases, check every value it wrote against the document the case cites: the decoder's output is a draft, not the authority. Encode cases are written by hand in full. Then run `dotnet test tests/Packet.Aprs.Tests --filter Vectors`: the case must pass, and it should fail if the behaviour it describes is broken.
+`fill` completes every decode case that has no `expect` yet (`expect`, `strict`, `reencode`) and leaves the others alone. Commit inside `spec/aprs`, push a branch of this repository, and open the pull request here; once it merges, packet.net moves its pin on.
 
-Real packets come from the APRS-IS capture that `aprs-corpus collect` writes:
+Real packets come from the APRS-IS capture that packet.net's `aprs-corpus collect` writes:
 
 ```sh
 dotnet run --project tools/Packet.Aprs.Corpus -c Release -- curate ~/aprs-corpus samples.txt
