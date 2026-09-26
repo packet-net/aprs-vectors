@@ -63,6 +63,13 @@ APRS 1.2 reassigned `` ` `` and `'` after the symbol to "messaging capable" and 
 
 **Decision:** text after the query type that is longer than 9 characters or contains spaces is not a target, so the message is a plain text message (with an `Info` diagnostic), not a query. A bot's help text that begins `?APRSM for the last 10...` is the case that found this.
 
+## A telemetry project title is 23 characters
+
+- APRS12c ch. 13 gives the bit-sense message's project title as 0-23 in its "Bytes" row, written when APRS text was ASCII; for status text it counts characters.
+- A real title such as `Traisnerhütte Telemetry` is 23 characters, 23 bytes in the Latin-1 it was sent in and 24 in UTF-8.
+
+**Decision:** the limit is 23 characters, whatever the encoding. An encoder refuses a longer title; a decoder accepts one.
+
 ## Where these decisions and Ham::APRS::FAP differ
 
 Found by comparing Packet.Aprs with FAP on the same 33,000 APRS-IS packets (see [packet.net's validation notes](https://github.com/packet-net/packet.net/blob/main/docs/aprs-validation.md#5-against-hamaprsfap)):
