@@ -405,6 +405,38 @@
       }
     },
     {
+      "id": "encode/refuses-status-with-an-out-of-range-timestamp",
+      "description": "The encoder refuses a status timestamp whose hour is 42, as it does in a position or object report; a decoder reads it with a warning.",
+      "source": "APRS12c ch. 6",
+      "authority": "spec",
+      "input": {"encode": {"type": "status", "timestamp": "034209z", "text": "x"}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-telemetry-project-title-over-23-characters",
+      "description": "The encoder refuses a bit-sense project title of 24 characters; the spec allows 23. A decoder accepts a longer one.",
+      "source": "APRS12c ch. 13",
+      "authority": "interpretation",
+      "interpretations": ["a-telemetry-project-title-is-23-characters"],
+      "input": {"encode": {"type": "telemetry-bits", "addressee": "N0CALL", "bits": "11111111", "project": "abcdefghijklmnopqrstuvwx"}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/a-telemetry-project-title-of-23-characters",
+      "description": "A project title of 23 characters is written, even when it is more than 23 bytes in UTF-8.",
+      "source": "APRS12c ch. 13",
+      "authority": "interpretation",
+      "interpretations": ["a-telemetry-project-title-is-23-characters"],
+      "input": {"encode": {"type": "telemetry-bits", "addressee": "N0CALL", "bits": "11111111", "project": "Traisnerhütte Telemetry"}},
+      "expect": {
+        "info": ":N0CALL   :BITS.11111111,Traisnerhütte Telemetry"
+      }
+    },
+    {
       "id": "encode/refuses-unknown-mic-e-message-type",
       "description": "The encoder refuses a Mic-E report whose message bits mix standard and custom ones, which has no defined meaning.",
       "source": "APRS12c ch. 10",

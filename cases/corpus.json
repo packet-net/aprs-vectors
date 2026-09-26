@@ -3283,7 +3283,7 @@
         "diagnostics": ["warning:invalid-timestamp"]
       },
       "strict": {"rejected_by": "invalid-timestamp"},
-      "reencode": "identical"
+      "reencode": "refused"
     },
     {
       "id": "corpus/0238",
@@ -5526,8 +5526,7 @@
         "diagnostics": ["warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "non-utf8-text"},
-      "reencode": "equivalent",
-      "canonical_info": ":DB0PBG-5 :BITS.11111111,DB0PBG Stadt Papenburgê¢"
+      "reencode": "refused"
     },
     {
       "id": "corpus/0397",
@@ -5613,7 +5612,7 @@
         "diagnostics": ["warning:invalid-timestamp"]
       },
       "strict": {"rejected_by": "invalid-timestamp"},
-      "reencode": "identical"
+      "reencode": "refused"
     },
     {
       "id": "corpus/0403",
@@ -9938,7 +9937,7 @@
       "expect": {
         "header": {"source": "9W2YIE-2", "destination": "AESPG4", "path": ["9W2OPS-3*", "WIDE1*", "9M4RTD-3*", "qAR", "9M2OZF-1"], "q_construct": {"construct": "qAR", "station": "9M2OZF-1"}},
         "data": {"type": "message", "addressee": "9W2YIE-2", "text": "EQNS.0,L\tb\u0082b\u008Ab\u0082b\u0082b\u008Ab\u0082b\u0082bj\u008Ab\u0082b\u0082b\u008Ab\u0082\u0002"},
-        "diagnostics": ["warning:multiple-used-markers", "warning:non-utf8-text", "info:invalid-telemetry-metadata", "warning:non-utf8-text"]
+        "diagnostics": ["warning:multiple-used-markers", "info:invalid-telemetry-metadata", "warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
       "reencode": "equivalent",
@@ -11075,7 +11074,7 @@
       "expect": {
         "header": {"source": "ED1YAP-3", "destination": "APMI01", "path": ["ED1ZBH-3*", "WIDE2", "qAR", "ED1ZAJ-3"], "q_construct": {"construct": "qAR", "station": "ED1ZAJ-3"}},
         "data": {"type": "message", "addressee": "ED1YAP-3", "text": "UNIT.Volt,Volt,Amp,Amp,Cº,ON,ON,ON,ON,HI,HI,HI,HIED1YBD-3>APMI03,ED1YAP-3,ED1ZAT-3,WIDE3*,qAR,EB1HBK-10:@120052z4309.56N/00629.74W#PHG4260 WIDE3-3 ESAS3-3 PLXDIGI"},
-        "diagnostics": ["warning:non-utf8-text", "info:invalid-telemetry-metadata", "warning:non-utf8-text"]
+        "diagnostics": ["info:invalid-telemetry-metadata", "warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "non-utf8-text"},
       "reencode": "refused"
@@ -12199,7 +12198,7 @@
       "expect": {
         "header": {"source": "HS5NMF", "destination": "AESPG4", "path": ["HS1AH-10*", "qAR", "HS1AL-1"], "q_construct": {"construct": "qAR", "station": "HS1AL-1"}},
         "data": {"type": "message", "addressee": "HS5NMF", "text": "EQNS.0,1,0,0,1,0,0,1,0,0,-1,\u0098\tb\u008Ab\u0082\u0002"},
-        "diagnostics": ["warning:non-utf8-text", "info:invalid-telemetry-metadata", "warning:non-utf8-text"]
+        "diagnostics": ["info:invalid-telemetry-metadata", "warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "non-utf8-text"},
       "reencode": "equivalent",
@@ -12777,7 +12776,7 @@
       "expect": {
         "header": {"source": "YH3AJS-9", "destination": "APLG02", "path": ["YH3AJS-12*", "YH3AJS-10*", "qAR", "YG3DEB-10"], "q_construct": {"construct": "qAR", "station": "YG3DEB-10"}},
         "data": {"type": "message", "addressee": "YH3AJS-9", "text": "EQNS.0,1,0,0,0.1,0,0,0.1,0,0,1,0,0,1,0¥"},
-        "diagnostics": ["warning:multiple-used-markers", "warning:non-utf8-text", "info:invalid-telemetry-metadata", "warning:non-utf8-text"]
+        "diagnostics": ["warning:multiple-used-markers", "info:invalid-telemetry-metadata", "warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
       "reencode": "equivalent",
@@ -17407,7 +17406,7 @@
       "expect": {
         "header": {"source": "WVSCn-6", "destination": "APMI03", "path": ["K6SDD-3*", "WIDE2-1", "qAR", "W6PKT-5"], "q_construct": {"construct": "qAR", "station": "W6PKT-5"}},
         "data": {"type": "message", "addressee": "W6SCR-6", "text": "BITS.11711111,CÏlby Data"},
-        "diagnostics": ["warning:non-utf8-text", "info:invalid-telemetry-metadata", "warning:non-utf8-text"]
+        "diagnostics": ["info:invalid-telemetry-metadata", "warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "non-utf8-text"},
       "reencode": "equivalent",
