@@ -217,6 +217,8 @@ class DataGen:
 
     def _object(self, d: dict) -> None:
         self._positioned(d)
+        if "timestamp" not in d and self.rng.random() < 0.95:
+            d["timestamp"] = self._timestamp()
         if self.rng.random() < 0.3:
             d["name"] = self._name(1, 9)
         if self.rng.random() < 0.2:
@@ -255,7 +257,7 @@ class DataGen:
         if rng.random() < 0.1:
             d["destination_ssid"] = rng.randint(1, 15)
         if rng.random() < 0.05:
-            d["legacy_telemetry"] = [rng.randint(0, 255) for _ in range(rng.choice([2, 5]))]
+            d["legacy_telemetry"] = [rng.randint(0, 254) for _ in range(5)] if rng.random() < 0.9 else [255, 1, 2, 3, 4]
 
     def _positioned(self, d: dict, mic_e: bool = False) -> None:
         rng, pool = self.rng, self.pool
@@ -277,7 +279,7 @@ class DataGen:
                         continue
                     if compressed_now and key in ("phg", "dfs", "area", "df_bearing", "storm"):
                         continue
-                    if "weather" in d and key not in ("dao", "telemetry"):
+                    if "weather" in d and key != "dao":
                         continue
                     if extension and any(k in d for k in ("phg", "range_miles", "dfs", "area", "df_bearing", "storm")):
                         continue
@@ -296,7 +298,10 @@ class DataGen:
                 d[key] = value
         if rng.random() < (0.03 if "weather" in d else 0.15):
             d["symbol"] = pool.part(rng, "positioned.symbol", "/>")
-        if rng.random() < (0.03 if "weather" in d else 0.5):
+        if "weather" in d:
+            if rng.random() < 0.95:
+                d.pop("comment", None)  # a clean weather report has none
+        elif rng.random() < 0.5:
             d["comment"] = text(rng, pool, "positioned.comment")
         compressed = bool(d.get("compressed"))
         toggled = False
@@ -305,6 +310,9 @@ class DataGen:
             if compressed:
                 d["compressed"] = True
                 d.pop("ambiguity", None)
+                if rng.random() < 0.95:
+                    for k in ("phg", "dfs", "area", "df_bearing", "storm"):
+                        d.pop(k, None)
             else:
                 d.pop("compressed", None)
                 d.pop("compression", None)
@@ -427,9 +435,10 @@ class DataGen:
             d["weather"] = self._wx()
         if rng.random() < 0.3:
             d["timestamp"] = f"{rng.randint(1, 12):02d}{rng.randint(1, 31):02d}{rng.randint(0, 23):02d}{rng.randint(0, 59):02d}"
-        if rng.random() < 0.3:
-            c = text(rng, self.pool, "weather.comment")
-            d.pop("comment", None) if not c else d.__setitem__("comment", c)
+        if rng.random() < 0.95:
+            d.pop("comment", None)  # comment text in a weather report reads back as weather-comment
+        elif rng.random() < 0.5:
+            d["comment"] = text(rng, self.pool, "weather.comment")
 
     _weather = _weather_positionless
 

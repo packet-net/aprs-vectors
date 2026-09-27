@@ -112,6 +112,14 @@ def data_type(mode, recs, inp):
     return "?"
 
 
+def without_inner_info(data):
+    """Third-party data without its inner packet's diagnostics, which generated data cannot know
+    in advance (only info ones get this far)."""
+    if isinstance(data, dict) and isinstance(data.get("packet"), dict) and "diagnostics" in data["packet"]:
+        data = dict(data, packet={k: v for k, v in data["packet"].items() if k != "diagnostics"})
+    return data
+
+
 def own_checks(mode, r, inp):
     """What is wrong with one implementation's record on its own, or None."""
     if mode == "encode" and r.get("result") == "written":
@@ -121,7 +129,11 @@ def own_checks(mode, r, inp):
             bad = bad + again["header_error"]
         if bad:
             return "written bytes decode with " + ", ".join(sorted(set(bad)))
-        if inp is not None and inp.get("exact") and key(again.get("data")) != key(inp.get("data")):
+        inner = ((again.get("data") or {}).get("packet") or {}).get("diagnostics", [])
+        inner_bad = [d for d in inner if not d.startswith("info:")]
+        if inner_bad:
+            return "written bytes decode with, in the inner packet, " + ", ".join(sorted(set(inner_bad)))
+        if inp is not None and inp.get("exact") and key(without_inner_info(again.get("data"))) != key(without_inner_info(inp.get("data"))):
             a, b = norm(again.get("data")) or {}, norm(inp.get("data")) or {}
             keys = sorted(k for k in set(a) | set(b) if a.get(k) != b.get(k))
             return "written bytes decode to different data: " + ", ".join(keys)
