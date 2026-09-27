@@ -166,7 +166,7 @@ APRS 1.2 reassigned `` ` `` and `'` after the symbol to "messaging capable" and 
 
 - APRS12c ch. 11: signposts (the `\m` symbol) "display as a yellow box" with an overlay of 1-3 characters, given in braces in the comment.
 
-**Decision:** an overlay character is printable ASCII, as every APRS overlay is. Braces around anything else, such as `{5`, 0xFF, `5}`, are comment text, where bytes that are not UTF-8 get `non-utf8-text` as usual.
+**Decision:** an overlay character is printable ASCII other than a brace, as every APRS overlay is printable and the braces delimit it. Braces around anything else, such as `{5`, 0xFF, `5}`, are comment text, where bytes that are not UTF-8 get `non-utf8-text` as usual, and they do not stop the search: the signpost is the first well-formed braces in the comment, as a late data extension is the first well-formed one.
 
 ## Which weather field a letter is
 

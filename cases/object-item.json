@@ -316,6 +316,32 @@
       },
       "strict": "same",
       "reencode": "equivalent"
+    },
+    {
+      "id": "item/signpost-brace-before-the-braces",
+      "description": "A brace is not an overlay character: in {{5} the well-formed braces are {5}, so the signpost is 5 and the first { is comment text.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["signpost-overlays-are-printable-ascii"],
+      "input": {"info": ")I9153N!4903.50N\\07201.75Wm{{5}"},
+      "expect": {
+        "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "5", "comment": "{"}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "item/signpost-after-braces-that-do-not-qualify",
+      "description": "Braces around a control character are comment text and do not stop the search, so the signpost is the later {AB}.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["signpost-overlays-are-printable-ascii"],
+      "input": {"info": ")I9153N!4903.50N\\07201.75Wm{5\u00015} {AB}"},
+      "expect": {
+        "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "AB", "comment": "{5\u00015} "}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
     }
   ]
 }
