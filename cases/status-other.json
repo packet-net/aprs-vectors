@@ -1113,6 +1113,19 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "third-party/q-construct-in-the-inner-path",
+      "description": "A q-construct is read only in the outer header. In a third-party header, qAR and the station after it are path entries like any other, and the inner packet has no q_construct.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["third-party-header-addresses"],
+      "input": {"info": "}N1CALL>APZ001,WIDE2-1,qAR,N2CALL:>hello"},
+      "expect": {
+        "data": {"type": "third-party", "packet": {"source": "N1CALL", "destination": "APZ001", "path": ["WIDE2-1", "qAR", "N2CALL"], "data": {"type": "status", "text": "hello"}}}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }
