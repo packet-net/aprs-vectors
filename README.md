@@ -75,7 +75,7 @@ The submodule pins a commit, so new cases reach an implementation only when it m
 | `expect` | yes | The lenient decoder's result, or an encode case's result. |
 | `strict` | no | The strict decoder's result: `"same"` (the default), `{"rejected_by": code}` (add `"header": true` when the header is what fails), or a full `{"data", "diagnostics"}` when strict reads the packet differently without rejecting it. |
 | `reencode` | no | Encoding the lenient decoder's data again: `"identical"` gives the input's information field byte for byte (for Mic-E, the destination too), `"equivalent"` gives bytes that decode to the same data, `"refused"` means the encoder must decline (for example message text over 67 characters, which receivers accept and senders may not write). |
-| `canonical_info` | no | With `equivalent`: the bytes Packet.Aprs writes. Another encoder may choose differently and still conform. |
+| `canonical_info` | no | With `equivalent`: the bytes the Encoding rule below leads to. Where that rule says what to write (a Mic-E status text starting with 0x1D goes after a `/`, say), an encoder writes those bytes; where it leaves a choice, another encoder may choose differently and still conform. |
 
 ### Input
 
@@ -124,7 +124,7 @@ The rules, which make absence meaningful: a field that is not listed must not be
 
 - `strict: {"rejected_by": code}` means the decoder still returns a packet, with `data` `{"type": "unrecognized", "reason": "malformed"}` and `error:code` among its diagnostics. With `"header": true`, the header is rejected instead, and `error:code` is among the header's diagnostics. Other diagnostics may be there too.
 - `reencode: "identical"` compares against the input's information field without any trailing CR or LF, which is a tolerated defect rather than part of the data.
-- `reencode: "equivalent"` means the bytes written decode, leniently, to the same data with no warnings or errors. `canonical_info` is only what Packet.Aprs writes.
+- `reencode: "equivalent"` means the bytes written decode, leniently, to the same data with no warnings or errors. `canonical_info` is one clean form; where the Encoding rule leaves a choice, it is not the only one.
 - A tolerance check (turning off only the one tolerance a case used) applies to cases whose lenient diagnostics name exactly one tolerable code; it must give the `strict` result.
 
 ### Rules the cases rely on
