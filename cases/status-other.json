@@ -1059,6 +1059,60 @@
       },
       "strict": {"rejected_by": "invalid-third-party"},
       "reencode": "refused"
+    },
+    {
+      "id": "nmea/proprietary-four-character-address",
+      "description": "P and three characters is a proprietary address: the sentence is NMEA, kept as text, not read as GLL.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$PGLL,2554.459,N,08020.187,W,154027.50,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "PGLL,2554.459,N,08020.187,W,154027.50,A"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/proprietary-address-checksum-mismatch",
+      "description": "A proprietary sentence with a checksum that does not match: the structure is valid, so the error is the checksum.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$PRMC,063909,A,3349.0,N,11700.3721,W,43.022,89.3,360,13.6,E*52"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:nmea-checksum-mismatch"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "third-party/empty-inner-destination",
+      "description": "An empty destination inside a third-party header is a tolerated defect of the inner header: decoded with its warning on the inner packet, which is written with destination \"\" as any header is; strict rejects it, and an encoder refuses it.",
+      "source": "APRS12c ch. 17 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["third-party-header-addresses"],
+      "input": {"info": "}N0CALL>:>x"},
+      "expect": {
+        "data": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "", "data": {"type": "status", "text": "x"}, "diagnostics": ["warning:empty-destination"]}}
+      },
+      "strict": {"rejected_by": "invalid-third-party"},
+      "reencode": "refused"
+    },
+    {
+      "id": "nmea/number-without-a-leading-digit",
+      "description": "An NMEA number may start with its decimal point: .30 is a speed of 0.3 knots.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPRMC,230034.000,A,4609.10970N,12258.8171,W,,.30,7.31,250926,,,A*71"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPRMC,230034.000,A,4609.10970N,12258.8171,W,,.30,7.31,250926,,,A*71", "has_checksum": true, "fix": "valid", "course_degrees": 7.31, "speed_knots": 0.3, "time": "23:00:34"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

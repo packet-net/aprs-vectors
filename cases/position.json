@@ -641,6 +641,33 @@
         "diagnostics": ["error:invalid-longitude"]
       },
       "strict": "same"
+    },
+    {
+      "id": "position/ambiguous-latitude-centre-past-90",
+      "description": "90 degrees with the minutes blanked reports the centre of the box, 90 degrees 30 minutes, which is past the pole: invalid-latitude, met before the longitude.",
+      "source": "APRS12c ch. 6 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["position-ambiguity-which-point-is-reported"],
+      "input": {"info": "!90  .  N/072  .  W-"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-latitude"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "position/df-bearing-over-360",
+      "description": "A DF bearing is in degrees; 670 is out of range, so the /BRG/NRQ element is dropped with out-of-range-value, as an out-of-range course or wind direction is.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"info": "=4903.50N/07201.75W\\000/036/670/729"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/\\", "course_degrees": 0, "speed_knots": 36},
+        "diagnostics": ["warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "equivalent"
     }
   ]
 }

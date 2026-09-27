@@ -533,6 +533,75 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "weather/snowfall-with-a-decimal-point",
+      "description": "s.50 is a snowfall of 0.50 inches written with a decimal point, not a short run of dots.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077s.50"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 0.5}}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/dots-read-up-to-the-field-width",
+      "description": "A run of dots is read only up to the field's width: s... is an unknown snowfall and the two dots after it are comment text.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "_10090556c220s004g005t077s....."},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": ".."},
+        "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/software-and-unit-after-compressed-telemetry",
+      "description": "After a compressed weather position, base-91 telemetry is lifted first and what is left, B then DV, is the software type and unit.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "=/io)_Rcit_[RrBDV|f-MM!!![/'y3!\"|"},
+      "expect": {
+        "data": {"type": "position", "latitude": -54.132508676225825, "longitude": 16.773966597186842, "symbol": "/_", "compressed": true, "compression": {"fix": "old", "source": "gga", "origin": "tnc-beacon-text"}, "altitude_feet": 41913.371507613876, "telemetry": {"sequence": 6291, "analog": [4048, 0, 58, 1280, 8026], "digital": 1}, "weather": {"software": "B", "unit": "DV"}, "messaging": true},
+        "diagnostics": ["warning:compression-type-reserved-bits", "warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "compression-type-reserved-bits"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/s-before-c-is-snowfall",
+      "description": "In a position report the wind comes as fields only once a c field has been read, so an s before any c is snowfall, and the wind is missing.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_s002g005t077"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 2}},
+        "diagnostics": ["warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "incomplete-weather"},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/software-unit-that-would-read-as-fields",
+      "description": "h after the fields is read as the software type and 89b1 as the unit; written back, h89 would read as humidity, so an encoder refuses.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "@252330z5003.17N/02201.43E_210/000g00t050r000p000P000h800h89b1"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "252330z", "messaging": true, "latitude": 50.05283333333333, "longitude": 22.023833333333332, "symbol": "/_", "weather": {"wind_direction_degrees": 210, "wind_speed_mph": 0, "wind_gust_mph": 0, "temperature_f": 50, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0, "software": "h", "unit": "89b1"}},
+        "diagnostics": ["warning:non-standard-weather-field-width", "warning:non-standard-weather-field-width", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "non-standard-weather-field-width"},
+      "reencode": "refused"
     }
   ]
 }

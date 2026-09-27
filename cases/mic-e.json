@@ -454,7 +454,8 @@
         "diagnostics": ["info:mic-e-missing-device-type"]
       },
       "strict": "same",
-      "reencode": "identical"
+      "reencode": "equivalent",
+      "canonical_info": "`c'wl|+>//\u001dABC"
     },
     {
       "id": "mic-e/legacy-binary-telemetry-after-ff-padding",
@@ -469,7 +470,7 @@
       },
       "strict": {"rejected_by": "kenwood-ff-padding"},
       "reencode": "equivalent",
-      "canonical_info": "`c'wl|+>/\u001d\u0000\u0001 "
+      "canonical_info": "`c'wl|+>//\u001d\u0000\u0001\u007f "
     },
     {
       "id": "mic-e/comment-starting-with-a-type-code-character",
@@ -610,6 +611,19 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "mic-e/south-of-the-equator-with-dao",
+      "description": "A Mic-E latitude of 0 degrees in the south, with DAO precision added: the added precision is south of the equator too, so the latitude is negative.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"tnc2_hex": "4B44304D2D313E5050303050303A2776581C6C201C5E2F272233727D204B44304D2044616C6520416972626F726E21774421217C33"},
+      "expect": {
+        "header": {"source": "KD0M-1", "destination": "PP00P0"},
+        "data": {"type": "mic-e", "mic_e_message": "en-route", "old_data": true, "type_code": "'", "device_suffix": "|3", "latitude": -6.41025641025641e-05, "longitude": 0, "symbol": "/^", "speed_knots": 0, "altitude_feet": 0, "dao": {"datum": "W", "precision": "base91"}, "comment": "KD0M Dale Airborn"}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
     }
   ]
 }

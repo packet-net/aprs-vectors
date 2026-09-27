@@ -279,6 +279,18 @@
       },
       "strict": {"rejected_by": "non-utf8-text"},
       "reencode": "equivalent"
+    },
+    {
+      "id": "object/overlaid-m-is-not-a-signpost",
+      "description": "Signposts use the \\m symbol; with an overlay (5m) the braces are comment text.",
+      "source": "APRS12c ch. 11 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": ";SIGN     *092345z4903.50N507201.75Wm{55}"},
+      "expect": {
+        "data": {"type": "object", "name": "SIGN", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "5m", "comment": "{55}"}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }
