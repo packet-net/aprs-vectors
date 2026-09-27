@@ -668,6 +668,19 @@
       },
       "strict": {"rejected_by": "out-of-range-value"},
       "reencode": "equivalent"
+    },
+    {
+      "id": "position/ambiguous-longitude-centre-past-180",
+      "description": "180 degrees with the minutes blanked (the latitude's ambiguity applies to the longitude) reports the centre of the box, 180 degrees 30 minutes, which is past the date line: invalid-longitude.",
+      "source": "APRS12c ch. 6 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["position-ambiguity-which-point-is-reported"],
+      "input": {"info": "!49  .  N/180  .  W-"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-longitude"]
+      },
+      "strict": "same"
     }
   ]
 }
