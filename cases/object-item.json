@@ -303,6 +303,19 @@
       },
       "strict": "same",
       "reencode": "equivalent"
+    },
+    {
+      "id": "item/signpost-with-a-space",
+      "description": "A space is printable ASCII, so {5 } is the signpost \"5 \", and an encoder writes it back.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["signpost-overlays-are-printable-ascii"],
+      "input": {"info": ")I9153N!4903.50N\\07201.75Wm{5 }"},
+      "expect": {
+        "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "5 "}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
     }
   ]
 }

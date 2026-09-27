@@ -658,6 +658,18 @@
       },
       "strict": {"rejected_by": "weather-comment"},
       "reencode": "refused"
+    },
+    {
+      "id": "weather/snowfall-in-hundredths",
+      "description": "A snowfall of 0.32 inches fits its three characters exactly as .32, so an encoder writes it that way rather than round it or refuse.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077s.32"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 0.32}}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
     }
   ]
 }
