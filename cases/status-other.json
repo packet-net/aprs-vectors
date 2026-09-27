@@ -439,6 +439,626 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "capabilities/control-character-in-token",
+      "description": "A control character in a token (0x1C here) makes the report free text (free-text-capabilities, tolerated).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["station-capabilities-items-tokens-and-values"],
+      "input": {"tnc2": "N0CALL>APZ001:<IGATE,MSG\u001cCNT=43,LOC_CNT=14"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "capabilities", "capabilities": [["IGATE"], ["MSG\u001cCNT", "43"], ["LOC_CNT", "14"]]},
+        "diagnostics": ["warning:free-text-capabilities"]
+      },
+      "strict": {"rejected_by": "free-text-capabilities"},
+      "reencode": "refused"
+    },
+    {
+      "id": "capabilities/control-character-in-value",
+      "description": "A control character in a value (0x1C here) makes the report free text, as one in a token does (free-text-capabilities, tolerated).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["station-capabilities-items-tokens-and-values"],
+      "input": {"tnc2": "N0CALL>APZ001:<IGATE,MSG_CNT=4\u001c3,LOC_CNT=14"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "capabilities", "capabilities": [["IGATE"], ["MSG_CNT", "4\u001c3"], ["LOC_CNT", "14"]]},
+        "diagnostics": ["warning:free-text-capabilities"]
+      },
+      "strict": {"rejected_by": "free-text-capabilities"},
+      "reencode": "refused"
+    },
+    {
+      "id": "capabilities/empty-token",
+      "description": "=43 has a value but no token, so it is neither TOKEN nor TOKEN=VALUE: free text (free-text-capabilities, tolerated).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["station-capabilities-items-tokens-and-values"],
+      "input": {"tnc2": "N0CALL>APZ001:<IGATE,=43"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "capabilities", "capabilities": [["IGATE"], ["", "43"]]},
+        "diagnostics": ["warning:free-text-capabilities"]
+      },
+      "strict": {"rejected_by": "free-text-capabilities"},
+      "reencode": "refused"
+    },
+    {
+      "id": "capabilities/spaces-around-equals",
+      "description": "Spaces around an item, and around its =, are padding: the token is MSG_CNT and the value 43.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["station-capabilities-items-tokens-and-values"],
+      "input": {"tnc2": "N0CALL>APZ001:<IGATE, MSG_CNT = 43 ,LOC_CNT=14"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "capabilities", "capabilities": [["IGATE"], ["MSG_CNT", "43"], ["LOC_CNT", "14"]]}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "<IGATE,MSG_CNT=43,LOC_CNT=14"
+    },
+    {
+      "id": "capabilities/carriage-return-is-not-padding",
+      "description": "Only spaces are trimmed from an item: a CR left at the end of a token is a control character, so the report is free text (free-text-capabilities, tolerated).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["station-capabilities-items-tokens-and-values"],
+      "input": {"tnc2": "N0CALL>APZ001:<IGATE\r,MSG_CNT=43"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "capabilities", "capabilities": [["IGATE\r"], ["MSG_CNT", "43"]]},
+        "diagnostics": ["warning:free-text-capabilities"]
+      },
+      "strict": {"rejected_by": "free-text-capabilities"},
+      "reencode": "refused"
+    },
+    {
+      "id": "capabilities/no-break-space-is-not-a-space",
+      "description": "U+00A0 is neither a space nor a control character, so it does not make a token free text.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["station-capabilities-items-tokens-and-values"],
+      "input": {"tnc2": "N0CALL>APZ001:<IG\u00a0ATE,MSG_CNT=43"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "capabilities", "capabilities": [["IG\u00a0ATE"], ["MSG_CNT", "43"]]}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "capabilities/latin-1-is-the-whole-text",
+      "description": "One capability is valid UTF-8 and the next is not: the whole text is read as Latin-1, not each item on its own (non-utf8-text, tolerated).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2_hex": "4e3043414c4c3e41505a3030313a3cc3a92ce9"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "capabilities", "capabilities": [["\u00c3\u00a9"], ["\u00e9"]]},
+        "diagnostics": ["warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "non-utf8-text"},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "query/type-with-a-digit",
+      "description": "A general query type is upper-case letters; IGAT7 is not one (invalid-general-query).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:?IGAT7?"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-general-query"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "query/radius-not-four-digits",
+      "description": "The footprint radius is a fixed 4-digit number (APRS12c ch. 15); 020 is not (invalid-general-query).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:?APRS? 34.02,-117.15,020"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-general-query"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "query/footprint-latitude-out-of-range",
+      "description": "A footprint latitude of 100.02 degrees is not a latitude (invalid-general-query).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["a-general-query-footprint-is-a-real-place"],
+      "input": {"tnc2": "N0CALL>APZ001:?APRS? 100.02,-117.15,0200"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-general-query"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "status/space-before-beam-heading",
+      "description": "^B7 is lifted from the end of the status text; the space before it is text as sent.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:>Net Control ^B7"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "status", "text": "Net Control ", "beam": {"heading_code": "B", "power_code": "7"}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "status/locator-text-and-beam-heading",
+      "description": "With a locator, the one space before the text is dropped, and the space before ^B7 is kept.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:>IO91SX/- Net Control ^B7"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "status", "locator": "IO91SX", "symbol": "/-", "text": "Net Control ", "beam": {"heading_code": "B", "power_code": "7"}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "status/erp-code-zero-is-text",
+      "description": "0 is not an ERP code (they run 1 to K, APRS12c ch. 16), so ^B0 is status text, not a beam heading.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:>Net Control^B0"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "status", "text": "Net Control^B0"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "status-other/user-defined-control-packet-type",
+      "description": "APRS12c ch. 19 places no restriction on user-defined data, header included, so a control byte as the packet type is written back as it came.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:{Q\u0001data"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "user-defined", "user_id": "Q", "packet_type": "\u0001", "data": "data"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "third-party/source-with-underscore",
+      "description": "The source in a third-party header may be 1-9 printable ASCII characters other than > and : (APRS12c ch. 17), so PY2SP_R-R is a source, though it would not be one in an APRS-IS header.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["third-party-header-addresses"],
+      "input": {"tnc2": "N0CALL>APZ001:}PY2SP_R-R>APRS,TCPIP,G9RXG*:>test"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "third-party", "packet": {"source": "PY2SP_R-R", "destination": "APRS", "path": ["TCPIP*", "G9RXG*"], "data": {"type": "status", "text": "test"}}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "third-party/path-entry-with-plus",
+      "description": "A path entry in a third-party header is an address, 1-9 letters, digits or -; TC+IP is not (invalid-third-party).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["third-party-header-addresses"],
+      "input": {"tnc2": "N0CALL>APZ001:}WB4APR-14>APRS,TC+IP,G9RXG*:>test"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-third-party"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "third-party/empty-inner-information",
+      "description": "A third-party packet whose inner information field is empty re-encodes with that field as received: empty.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:}WB4APR-14>APRS,TCPIP,G9RXG*:"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "third-party", "packet": {"source": "WB4APR-14", "destination": "APRS", "path": ["TCPIP*", "G9RXG*"], "data": {"type": "unrecognized", "reason": "empty"}}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "agrelo-df/text-after-quality",
+      "description": "The Agrelo format is %, 3 bearing digits, / and 1 quality digit; a second quality digit is not part of it (invalid-agrelo-df).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:%123/60"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-agrelo-df"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "agrelo-df/bearing-over-360",
+      "description": "A bearing of 361 degrees is not a bearing (invalid-agrelo-df).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["an-agrelo-bearing-is-0-to-360"],
+      "input": {"tnc2": "N0CALL>APZ001:%361/0"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-agrelo-df"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/not-a-sentence",
+      "description": "Text after $ that has no NMEA address field is not an NMEA sentence: invalid-nmea, an error in both modes.",
+      "source": "APRS-IS 2026-09-26; NMEA 0183 via APRS12c ch. 5",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"tnc2": "W6SCR-6>APMI03,K6SDD-3*,WIDE2-1,qAR,W6PKT-5:$W6SCR-6  :BITS.11111111,Colby Data"},
+      "expect": {
+        "header": {"source": "W6SCR-6", "destination": "APMI03", "path": ["K6SDD-3*", "WIDE2-1", "qAR", "W6PKT-5"], "q_construct": {"construct": "qAR", "station": "W6PKT-5"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:invalid-nmea"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/not-a-sentence-short",
+      "description": "Seven characters after $ with no comma: not an NMEA sentence.",
+      "source": "APRS-IS 2026-09-26; NMEA 0183 via APRS12c ch. 5",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$3tXJkPA"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:invalid-nmea"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/address-without-fields",
+      "description": "An address field with no comma and no fields after it is not a sentence.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$GPRMC"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:invalid-nmea"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/address-wrong-length",
+      "description": "A six-character address that does not start with P is not an NMEA address field, so the sentence is not read as RMC.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$GPSRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:invalid-nmea"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/address-checked-before-checksum",
+      "description": "A four-character address and a wrong checksum: the address is read first, so the error is invalid-nmea.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$GGGA,152920.00,5341.150,N,1001.850,E,1,3,0.0,10.0,2,,M,,*47"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:invalid-nmea"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/proprietary-sentence",
+      "description": "A proprietary sentence (P, a manufacturer code, more characters) is NMEA and is kept as text.",
+      "source": "NMEA 0183 via APRS12c ch. 5",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$PMGNWPL,4228.1000,N,07120.0000,W,0000000,M,WPT01,comment,a"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "PMGNWPL,4228.1000,N,07120.0000,W,0000000,M,WPT01,comment,a"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/talker-with-digit",
+      "description": "A user-configured talker ID (U1) is a valid address; the sentence is read as GGA.",
+      "source": "NMEA 0183 via APRS12c ch. 5",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$U1GGA,102705,5157.9762,N,00029.3256,W,1,04,2.0,75.7,M,47.6,M,,*11"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "U1GGA,102705,5157.9762,N,00029.3256,W,1,04,2.0,75.7,M,47.6,M,,*11", "has_checksum": true, "latitude": 51.96627, "longitude": -0.48876000000000003, "fix": "valid", "altitude_m": 75.7, "time": "10:27:05"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/delete-is-not-printable",
+      "description": "A DEL byte in a sentence: not printable ASCII, so invalid-nmea.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$GPGLL,2554.459,N,08020.187,W,154027.281,A\u007f"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:invalid-nmea"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/minutes-60-or-more",
+      "description": "A latitude whose minutes are 60 or more is not a coordinate; the position is left out and the rest of the sentence is read.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPGLL,2560.459,N,08020.187,W,154027.281,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,2560.459,N,08020.187,W,154027.281,A", "fix": "valid", "time": "15:40:27.281"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/coordinate-without-degree-digit",
+      "description": "A latitude with only two digits before the point has no degrees; it is not read as 0 degrees.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPGLL,54.459,N,08020.187,W,154027.281,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,54.459,N,08020.187,W,154027.281,A", "fix": "valid", "time": "15:40:27.281"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/latitude-beyond-90",
+      "description": "A latitude of 91 degrees is out of range; the position is left out.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPGLL,9154.459,N,08020.187,W,154027.281,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,9154.459,N,08020.187,W,154027.281,A", "fix": "valid", "time": "15:40:27.281"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/position-needs-both-coordinates",
+      "description": "A latitude with an empty longitude is no position at all.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPGLL,2554.459,N,,W,154027.281,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,2554.459,N,,W,154027.281,A", "fix": "valid", "time": "15:40:27.281"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/time-out-of-range",
+      "description": "Hour 25 is not a time; the time is left out and the rest is read.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPGLL,2554.459,N,08020.187,W,254027.281,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,2554.459,N,08020.187,W,254027.281,A", "latitude": 25.90765, "longitude": -80.33645, "fix": "valid"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/time-not-six-digits",
+      "description": "Seven digits are not hhmmss (and nor are five): the time is left out, not read from the first six.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPGLL,2554.459,N,08020.187,W,1540271,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,2554.459,N,08020.187,W,1540271,A", "latitude": 25.90765, "longitude": -80.33645, "fix": "valid"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/time-five-digits",
+      "description": "Five digits and a fraction are not hhmmss; the time is left out.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPGLL,2554.459,N,08020.187,W,15402.5,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,2554.459,N,08020.187,W,15402.5,A", "latitude": 25.90765, "longitude": -80.33645, "fix": "valid"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/status-not-a-or-v",
+      "description": "A GLL status that is neither A nor V says nothing about the fix.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPGLL,2554.459,N,08020.187,W,154027.281,X"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,2554.459,N,08020.187,W,154027.281,X", "latitude": 25.90765, "longitude": -80.33645, "time": "15:40:27.281"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/gga-quality-one-digit",
+      "description": "GGA's quality indicator is one digit; 05 is not one, so the fix is left out.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPGGA,102705,5157.9762,N,00029.3256,W,05,04,2.0,75.7,M,47.6,M,,*56"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGGA,102705,5157.9762,N,00029.3256,W,05,04,2.0,75.7,M,47.6,M,,*56", "has_checksum": true, "latitude": 51.96627, "longitude": -0.48876000000000003, "altitude_m": 75.7, "time": "10:27:05"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/short-sentence",
+      "description": "A sentence that stops early: the fields that are there are read.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPRMC,063909,A,3349.4302,N"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N", "fix": "valid", "time": "06:39:09"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/short-vtg",
+      "description": "A VTG with only its course: the course is read.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$GPVTG,318.7,T"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPVTG,318.7,T", "course_degrees": 318.7},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/proprietary-not-read-as-rmc",
+      "description": "Garmin's PGRMC ends in RMC but is proprietary, so none of its fields are read.",
+      "source": "NMEA 0183 via APRS12c ch. 5",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"info": "$PGRMC,A,218.8,100,6378137.000,298.257223563,0.0,0.0,0.0,A,3,1,1,4,30*72"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "PGRMC,A,218.8,100,6378137.000,298.257223563,0.0,0.0,0.0,A,3,1,1,4,30*72", "has_checksum": true},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/comment-after-checksum",
+      "description": "TinyTrack's comment after a sentence's checksum: the sentence ends at the checksum, which is checked, and the rest is the comment.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"tnc2": "WB4BYQ-3>APT311,WIDE2-2,qAR,WB4BYQ-7:$GPRMC,204717,A,3242.4549,N,08527.2835,W,000,340,090207,,*0C/Home Station by TinyTrack"},
+      "expect": {
+        "header": {"source": "WB4BYQ-3", "destination": "APT311", "path": ["WIDE2-2", "qAR", "WB4BYQ-7"], "q_construct": {"construct": "qAR", "station": "WB4BYQ-7"}},
+        "data": {"type": "nmea", "sentence": "GPRMC,204717,A,3242.4549,N,08527.2835,W,000,340,090207,,*0C", "has_checksum": true, "latitude": 32.70758166666667, "longitude": -85.454725, "fix": "valid", "course_degrees": 340, "speed_knots": 0, "time": "20:47:17", "comment": "/Home Station by TinyTrack"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/comment-after-checksum-mismatch",
+      "description": "TinyTrack's comment after a checksum that does not match: the sentence ends at its checksum, which is checked, so the corruption is caught.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"tnc2": "WB4BYQ-3>APT311,WIDE2-2,qAR,WB4BYQ-7:$GPRMC,204717,A,3242.4549,N,08527.2835,W,000,340,090207,,*0D/Home Station by TinyTrack"},
+      "expect": {
+        "header": {"source": "WB4BYQ-3", "destination": "APT311", "path": ["WIDE2-2", "qAR", "WB4BYQ-7"], "q_construct": {"construct": "qAR", "station": "WB4BYQ-7"}},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:nmea-checksum-mismatch"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/star-without-two-hex-digits",
+      "description": "A * not followed by two hex digits is a reserved character in a field, not a checksum: invalid-nmea.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["what--text-is-an-nmea-sentence"],
+      "input": {"info": "$GPGGA,102705,5157.9762,N,00029.3256,W,1,04,2.0,75.7,M,47.6,M,,*6"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:invalid-nmea"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "nmea/time-fraction-as-sent",
+      "description": "A time fraction is kept exactly as sent: .429 is 23:03:18.429, not a floating-point neighbour of it.",
+      "source": "APRS-IS 2026-09-26",
+      "authority": "spec",
+      "input": {"info": "$GPGLL,2554.459,N,08020.187,W,230318.429,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,2554.459,N,08020.187,W,230318.429,A", "latitude": 25.90765, "longitude": -80.33645, "fix": "valid", "time": "23:03:18.429"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "nmea/time-long-fraction",
+      "description": "Every digit of a long time fraction is kept, not cut at a fixed precision.",
+      "source": "NMEA 0183 via APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "$GPGLL,2554.459,N,08020.187,W,154027.1234567890,A"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPGLL,2554.459,N,08020.187,W,154027.1234567890,A", "latitude": 25.90765, "longitude": -80.33645, "fix": "valid", "time": "15:40:27.123456789"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "third-party/tolerated-defect-in-the-inner-header",
+      "description": "The inner header marks two path entries used (multiple-used-markers): lenient decoding reads it, with the warning on the inner packet; strict gives invalid-third-party; and it is not re-encoded, since the inner packet's diagnostics are part of the data.",
+      "source": "APRS12c ch. 17 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["third-party-header-addresses"],
+      "input": {"tnc2": "N0CALL>APZ001:}N0CALL>APZ,WIDE1-1*,WIDE2-1*:>x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ", "path": ["WIDE1-1*", "WIDE2-1*"], "data": {"type": "status", "text": "x"}, "diagnostics": ["warning:multiple-used-markers"]}}
+      },
+      "strict": {"rejected_by": "invalid-third-party"},
+      "reencode": "refused"
     }
   ]
 }

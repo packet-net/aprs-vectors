@@ -155,7 +155,8 @@
         "data": {"type": "directed-query", "addressee": "KH2Z", "query_type": "APRSH", "target": "N0QBF"}
       },
       "strict": "same",
-      "reencode": "identical"
+      "reencode": "equivalent",
+      "canonical_info": ":KH2Z     :?APRSHN0QBF    "
     },
     {
       "id": "message/directed-queries-7",
@@ -366,6 +367,261 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "message/nws-bulletin-brace-in-text",
+      "description": "An NWS bulletin whose { does not start a message ID keeps it in the text (brace-in-message-text, tolerated); an encoder does not write it back.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001::NWS-WARN :092010z,THUNDER_STORM{AR_ASHLEY"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "nws-bulletin", "addressee": "NWS-WARN", "text": "092010z,THUNDER_STORM{AR_ASHLEY"},
+        "diagnostics": ["warning:brace-in-message-text"]
+      },
+      "strict": {"rejected_by": "brace-in-message-text"},
+      "reencode": "refused"
+    },
+    {
+      "id": "telemetry-metadata/brace-in-project-title",
+      "description": "A { in a bit-sense project title that does not start a message ID stays in the title (brace-in-message-text, tolerated); an encoder does not write it back.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["a-brace-in-telemetry-metadata"],
+      "input": {"tnc2": "N0CALL>APZ001::N0QBF-11 :BITS.10110000,N0QBF{s Big Balloon"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "telemetry-bits", "addressee": "N0QBF-11", "bits": "10110000", "project": "N0QBF{s Big Balloon"},
+        "diagnostics": ["warning:brace-in-message-text"]
+      },
+      "strict": {"rejected_by": "brace-in-message-text"},
+      "reencode": "refused"
+    },
+    {
+      "id": "message/nws-bulletin-longer-than-67",
+      "description": "An NWS bulletin has no length limit (APRS12c ch. 14), so 78 characters of text re-encode as sent.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001::NWS-WARN :092010z,THUNDER_STORM,AR_ASHLEY,AR_CHICOT,AR_DESHA,AR_DREW,AR_UNION,AR_BRADLEY{S9JbA"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "nws-bulletin", "addressee": "NWS-WARN", "text": "092010z,THUNDER_STORM,AR_ASHLEY,AR_CHICOT,AR_DESHA,AR_DREW,AR_UNION,AR_BRADLEY", "message_id": "S9JbA"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "telemetry-metadata/brace-in-a-unit",
+      "description": "A { inside a UNIT. list that does not start a message ID stays in the unit: still telemetry metadata, with brace-in-message-text (tolerated).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["a-brace-in-telemetry-metadata"],
+      "input": {"tnc2": "N0CALL>APZ001::N0QBF-11 :UNIT.v/100,deg{F,deg.F"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "telemetry-units", "addressee": "N0QBF-11", "units": ["v/100", "deg{F", "deg.F"]},
+        "diagnostics": ["warning:brace-in-message-text"]
+      },
+      "strict": {"rejected_by": "brace-in-message-text"},
+      "reencode": "refused"
+    },
+    {
+      "id": "message/addressee-starting-with-colon",
+      "description": "A 9-character addressee field followed by : is read as the addressee even when it starts with : (invalid-addressee-characters, tolerated); the empty-addressee rule is only for a : found before the tenth byte.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:::YO8RXT-5:salut{180"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": ":YO8RXT-5", "text": "salut", "message_id": "180"},
+        "diagnostics": ["warning:invalid-addressee-characters"]
+      },
+      "strict": {"rejected_by": "invalid-addressee-characters"},
+      "reencode": "refused"
+    },
+    {
+      "id": "message/ack-then-not-a-message-id",
+      "description": "ack1348 followed by {420505, which is too long for a message ID: not an ack but a message with a stray { (brace-in-message-text, tolerated).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001::KD4DRA-10:ack1348{420505"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "KD4DRA-10", "text": "ack1348{420505"},
+        "diagnostics": ["warning:brace-in-message-text"]
+      },
+      "strict": {"rejected_by": "brace-in-message-text"},
+      "reencode": "refused"
+    },
+    {
+      "id": "message/bln-then-lower-case-is-a-message",
+      "description": "BLN and a lower-case letter is not a bulletin or announcement identifier (a digit or an upper-case letter), so this is an ordinary message.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001::BLNe     :Burn in testing"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "BLNe", "text": "Burn in testing"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "message/bln-then-punctuation-is-a-message",
+      "description": "BLN- is not a bulletin addressee: the character after BLN is a digit or an upper-case letter.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001::BLN-     :WX report"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "BLN-", "text": "WX report"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "message/bulletin-with-reply-ack-form",
+      "description": "A bulletin is not acknowledged, so it takes a message ID but not the reply-ack form: {12} is not an ID and stays in the text (brace-in-message-text, tolerated).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["reply-acks-are-for-messages"],
+      "input": {"tnc2": "N0CALL>APZ001::BLN1     :Snow expected{12}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "bulletin", "addressee": "BLN1", "text": "Snow expected{12}"},
+        "diagnostics": ["warning:brace-in-message-text"]
+      },
+      "strict": {"rejected_by": "brace-in-message-text"},
+      "reencode": "refused"
+    },
+    {
+      "id": "message/query-type-with-digits",
+      "description": "?APRS000: a query type is upper-case letters, and APRS followed straight by 000 is not a type the spec defines followed by a space or the end, so this is an ordinary message.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["query-types-are-upper-case-letters"],
+      "input": {"tnc2": "N0CALL>APZ001::KH2Z     :?APRS000"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "KH2Z", "text": "?APRS000"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "message/query-target-not-a-callsign",
+      "description": "?APRST~: the text after the query type is not a callsign (1-9 letters, digits or -), so this is a message (invalid-query info).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["a-directed-querys-target-is-one-callsign"],
+      "input": {"tnc2": "N0CALL>APZ001::KH2Z     :?APRST~"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "KH2Z", "text": "?APRST~"},
+        "diagnostics": ["info:invalid-query"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "telemetry-metadata/plus-sign-in-a-coefficient",
+      "description": "A coefficient is written as a telemetry value is, with at most a minus sign; +5.2 is not one, so EQNS. is a plain message (invalid-telemetry-metadata info).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["numbers-in-telemetry"],
+      "input": {"tnc2": "N0CALL>APZ001::N0QBF-11 :EQNS.0,+5.2,0"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "N0QBF-11", "text": "EQNS.0,+5.2,0"},
+        "diagnostics": ["info:invalid-telemetry-metadata"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "telemetry-metadata/carriage-return-by-a-coefficient",
+      "description": "Only spaces may surround a coefficient; a CR is not a space, so EQNS. is a plain message (invalid-telemetry-metadata info), which an encoder refuses for its line break.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["numbers-in-telemetry"],
+      "input": {"tnc2": "N0CALL>APZ001::N0QBF-11 :EQNS.0\r,5.2,0"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "N0QBF-11", "text": "EQNS.0\r,5.2,0"},
+        "diagnostics": ["info:invalid-telemetry-metadata"]
+      },
+      "strict": "same",
+      "reencode": "refused"
+    },
+    {
+      "id": "telemetry-metadata/coefficient-with-a-large-exponent",
+      "description": "10E60 is a coefficient like any other: 1e61.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["numbers-in-telemetry"],
+      "input": {"tnc2": "N0CALL>APZ001::N0QBF-11 :EQNS.0,10E60,0"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "telemetry-coefficients", "addressee": "N0QBF-11", "coefficients": [0, 1e+61, 0]}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "telemetry-metadata/zero-with-a-huge-exponent",
+      "description": "0e16016 is zero, however large the exponent.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["numbers-in-telemetry"],
+      "input": {"tnc2": "N0CALL>APZ001::N0QBF-11 :EQNS.0,0e16016,0"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "telemetry-coefficients", "addressee": "N0QBF-11", "coefficients": [0, 0, 0]}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "telemetry-metadata/coefficient-too-large",
+      "description": "1e400 is beyond any floating-point number, so it is not a usable coefficient and EQNS. is a plain message (invalid-telemetry-metadata info).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["numbers-in-telemetry"],
+      "input": {"tnc2": "N0CALL>APZ001::N0QBF-11 :EQNS.0,1e400,0"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "N0QBF-11", "text": "EQNS.0,1e400,0"},
+        "diagnostics": ["info:invalid-telemetry-metadata"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "message/aprsh-target-padded-to-nine",
+      "description": "An APRSH target padded to 9 characters, as APRS12c's example and its 1.2 notes say: the trailing spaces are padding.",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-directed-querys-target-is-one-callsign"],
+      "input": {"info": ":KH2Z     :?APRSHN0QBF    "},
+      "expect": {
+        "data": {"type": "directed-query", "addressee": "KH2Z", "query_type": "APRSH", "target": "N0QBF"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "message/aprsh-target-after-a-space",
+      "description": "One space between the query type and the target is a separator; an encoder writes an APRSH target straight after the type, padded to 9 characters.",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-directed-querys-target-is-one-callsign"],
+      "input": {"info": ":KH2Z     :?APRSH N0QBF"},
+      "expect": {
+        "data": {"type": "directed-query", "addressee": "KH2Z", "query_type": "APRSH", "target": "N0QBF"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": ":KH2Z     :?APRSHN0QBF    "
     }
   ]
 }

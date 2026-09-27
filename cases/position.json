@@ -496,6 +496,151 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "position/late-phg-is-the-first-well-formed-one",
+      "description": "A malformed PHG straight after the symbol is comment text, so the well-formed PHG later in the comment is the data extension.",
+      "source": "UAP 5.15 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-late-data-extension-is-the-first-well-formed-one"],
+      "input": {"info": "!4903.50N/07201.75W#PHG12 digi PHG5132"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "comment": "PHG12 digi "},
+        "diagnostics": ["warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "comment": "PHG12 digi PHG5132"}},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "position/late-rng-after-a-malformed-rng",
+      "description": "RNG12 is not a range; the first well-formed RNG after it is.",
+      "source": "UAP 5.15 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-late-data-extension-is-the-first-well-formed-one"],
+      "input": {"info": "!4903.50N/07201.75W#RNG12 RNG0050"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "range_miles": 50, "comment": "RNG12 "},
+        "diagnostics": ["warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "comment": "RNG12 RNG0050"}},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "position/dfs-height-code-above-9",
+      "description": "A DFS height code above 9 decodes and re-encodes byte for byte.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "!4903.50N/07201.75W#DFS2:36"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "dfs": {"strength": 2, "height": 10, "gain": 3, "directivity": 6}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/longitude-blanked-beyond-the-latitude",
+      "description": "The latitude sets the ambiguity; a space in a longitude digit the latitude does not blank is a missing digit.",
+      "source": "APRS12c ch. 6 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["longitude-blanks-follow-the-latitude", "position-ambiguity-which-point-is-reported"],
+      "input": {"info": "!4903.50N/07201.7 W-"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-longitude"]
+      },
+      "strict": {"rejected_by": "invalid-longitude"}
+    },
+    {
+      "id": "position/longitude-places-inside-the-ambiguity-are-ignored",
+      "description": "The longitude places the latitude's ambiguity blanks may hold digits or spaces in any mix; they are ignored.",
+      "source": "APRS12c ch. 6 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["longitude-blanks-follow-the-latitude", "position-ambiguity-which-point-is-reported"],
+      "input": {"info": "!4903.  N/07201. 5W-"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.025, "ambiguity": 2, "symbol": "/-"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.  N/07201.  W-"
+    },
+    {
+      "id": "position/gga-altitude-overridden-by-a-negative-altitude",
+      "description": "A /A= altitude below zero wins over the GGA cs altitude and re-encodes.",
+      "source": "APRS12c ch. 6, ch. 9 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"info": "!/5L!!<*e7>081/A=-00059"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.5, "longitude": -72.75000393777269, "symbol": "/>", "compressed": true, "compression": {"fix": "old", "source": "gga", "origin": "compressed"}, "altitude_feet": -59}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "position/lower-case-band-letter-is-not-a-frequency",
+      "description": "Microwave band letters are upper case; n47.150MHz is comment text.",
+      "source": "APRS12c ch. 18 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "!4903.50N/07201.75W-n47.150MHz"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "n47.150MHz"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/dao-digit-datum-without-precision",
+      "description": "A digit is a local datum; with spaces for A and O it carries no added precision.",
+      "source": "APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "!4903.50N/07201.75W-Hi !3  !"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "3", "precision": "none"}, "comment": "Hi "}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/dao-digit-datum-with-digits-is-text",
+      "description": "A digit datum has no case to say which precision A and O use, so !361! is not a DAO.",
+      "source": "APRS12c ch. 5 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["dao-datum-digits"],
+      "input": {"info": "!4903.50N/07201.75W-Hi !361!"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "Hi !361!"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/dao-checked-before-the-text-encoding",
+      "description": "A DAO on an ambiguous position is a structural defect, met before the comment's encoding.",
+      "source": "APRS12c ch. 5, ch. 6 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030313A21343930332E20204E2F30373230312E2020572D48656C806F2157313221"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.025, "ambiguity": 2, "symbol": "/-", "dao": {"datum": "W", "precision": "thousandths"}, "comment": "Hel\u0080o"},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "dao-with-ambiguity"},
+      "reencode": "refused"
+    },
+    {
+      "id": "position/longitude-range-before-hemisphere-case",
+      "description": "A longitude of 619 degrees with a lower-case hemisphere: the range is met first, so there is no lowercase-hemisphere warning and strict rejects by invalid-longitude.",
+      "source": "APRS12c ch. 6 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"info": "=3214.41N/61948.70e#"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-longitude"]
+      },
+      "strict": "same"
     }
   ]
 }

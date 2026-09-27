@@ -470,6 +470,146 @@
       "strict": {"rejected_by": "kenwood-ff-padding"},
       "reencode": "equivalent",
       "canonical_info": "`c'wl|+>/\u001d\u0000\u0001 "
+    },
+    {
+      "id": "mic-e/comment-starting-with-a-type-code-character",
+      "description": "Status text after a / delimiter that starts with ]: no type code, and the comment keeps the ].",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text", "mic-e-type-codes"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj//]Hello"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "]Hello"},
+        "diagnostics": ["info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/course-checked-before-trailing-ff-padding",
+      "description": "A course over 360 comes before trailing 0xFF padding in reading order, so strict rejects it first.",
+      "source": "UAP 5.10, APRS12c ch. 10 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-0xff-padding-is-in-the-status-text", "a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "57315348532D393E3452315839553A6063301D6D7F1C3E2F5D2234547DFFFF3D"},
+      "expect": {
+        "header": {"source": "W1SHS-9", "destination": "4R1X9U"},
+        "data": {"type": "mic-e", "mic_e_message": "special", "type_code": "]", "device_suffix": "=", "latitude": 42.31583333333333, "longitude": -71.3335, "symbol": "/>", "speed_knots": 19, "altitude_feet": 200.1312335958005},
+        "diagnostics": ["warning:out-of-range-value", "warning:kenwood-ff-padding"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "mic-e/ff-padding-after-destination",
+      "description": "An invalid destination is reported before any 0xFF padding is looked at.",
+      "source": "UAP 5.10 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-0xff-padding-is-in-the-status-text"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030313A60285F666E224F6A2F5D22342D7DFFFF"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-mic-e-destination"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "mic-e/ff-padding-not-reached",
+      "description": "0xFF padding in the status text of a report whose symbol table is invalid: the report fails before the status text, so there is no padding warning.",
+      "source": "UAP 5.10 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-0xff-padding-is-in-the-status-text"],
+      "input": {"tnc2_hex": "4E3043414C4C3E5333325536543A60285F666E224F6A215D22342D7DFFFF"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32U6T"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-symbol-table"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "mic-e/ff-in-fixed-bytes",
+      "description": "An 0xFF among the nine fixed bytes is out of range; it is not removed as padding.",
+      "source": "APRS12c ch. 10, UAP 5.10 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-0xff-padding-is-in-the-status-text"],
+      "input": {"tnc2_hex": "4E3043414C4C3E5333325536543A60285F66FF6E224F6A2F5D22342D7D"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32U6T"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-mic-e-information"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "mic-e/rev0-current-dti",
+      "description": "The Rev 0 beta DTI 0x1C decodes as Mic-E with an obsolete-format info.",
+      "source": "APRS12c ch. 10",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>S32U6T:\u001c(_fn\"Oj/]\"4-}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32U6T"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "]", "latitude": 33.42733333333334, "longitude": -12.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 72.1784776902887},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "mic-e/rev0-old-dti",
+      "description": "The Rev 0 beta DTI 0x1D is old data, with an obsolete-format info.",
+      "source": "APRS12c ch. 10",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>S32U6T:\u001d(_fn\"Oj/]\"4-}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32U6T"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "old_data": true, "type_code": "]", "latitude": 33.42733333333334, "longitude": -12.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 72.1784776902887},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "mic-e/rev0-dti-malformed",
+      "description": "A malformed report with the 0x1C DTI still gets the obsolete-format info.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>S32U6T:\u001cHello, world"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32U6T"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:invalid-mic-e-information"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "mic-e/rev0-dti-bad-destination",
+      "description": "The obsolete-format info belongs to the 0x1C DTI, so it comes before the destination is checked, even when the destination then fails.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:\u001c(_fn\"Oj/]\"4-}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["info:obsolete-format", "error:invalid-mic-e-destination"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "mic-e/phg-before-a-later-altitude",
+      "description": "A PHG straight after the type code is lifted before an altitude is looked for later in the status text, so 0PH} inside PHG3330PH} is not an altitude.",
+      "source": "APRS12c ch. 7, ch. 10 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4e3043414c4c3e5355535055343a27433d3f6c201c23535d5048473333333050487d23535d57313d"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "SUSPU4"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "old_data": true, "type_code": "]", "device_suffix": "=", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "S#", "speed_knots": 0, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": "PH}#S]W1"}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

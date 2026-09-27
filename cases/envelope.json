@@ -212,6 +212,28 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "envelope/path-entry-that-is-not-an-address",
+      "description": "TC+IP is not an APRS-IS address (1-9 letters, digits or -), so the header is unusable: invalid-address.",
+      "source": "UAP 1 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001,TC+IP:>x"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "envelope/destination-that-is-not-an-address",
+      "description": "AP\"Z is not an APRS-IS address (1-9 letters, digits or -), so the header is unusable: invalid-address.",
+      "source": "UAP 1 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>AP\"Z:>x"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
     }
   ]
 }

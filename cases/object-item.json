@@ -238,6 +238,47 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "object/garbled-timestamp-judged-on-the-position",
+      "description": "A garbled object timestamp followed by a valid position is malformed-timestamp even when strict mode rejects something later in the report.",
+      "source": "APRS12c ch. 11 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"info": ";TESTOBJ  *ABCDEFz5301.01N/01745.68E>361/010"},
+      "expect": {
+        "data": {"type": "object", "name": "TESTOBJ", "latitude": 53.01683333333334, "longitude": 17.761333333333333, "symbol": "/>", "speed_knots": 10},
+        "diagnostics": ["warning:malformed-timestamp", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "refused"
+    },
+    {
+      "id": "object/overlaid-l-is-not-an-area-object",
+      "description": "Area objects use the \\l symbol; with an overlay (5l) the extension is course and speed.",
+      "source": "APRS12c ch. 11 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": ";OBJECT   *092345z4903.50N507201.75Wl284/000"},
+      "expect": {
+        "data": {"type": "object", "name": "OBJECT", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "5l", "course_degrees": 284, "speed_knots": 0}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "item/signpost-text-is-printable-ascii",
+      "description": "A signpost overlay is 1-3 printable ASCII characters; braces around a 0xFF byte are comment text.",
+      "source": "APRS12c ch. 11 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["signpost-overlays-are-printable-ascii"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030313A2949393120334E21343930332E35304E5C30373230312E3735576D7B35FF357D"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "item", "name": "I91 3N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "comment": "{5\u00ff5}"},
+        "diagnostics": ["warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "non-utf8-text"},
+      "reencode": "equivalent"
     }
   ]
 }
