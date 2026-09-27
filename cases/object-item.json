@@ -355,6 +355,19 @@
       },
       "strict": "same",
       "reencode": "equivalent"
+    },
+    {
+      "id": "item/signpost-then-braces-in-the-comment",
+      "description": "The signpost {5p5} comes first, so writing it before the comment {AB} reads back the same; an encoder writes it rather than refuse.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["signpost-overlays-are-printable-ascii"],
+      "input": {"info": ")I9153N!4903.50N\\07201.75Wm{5p5} {AB}"},
+      "expect": {
+        "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "5p5", "comment": "{AB}"}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
     }
   ]
 }

@@ -1126,6 +1126,19 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "query/space-after-a-minus-sign",
+      "description": "Only a positive footprint value may have a leading space; - 17.15 has a space after its minus sign, so it is not a number: invalid-general-query.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["a-general-query-footprint-is-a-real-place"],
+      "input": {"info": "?APRS? 34.02,- 17.15,0200"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-general-query"]
+      },
+      "strict": "same"
     }
   ]
 }
