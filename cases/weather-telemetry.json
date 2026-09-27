@@ -305,6 +305,371 @@
       "strict": {"rejected_by": "non-standard-weather-field-width"},
       "reencode": "equivalent",
       "canonical_info": "_09251830c220s004g005t077"
+    },
+    {
+      "id": "weather/wind-fields-reported-before-their-width",
+      "description": "Wind sent as c/s fields where the extension belongs is met there, before the short c value's width.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"info": "!4903.50N/07201.75W_c22s004g005t077"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 22, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:wind-fields-instead-of-extension", "warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "wind-fields-instead-of-extension"},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/wind-direction-without-speed-is-incomplete",
+      "description": "A c field with no s field: the wind speed is mandatory, so the wind is incomplete.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "!4903.50N/07201.75W_c220g005t077"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:wind-fields-instead-of-extension", "warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "wind-fields-instead-of-extension"},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/bare-c-is-not-wind-fields",
+      "description": "A c with no value where the wind extension belongs is not wind sent as fields; the wind is missing and the fields end there.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_cA86s003g004t067"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {}, "comment": "cA86s003g004t067"},
+        "diagnostics": ["warning:incomplete-weather", "warning:incomplete-weather", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "incomplete-weather"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/short-c-at-the-end",
+      "description": "A short c field at the end of a position weather report is the wind direction, with a width warning.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_c35"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 35}},
+        "diagnostics": ["warning:wind-fields-instead-of-extension", "warning:non-standard-weather-field-width", "warning:incomplete-weather", "warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "wind-fields-instead-of-extension"},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/second-s-is-snowfall",
+      "description": "After the wind speed, a second s is snowfall (APRS12c defines s twice), not a repeated field.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "_10090556c220s004g005t077s002"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 2}},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "weather/l-then-capital-l-is-a-repeated-field",
+      "description": "l and L are both luminosity: the second ends the fields rather than overwriting the first.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077l008L010"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "luminosity_w_m2": 1008}, "comment": "L010"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/c-field-over-360",
+      "description": "A c wind direction over 360 degrees is out of range and dropped, as in the DIR/SPD extension.",
+      "source": "APRS12c ch. 7, ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "_10090556c758s004g005t077"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["info:obsolete-format", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/extra-field-run-ends-in-a-dot",
+      "description": "V62. is not an extra field: the run after the letter ends in a dot, so the fields end at V.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077V62.DsVP"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "V62.DsVP"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/short-dotted-snowfall",
+      "description": "s. is an unknown snowfall one dot short: a field, with a width warning.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077s.h50"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 50}},
+        "diagnostics": ["warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "non-standard-weather-field-width"},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "telemetry/comment-telemetry-binary-is-8-bits",
+      "description": "The base-91 binary value carries 8 channels; bits 9 to 13 are reserved and ignored.",
+      "source": "APRS12c ch. 13 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "!4903.50N/07201.75W-Hi|!!!!!!!!!!!!&!|"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 0, "analog": [0, 0, 0, 0, 0], "digital": 199}, "comment": "Hi"}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/positionless-comment-keeps-dao-text",
+      "description": "A positionless weather report has no position for a DAO, so the DAO-shaped text stays in its comment.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-and-dao"],
+      "input": {"info": "_10090556c220s004g005t077 abc!w8'!"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": " abc!w8'!"},
+        "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/first-s-is-the-wind-speed",
+      "description": "When the wind comes as fields, an s before the wind speed is known is the wind speed wherever it comes, as a c before the direction is known is the direction.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "_10090556c220g005s004t077"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/repeated-extra-field-letter",
+      "description": "Extra fields are kept as a list, so a repeated extra field's letter does not end the fields; only a defined field already read does.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077X01X02"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "extra": [{"letter": "X", "value": "01"}, {"letter": "X", "value": "02"}]}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "telemetry/space-in-a-value",
+      "description": "A telemetry value is an optional minus sign, digits and a decimal point; one with a space before it is not a number (invalid-telemetry, an error).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:T#005,199, 000,255,073,123,01101001"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-telemetry"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "telemetry/plus-sign-in-a-value",
+      "description": "A telemetry value may be preceded by a minus sign (APRS12c ch. 13), not a plus sign: +000 is not a value (invalid-telemetry, an error).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:T#005,199,+000,255,073,123,01101001"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-telemetry"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "telemetry/nul-after-a-value",
+      "description": "A NUL byte is not part of a number: 199 followed by 0x00 is not a telemetry value (invalid-telemetry, an error).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:T#005,199\u0000,000,255,073,123,01101001"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-telemetry"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "telemetry/twenty-character-sequence",
+      "description": "A sequence is letters and digits of any length up to the comma; 20 characters is still a sequence.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["telemetry-sequence-numbers-are-not-3-characters"],
+      "input": {"tnc2": "N0CALL>APZ001:T#12345678901234567890,199,000,255,073,123,01101001"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "telemetry", "sequence": "12345678901234567890", "analog": [199, 0, 255, 73, 123], "bits": "01101001"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "weather/snowfall-with-a-decimal-point",
+      "description": "s.50 is a snowfall of 0.50 inches written with a decimal point, not a short run of dots.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077s.50"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 0.5}}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/dots-read-up-to-the-field-width",
+      "description": "A run of dots is read only up to the field's width: s... is an unknown snowfall and the two dots after it are comment text.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "_10090556c220s004g005t077s....."},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": ".."},
+        "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/software-and-unit-after-compressed-telemetry",
+      "description": "After a compressed weather position, base-91 telemetry is lifted first and what is left, B then DV, is the software type and unit.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "=/io)_Rcit_[RrBDV|f-MM!!![/'y3!\"|"},
+      "expect": {
+        "data": {"type": "position", "latitude": -54.132508676225825, "longitude": 16.773966597186842, "symbol": "/_", "compressed": true, "compression": {"fix": "old", "source": "gga", "origin": "tnc-beacon-text"}, "altitude_feet": 41913.371507613876, "telemetry": {"sequence": 6291, "analog": [4048, 0, 58, 1280, 8026], "digital": 1}, "weather": {"software": "B", "unit": "DV"}, "messaging": true},
+        "diagnostics": ["warning:compression-type-reserved-bits", "warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "compression-type-reserved-bits"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/s-before-c-is-snowfall",
+      "description": "In a position report the wind comes as fields only once a c field has been read, so an s before any c is snowfall, and the wind is missing.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_s002g005t077"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 2}},
+        "diagnostics": ["warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "incomplete-weather"},
+      "reencode": "equivalent"
+    },
+    {
+      "id": "weather/software-unit-that-would-read-as-fields",
+      "description": "h after the fields is read as the software type and 89b1 as the unit; written back, h89 would read as humidity, so an encoder refuses.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "@252330z5003.17N/02201.43E_210/000g00t050r000p000P000h800h89b1"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "252330z", "messaging": true, "latitude": 50.05283333333333, "longitude": 22.023833333333332, "symbol": "/_", "weather": {"wind_direction_degrees": 210, "wind_speed_mph": 0, "wind_gust_mph": 0, "temperature_f": 50, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0, "software": "h", "unit": "89b1"}},
+        "diagnostics": ["warning:non-standard-weather-field-width", "warning:non-standard-weather-field-width", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "non-standard-weather-field-width"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/snowfall-keeps-its-width-with-a-decimal-point",
+      "description": "Snowfall keeps its width of three characters: .05 holds a digit, so it is a number (0.05 inches), not a run of dots, and the 0 after it does not make a wider field; it is weather-comment text.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077s.050"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 0.05}, "comment": "0"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/compressed-wind-speed-without-a-direction",
+      "description": "Blank cs bytes, then a wind extension whose direction (361) is out of range: the speed is known and the direction is not. The cs bytes cannot carry a speed without a direction, so an encoder refuses rather than write a direction of 0.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds", "wind-after-a-compressed-weather-position"],
+      "input": {"info": "/182224z/:XXn/?_T_ sT361/000g000t056r598P000p598h51b0000"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "182224z", "latitude": 39.33448491308023, "longitude": -123.2744575061823, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_speed_mph": 0, "wind_gust_mph": 0, "temperature_f": 56, "rain_1h_in": 5.98, "rain_24h_in": 5.98, "rain_midnight_in": 0, "humidity_percent": 51, "pressure_mbar": 0}},
+        "diagnostics": ["warning:wind-extension-after-compressed", "warning:out-of-range-value", "warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "wind-extension-after-compressed"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/compressed-range-and-a-wind-extension",
+      "description": "cs bytes carrying a range, then a wind extension: the cs bytes cannot hold both, so an encoder refuses rather than drop the range or the wind.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds", "wind-after-a-compressed-weather-position"],
+      "input": {"info": "@211049h/;Y6`/\\'0_{*C360/001g00"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "211049h", "messaging": true, "latitude": 37.34264397809548, "longitude": -122.04053280689688, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 3.9980092542088665, "weather": {"wind_direction_degrees": 360, "wind_speed_mph": 1, "wind_gust_mph": 0}},
+        "diagnostics": ["warning:wind-extension-after-compressed", "warning:non-standard-weather-field-width", "warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "wind-extension-after-compressed"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/snowfall-dots-then-a-digit",
+      "description": "A run of dots followed by a digit is neither an unknown snowfall nor a number: s..6 is not a field, so the fields end and it is weather-comment text.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["which-weather-field-a-letter-is"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077s..6"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "s..6"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused"
+    },
+    {
+      "id": "weather/snowfall-in-hundredths",
+      "description": "A snowfall of 0.32 inches fits its three characters exactly as .32, so an encoder writes it that way rather than round it or refuse.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t077s.32"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 0.32}}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
     }
   ]
 }

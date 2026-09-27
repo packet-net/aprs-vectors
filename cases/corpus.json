@@ -9630,16 +9630,17 @@
     },
     {
       "id": "corpus/0686",
-      "description": "Observed on APRS-IS: not decoded (malformed); error:invalid-nmea.",
+      "description": "Observed on APRS-IS: nmea with course.",
       "source": "APRS-IS 2026-09-25/26",
       "authority": "observed",
       "input": {"tnc2": "WB4BYQ-3>APT311,W4LEE-1,W4AP-2*,WIDE2,qAR,KS4EMA-1:$GPRMC,205515,A,3242.4469,N,08527.2779,W,000,106,090207,,*09/Home Station by TinyTrackÀÀ\u0000\u0082\u00A0ªdj\u009Cà®h\u0098\u008A\u008A@b®h\u0082\u00A0@@ä®\u0092\u0088\u008Ad@c\u0003ð>192001zUI-View32 V2.03"},
       "expect": {
         "header": {"source": "WB4BYQ-3", "destination": "APT311", "path": ["W4LEE-1*", "W4AP-2*", "WIDE2", "qAR", "KS4EMA-1"], "q_construct": {"construct": "qAR", "station": "KS4EMA-1"}},
-        "data": {"type": "unrecognized", "reason": "malformed"},
-        "diagnostics": ["info:obsolete-format", "error:invalid-nmea"]
+        "data": {"type": "nmea", "sentence": "GPRMC,205515,A,3242.4469,N,08527.2779,W,000,106,090207,,*09", "has_checksum": true, "latitude": 32.70744833333333, "longitude": -85.45463166666667, "fix": "valid", "course_degrees": 106, "speed_knots": 0, "time": "20:55:15", "comment": "/Home Station by TinyTrackÀÀ\u0000\u0082\u00A0ªdj\u009Cà®h\u0098\u008A\u008A@b®h\u0082\u00A0@@ä®\u0092\u0088\u008Ad@c\u0003ð>192001zUI-View32 V2.03"},
+        "diagnostics": ["info:obsolete-format"]
       },
-      "strict": "same"
+      "strict": "same",
+      "reencode": "identical"
     },
     {
       "id": "corpus/0687",

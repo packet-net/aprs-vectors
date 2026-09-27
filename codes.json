@@ -73,7 +73,7 @@
     },
     {
       "id": "obsolete-format",
-      "meaning": "A format the spec marks obsolete or not recommended, e.g. raw NMEA or raw weather.",
+      "meaning": "A format the spec marks obsolete or not recommended, e.g. raw NMEA, raw weather, or the Rev 0 Mic-E data type identifiers 0x1C and 0x1D.",
       "tolerable": false
     },
     {
@@ -178,7 +178,7 @@
     },
     {
       "id": "kenwood-ff-padding",
-      "meaning": "Kenwood TM-D710 0xFF padding was removed (UAP 5.10).",
+      "meaning": "Kenwood TM-D710 0xFF padding was removed from Mic-E status text, after the destination and the nine fixed bytes decoded (UAP 5.10).",
       "tolerable": true
     },
     {
@@ -228,7 +228,7 @@
     },
     {
       "id": "invalid-nmea",
-      "meaning": "An NMEA sentence is malformed.",
+      "meaning": "The text after $ is not an NMEA 0183 sentence: not printable ASCII, no valid address field, or a reserved character in a field.",
       "tolerable": false
     },
     {
@@ -238,12 +238,12 @@
     },
     {
       "id": "invalid-third-party",
-      "meaning": "A third-party header is malformed (APRS12c ch. 17).",
+      "meaning": "A third-party header is malformed, or (strict) its inner header has a defect a lenient decoder tolerates (APRS12c ch. 17).",
       "tolerable": false
     },
     {
       "id": "invalid-general-query",
-      "meaning": "A general query is malformed (APRS12c ch. 15).",
+      "meaning": "A general query is malformed, or its footprint is out of range (APRS12c ch. 15).",
       "tolerable": false
     },
     {
@@ -258,7 +258,7 @@
     },
     {
       "id": "invalid-agrelo-df",
-      "meaning": "An Agrelo DF report is malformed.",
+      "meaning": "An Agrelo DF report is not exactly %, a bearing of 000 to 360, / and a quality digit.",
       "tolerable": false
     },
     {
@@ -303,7 +303,7 @@
     },
     {
       "id": "brace-in-message-text",
-      "meaning": "Message text contains a { that does not start a valid message ID (APRS12c ch. 14).",
+      "meaning": "Message, bulletin or telemetry metadata text contains a { that does not start a valid message ID, including the reply-ack form on a bulletin or metadata (APRS12c ch. 14).",
       "tolerable": true
     },
     {
@@ -318,7 +318,7 @@
     },
     {
       "id": "free-text-capabilities",
-      "meaning": "A < station capabilities packet holds free text rather than TOKEN / TOKEN=VALUE items (APRS12c ch. 15).",
+      "meaning": "A < station capabilities packet holds free text rather than TOKEN / TOKEN=VALUE items: a token that is empty or holds a space or a control character, or a value that holds a control character (APRS12c ch. 15).",
       "tolerable": true
     }
   ]

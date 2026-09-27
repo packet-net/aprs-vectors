@@ -488,6 +488,154 @@
       "expect": {
         "refused": true
       }
+    },
+    {
+      "id": "encode/phg-height-code-above-9",
+      "description": "A PHG height code above 9 is written as the ASCII character after 9 (: for 10), as the spec allows for balloons and aircraft.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "phg": {"power": 5, "height": 10, "gain": 3, "directivity": 0}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W#PHG5:30"
+      }
+    },
+    {
+      "id": "encode/gga-altitude-below-one-foot",
+      "description": "A GGA compressed position at sea level: the cs bytes cannot hold 0 feet, so they carry the nearest (1 foot) and /A= carries the altitude, as for any altitude they cannot hold exactly.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75000393777269, "symbol": "/>", "compressed": true, "compression": {"fix": "old", "source": "gga", "origin": "compressed"}, "altitude_feet": 0}},
+      "expect": {
+        "info": "!/5L!!<*e7>!!1/A=000000"
+      }
+    },
+    {
+      "id": "encode/compressed-course-and-range-refused",
+      "description": "A compressed position carries course/speed or a range in its cs bytes, not both, so an encoder refuses both.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75000393777269, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88, "speed_knots": 36.23201216883807, "range_miles": 34}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/compressed-range-under-two-miles-refused",
+      "description": "The compressed range is 2 x 1.08^s miles; a range under 2 miles is outside the format and is refused, not moved to 2.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75000393777269, "symbol": "/>", "compressed": true, "range_miles": 1}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/mic-e-comment-starting-with-a-type-code-character",
+      "description": "Mic-E status text must not start with a type code character, so a comment that does is written after a /.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "]Hello"}},
+      "expect": {
+        "info": "`(_fn\"Oj//]Hello",
+        "destination": "S32UVT"
+      }
+    },
+    {
+      "id": "encode/refuses-a-control-character-in-a-capability-value",
+      "description": "A value holding a control character would read back as free text, so the encoder refuses it.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["station-capabilities-items-tokens-and-values"],
+      "input": {"encode": {"type": "capabilities", "capabilities": [["MSG_CNT", "4\u001c3"]]}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-padded-capability-value",
+      "description": "A value starting with a space would read back without it, so the encoder refuses it.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["station-capabilities-items-tokens-and-values"],
+      "input": {"encode": {"type": "capabilities", "capabilities": [["MSG_CNT", " 43"]]}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-brace-in-nws-bulletin-text",
+      "description": "A { in NWS bulletin text would read back as brace-in-message-text, so the encoder refuses it.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"encode": {"type": "nws-bulletin", "addressee": "NWS-WARN", "text": "092010z,THUNDER_STORM{AR_ASHLEY"}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-brace-in-a-project-title",
+      "description": "A { in a bit-sense project title would read back as brace-in-message-text, so the encoder refuses it.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"encode": {"type": "telemetry-bits", "addressee": "N0QBF-11", "bits": "10110000", "project": "N0QBF{s Big Balloon"}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/nws-bulletin-longer-than-67",
+      "description": "NWS bulletin text has no length limit (APRS12c ch. 14), so 78 characters are written.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"encode": {"type": "nws-bulletin", "addressee": "NWS-WARN", "text": "092010z,THUNDER_STORM,AR_ASHLEY,AR_CHICOT,AR_DESHA,AR_DREW,AR_UNION,AR_BRADLEY"}},
+      "expect": {
+        "info": ":NWS-WARN :092010z,THUNDER_STORM,AR_ASHLEY,AR_CHICOT,AR_DESHA,AR_DREW,AR_UNION,AR_BRADLEY"
+      }
+    },
+    {
+      "id": "encode/refuses-a-footprint-out-of-range",
+      "description": "A footprint latitude of 100.02 degrees is refused.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["a-general-query-footprint-is-a-real-place"],
+      "input": {"encode": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 100.02, "longitude": -117.15, "radius_miles": 200}}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/user-defined-control-user-id",
+      "description": "A control byte as the user ID is written back as it came (APRS12c ch. 19 places no restriction on user-defined data).",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"encode": {"type": "user-defined", "user_id": "\u0001", "packet_type": "Q", "data": "data"}},
+      "expect": {
+        "info": "{\u0001Qdata"
+      }
+    },
+    {
+      "id": "encode/refuses-an-agrelo-bearing-over-360",
+      "description": "An Agrelo bearing of 361 degrees is refused.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["an-agrelo-bearing-is-0-to-360"],
+      "input": {"encode": {"type": "agrelo-df", "bearing_degrees": 361, "quality": 0}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/directed-query-undefined-type-with-a-target",
+      "description": "A query type the spec does not define has no fixed length, so its target is written after one space.",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["a-directed-querys-target-is-one-callsign"],
+      "input": {"encode": {"type": "directed-query", "addressee": "KH2Z", "query_type": "FOO", "target": "N0QBF"}},
+      "expect": {
+        "info": ":KH2Z     :?FOO N0QBF"
+      }
     }
   ]
 }
