@@ -259,3 +259,9 @@ python3 tools/compare.py cs.jsonl.gz rs.jsonl.gz --names C# Rust --lines lines.h
 ```
 
 `compare.py` needs only Python's standard library. It groups disagreements by which fields and diagnostics differ, with a count and example packets for each, and exits 1 if there are any. When one side re-encodes byte for byte and the other only equivalently, both round-trip and the encoders merely write different bytes; that is reported as an encoder choice, not a disagreement. A new implementation needs only the dump: read the lines file, decode each line, and write the same JSON. To judge a re-encoding, decode the bytes written again under a well-formed header (for Mic-E, the destination the encoder computed), so that a defect in the original header is not counted against the encoder. Each rule a disagreement over real packets settles becomes a case in `differential.json`; a rule found by fuzzing, whose packets are made up, becomes a case in the file for its area, with the source `differential fuzzing` and the date.
+
+Real traffic only exercises the packets people send. To reach the rest, `tools/mutate.py` makes mutated packets from a capture's lines file and the cases' own inputs: cut short, bytes changed to ones APRS gives meaning to, fields spliced in from other packets, numbers pushed to their limits, the data type changed. Dump them with each implementation and compare as above; the same arguments always give the same packets.
+
+```sh
+python3 tools/mutate.py lines.hex.gz fuzz.hex.gz --seeds 50000 --count 2000000 --seed 1
+```
