@@ -477,6 +477,17 @@
       "expect": {
         "info": "!5127.  N/00058.  W-"
       }
+    },
+    {
+      "id": "encode/mic-e-legacy-telemetry-value-255",
+      "description": "Rev 0 Mic-E binary telemetry with a value of 255: it would be taken for 0xFF padding and removed on the way back in, so an encoder refuses it.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-rev-0-binary-telemetry"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "off-duty", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "legacy_telemetry": [1, 2, 3, 4, 255]}},
+      "expect": {
+        "refused": true
+      }
     }
   ]
 }

@@ -117,6 +117,13 @@ APRS 1.2 reassigned `` ` `` and `'` after the symbol to "messaging capable" and 
 
 **Decision:** empty items are skipped, and a report with no items left (`<`, or `< , ,`) is malformed: `invalid-capabilities`, an error. An encoder refuses a report with no capabilities.
 
+## Mic-E Rev 0 binary telemetry
+
+- APRS12c ch. 10 describes an obsolete form of Mic-E telemetry: the byte 0x1D, then five binary values, straight after the symbol. It predates the device type codes, and nothing in the captured traffic uses it.
+- Kenwood radios pad Mic-E status text with 0xFF bytes, which a decoder removes first (UAP 5.10).
+
+**Decision:** once any 0xFF padding is removed, 0x1D followed by at least five bytes at the start of the status text is `legacy_telemetry`, the five byte values, with an `obsolete-format` info as for the other obsolete formats. Anything after them is status text as usual. An encoder writes it back as received, like the other obsolete formats it decodes. A value of 255 is refused, because it would be removed as padding on the way back in.
+
 ## Where these decisions and Ham::APRS::FAP differ
 
 Found by comparing Packet.Aprs with FAP on the same 33,000 APRS-IS packets (see [packet.net's validation notes](https://github.com/packet-net/packet.net/blob/main/docs/aprs-validation.md#5-against-hamaprsfap)):

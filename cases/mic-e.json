@@ -413,6 +413,63 @@
       },
       "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "'", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "Test:2\"4T}"}},
       "reencode": "refused"
+    },
+    {
+      "id": "mic-e/legacy-binary-telemetry",
+      "description": "Rev 0 Mic-E binary telemetry: 0x1D, then five bytes, straight after the symbol. Obsolete, so an info, and written back as received.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-rev-0-binary-telemetry"],
+      "input": {"tnc2_hex": "4E314A434D2D393E5452515037543A606327776C7C2B3E2F1D4142434445"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "legacy_telemetry": [65, 66, 67, 68, 69], "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/legacy-binary-telemetry-then-text",
+      "description": "Status text after the binary telemetry is read as usual; here it has no device type code.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-rev-0-binary-telemetry"],
+      "input": {"tnc2_hex": "4E314A434D2D393E5452515037543A606327776C7C2B3E2F1D414243444568656C6C6F"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "legacy_telemetry": [65, 66, 67, 68, 69], "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "comment": "hello"},
+        "diagnostics": ["info:obsolete-format", "info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/legacy-binary-telemetry-too-short",
+      "description": "0x1D with fewer than five bytes after it is not telemetry; it stays in the status text.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-rev-0-binary-telemetry"],
+      "input": {"tnc2_hex": "4E314A434D2D393E5452515037543A606327776C7C2B3E2F1D414243"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "comment": "\u001dABC"},
+        "diagnostics": ["info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/legacy-binary-telemetry-after-ff-padding",
+      "description": "0xFF padding is removed before telemetry is looked for, so a 0xFF among the five bytes leaves too few, and it all stays in the status text.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-rev-0-binary-telemetry"],
+      "input": {"tnc2_hex": "4E314A434D2D393E5452515037543A606327776C7C2B3E2F1D0001FF7F20"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "comment": "\u001d\u0000\u0001 "},
+        "diagnostics": ["warning:kenwood-ff-padding", "info:mic-e-missing-device-type"]
+      },
+      "strict": {"rejected_by": "kenwood-ff-padding"},
+      "reencode": "equivalent",
+      "canonical_info": "`c'wl|+>/\u001d\u0000\u0001 "
     }
   ]
 }
