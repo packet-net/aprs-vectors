@@ -658,6 +658,42 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "message/bulletin-text-like-telemetry-metadata",
+      "description": "Only a message can be telemetry metadata, which APRS12c addresses to \"the callsign of the station transmitting the telemetry data\": a bulletin's text starting EQNS. is just text.",
+      "source": "APRS12c ch. 13 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": ":BLN1     :EQNS.0,1,0"},
+      "expect": {
+        "data": {"type": "bulletin", "addressee": "BLN1", "text": "EQNS.0,1,0"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "message/nws-bulletin-text-like-telemetry-metadata",
+      "description": "Only a message can be telemetry metadata: an NWS bulletin's text starting PARM. is just text.",
+      "source": "APRS12c ch. 13 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": ":NWS-WARN :PARM.Temp"},
+      "expect": {
+        "data": {"type": "nws-bulletin", "addressee": "NWS-WARN", "text": "PARM.Temp"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "message/bulletin-text-like-malformed-telemetry-metadata",
+      "description": "A bulletin's text is never checked as telemetry metadata, so text that would be malformed metadata has no invalid-telemetry-metadata info.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "spec",
+      "input": {"info": ":BLN1     :EQNS.0,19.5,DVIS"},
+      "expect": {
+        "data": {"type": "bulletin", "addressee": "BLN1", "text": "EQNS.0,19.5,DVIS"}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

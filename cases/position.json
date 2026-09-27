@@ -681,6 +681,19 @@
         "diagnostics": ["error:invalid-longitude"]
       },
       "strict": "same"
+    },
+    {
+      "id": "position/compressed-longitude-before-symbol-code",
+      "description": "A compressed longitude past 180 degrees ({{Ra) is met before the symbol code (a space, also invalid), so the error is invalid-compressed-position.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"info": "=LR1Lj{{Ra !Gtest"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-compressed-position"]
+      },
+      "strict": "same"
     }
   ]
 }
