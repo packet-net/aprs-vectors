@@ -749,7 +749,7 @@ class RecipeGen:
 
     def _options(self, args: dict, *, mic_e: bool = False) -> None:
         rng = self.rng
-        args["symbol"] = rng.choice(["/>", "/-", "/k", "\\>", "/_", "\\m", "/#", "S#", "3>", "/[", "/l"])
+        args["symbol"] = rng.choice(["/>", "/-", "/k", "\\>", "\\m", "/#", "S#", "3>", "/[", "/l"])
         if rng.random() < 0.4:
             args["course_degrees"] = rng.choice([0, 1, 359, 360, rng.randint(0, 360), round(rng.uniform(0, 360), 1)])
         if rng.random() < 0.4:
@@ -788,6 +788,10 @@ class RecipeGen:
             if n == 5 and rng.random() < 0.5:
                 args["telemetry"]["digital"] = rng.randint(0, 255)
 
+    def _pick(self, good: list, bad: list, odd: float = 0.05):
+        """Mostly a valid value, now and then one a builder should refuse."""
+        return self.rng.choice(bad if self.rng.random() < odd else good)
+
     def _position(self) -> dict:
         args: dict = {}
         self._latlon(args)
@@ -799,7 +803,7 @@ class RecipeGen:
         return args
 
     def _object(self) -> dict:
-        args = {"name": self.rng.choice(["LEADER", "REPEATER1", "A", "ABC", "147.345", "NINECHARS", "TOOLONGNAME"])}
+        args = {"name": self._pick(["LEADER", "REPEATER1", "A", "ABC", "147.345", "NINECHARS", "  SPACED"], ["TOOLONGNAME", "\u00e9t\u00e9", ""])}
         self._latlon(args)
         self._options(args)
         args["timestamp"] = self._timestamp()
@@ -808,7 +812,7 @@ class RecipeGen:
         return args
 
     def _item(self) -> dict:
-        args = {"name": self.rng.choice(["LEADER", "ABC", "AB", "NINECHARS", "TOOLONGNAME", "X Y"])}
+        args = {"name": self._pick(["LEADER", "ABC", "NINECHARS", "X Y", "147.345"], ["AB", "TOOLONGNAME", "A!B", "A_B"])}
         self._latlon(args)
         self._options(args)
         if self.rng.random() < 0.1:
@@ -862,15 +866,15 @@ class RecipeGen:
 
     def _message(self) -> dict:
         rng = self.rng
-        args = {"addressee": rng.choice(["N0CALL", "G4ABC-9", "VK2XYZ-15", "ABCDEFGHI", "TOOLONGCALL"]), "text": text(rng, self.pool, "message.text", 0.25)}
+        args = {"addressee": self._pick(["N0CALL", "G4ABC-9", "VK2XYZ-15", "ABCDEFGHI"], ["TOOLONGCALL", "A B", ""]), "text": text(rng, self.pool, "message.text", 0.25)}
         if rng.random() < 0.5:
-            args["message_id"] = rng.choice(["1", "001", "ABCDE", "123456", str(rng.randint(0, 99999))])
+            args["message_id"] = self._pick(["1", "001", "ABCDE", str(rng.randint(0, 99999))], ["123456", "A-1", ""])
         if rng.random() < 0.1:
             args["reply_ack"] = rng.choice(["", "AB"])
         return args
 
     def _ack(self) -> dict:
-        return {"addressee": self.rng.choice(["N0CALL", "G4ABC-9"]), "message_id": self.rng.choice(["1", "001", "ABCDE", "123456"])}
+        return {"addressee": self.rng.choice(["N0CALL", "G4ABC-9"]), "message_id": self._pick(["1", "001", "ABCDE", "42"], ["123456", "A-1"])}
 
     _reject = _ack
 
