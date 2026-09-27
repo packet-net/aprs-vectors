@@ -624,6 +624,20 @@
       },
       "strict": "same",
       "reencode": "equivalent"
+    },
+    {
+      "id": "mic-e/ambiguous-latitude-centre-past-90",
+      "description": "A destination of 90 degrees with the minutes blanked (90LLLL) reports the centre of the box, 90 degrees 30 minutes, which is past the pole: invalid-mic-e-destination.",
+      "source": "APRS12c ch. 6 and 10 (differential fuzzing 2026-09-27)",
+      "authority": "interpretation",
+      "interpretations": ["position-ambiguity-which-point-is-reported"],
+      "input": {"tnc2": "N0CALL>90LLLL:`c'wl|+>/"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "90LLLL"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-mic-e-destination"]
+      },
+      "strict": "same"
     }
   ]
 }
