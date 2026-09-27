@@ -696,7 +696,8 @@
         "diagnostics": ["info:mic-e-missing-device-type"]
       },
       "strict": "same",
-      "reencode": "identical"
+      "reencode": "equivalent",
+      "canonical_info": "`/Xg/>O>/\"5o}438.900MHz T077 -760 Kamil"
     },
     {
       "id": "mic-e/speed-190-to-199-knots-sent-as-del",
@@ -710,7 +711,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "`/Xg/:O>/\"5o}438.900MHz T077 -760 Kamil"
+      "canonical_info": "`/Xg/>O>/\"5o}438.900MHz T077 -760 Kamil"
     },
     {
       "id": "mic-e/0x1d-comment-after-legacy-telemetry",
@@ -751,6 +752,21 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "mic-e/late-altitude-and-phg-written-first",
+      "description": "An altitude and a PHGR found late in Mic-E status text are written first, the altitude then the PHGR, and the comment after them needs no separator.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["a-late-data-extension-is-the-first-well-formed-one"],
+      "input": {"tnc2": "JA1YKX-1>SUSPU4:'C=?l <1C>#S]PH}#S]PHG33302/W1,KNn-N YOKOHAMA 1200bps="},
+      "expect": {
+        "data": {"type": "mic-e", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "C1", "course_degrees": 32, "speed_knots": 0, "altitude_feet": 1611469.8162729656, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0, "beacons_per_hour": 2}, "comment": "#S#S]W1,KNn-N YOKOHAMA 1200bps", "mic_e_message": "off-duty", "old_data": true, "type_code": ">", "device_suffix": "="},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "C1", "course_degrees": 32, "speed_knots": 0, "comment": "#S]PH}#S]PHG33302/W1,KNn-N YOKOHAMA 1200bps", "mic_e_message": "off-duty", "old_data": true, "type_code": ">", "device_suffix": "="}, "diagnostics": []},
+      "reencode": "equivalent",
+      "canonical_info": "'C=?l <1C>]PH}PHG33302/#S#S]W1,KNn-N YOKOHAMA 1200bps="
     }
   ]
 }

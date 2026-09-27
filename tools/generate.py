@@ -63,14 +63,16 @@ class Pool:
 
     @staticmethod
     def _data(case: dict):
+        """Decoded data only: an encode case's input holds values a program chose, not ones a
+        format holds."""
+        if "encode" in case.get("input", {}):
+            return
         expect = case.get("expect", {})
         if "data" in expect:
             yield expect["data"]
         strict = case.get("strict")
         if isinstance(strict, dict) and "data" in strict:
             yield strict["data"]
-        if "encode" in case.get("input", {}):
-            yield case["input"]["encode"]
 
     def add(self, d: dict) -> None:
         t = d.get("type")
@@ -110,6 +112,16 @@ def text(rng: random.Random, pool: Pool, key: str, awkward: float = 0.35) -> str
         at = rng.randint(0, len(base))
         base = base[:at] + rng.choice(AWKWARD) + base[at:]
     return base
+
+
+def tidy(d: dict) -> None:
+    """The neutral form leaves empty text out (reply_ack apart), wherever it is."""
+    for k in list(d):
+        v = d[k]
+        if v == "" and k != "reply_ack":
+            del d[k]
+        elif isinstance(v, dict):
+            tidy(v)
 
 
 # ------------------------------------------------------------------ numbers on their steps
@@ -180,7 +192,7 @@ class DataGen:
 
     def data(self, depth: int = 0) -> tuple[dict, bool]:
         rng = self.rng
-        types = [t for t in self.WEIGHTS if t in self.pool.by_type and (depth == 0 or t != "third-party")]
+        types = [t for t in self.WEIGHTS if t in self.pool.by_type and (depth == 0 or t not in ("third-party", "mic-e"))]
         t = rng.choices(types, weights=[self.WEIGHTS[x] for x in types])[0]
         d = copy.deepcopy(rng.choice(self.pool.by_type[t]))
         exact = True
@@ -189,6 +201,7 @@ class DataGen:
             exact = make(d) is not False
         if exact and rng.random() < self.inexact:
             exact = not self._nudge(d)
+        tidy(d)
         return d, exact
 
     # --- positioned reports
@@ -247,21 +260,44 @@ class DataGen:
     def _positioned(self, d: dict, mic_e: bool = False) -> None:
         rng, pool = self.rng, self.pool
         dao_before = json.dumps(d.get("dao"), sort_keys=True)
-        # Take parts from other reports.
+        # Take parts from other reports, mostly ones the report's symbol and format can carry.
+        compressed_now = bool(d.get("compressed"))
         for key in ("phg", "frequency", "telemetry", "dao", "range_miles", "dfs", "area", "df_bearing", "storm", "signpost"):
             if rng.random() < 0.12:
                 if rng.random() < 0.4:
                     d.pop(key, None)
-                else:
-                    value = pool.part(rng, f"positioned.{key}")
-                    if value is not None:
-                        d[key] = value
+                    continue
+                value = pool.part(rng, f"positioned.{key}")
+                if value is None:
+                    continue
+                odd = rng.random() < 0.05  # now and then, a part the report cannot carry
+                extension = key in ("phg", "range_miles", "dfs", "area", "df_bearing", "storm")
+                if not odd:
+                    if mic_e and key in ("area", "df_bearing", "storm", "signpost", "dfs"):
+                        continue
+                    if compressed_now and key in ("phg", "dfs", "area", "df_bearing", "storm"):
+                        continue
+                    if "weather" in d and key not in ("dao", "telemetry"):
+                        continue
+                    if extension and any(k in d for k in ("phg", "range_miles", "dfs", "area", "df_bearing", "storm")):
+                        continue
+                    symbol = {"df_bearing": "/\\", "storm": "\\@", "signpost": "\\m", "area": "\\l"}.get(key)
+                    if symbol:
+                        d["symbol"] = symbol
+                    if key == "range_miles":
+                        value = 2 * 1.08 ** rng.randint(0, 90) if compressed_now else rng.randint(0, 9999)
+                        if compressed_now:
+                            for k in ("course_degrees", "speed_knots"):
+                                d.pop(k, None)
+                            d["compression"] = d.get("compression") or {"fix": "current", "source": "other", "origin": "software"}
+                            if d["compression"].get("source") == "gga":
+                                d["compression"]["source"] = "other"
+                                d.pop("altitude_feet", None)
+                d[key] = value
         if rng.random() < (0.03 if "weather" in d else 0.15):
             d["symbol"] = pool.part(rng, "positioned.symbol", "/>")
-        if rng.random() < 0.5:
+        if rng.random() < (0.03 if "weather" in d else 0.5):
             d["comment"] = text(rng, pool, "positioned.comment")
-            if not d["comment"]:
-                del d["comment"]
         compressed = bool(d.get("compressed"))
         toggled = False
         if not mic_e and rng.random() < 0.1:
@@ -273,7 +309,7 @@ class DataGen:
                 d.pop("compressed", None)
                 d.pop("compression", None)
         ambiguity_changed = False
-        if not compressed and rng.random() < 0.06:
+        if not compressed and rng.random() < (0.01 if d.get("dao") else 0.06):
             ambiguity = rng.choice([0, 0, 1, 2, 3, 4])
             ambiguity_changed = ambiguity != d.get("ambiguity", 0)
             if ambiguity:
@@ -312,6 +348,13 @@ class DataGen:
                 d["telemetry"]["digital"] = rng.randint(0, 255)
         if isinstance(d.get("weather"), dict) and (toggled or rng.random() < 0.5):
             d["weather"] = self._wx(positioned=True, compressed=compressed)
+            w = d["weather"]
+            if compressed and ("wind_direction_degrees" in w or "wind_speed_mph" in w):
+                d["compression"] = d.get("compression") or {"fix": "current", "source": "other", "origin": "software"}
+                if d["compression"].get("source") == "gga":
+                    d["compression"]["source"] = "other"
+                for k in ("course_degrees", "speed_knots", "range_miles"):
+                    d.pop(k, None)
 
     def _cs(self, d: dict, force: bool) -> None:
         """A compressed position's cs bytes: a course and speed, a range or a GGA altitude."""
@@ -415,6 +458,8 @@ class DataGen:
 
     def _ack(self, d: dict) -> None:
         rng = self.rng
+        if rng.random() < 0.9:
+            d.pop("message_id", None)
         if rng.random() < 0.3:
             d["addressee"] = self._addressee()
         key = "acked_id" if d["type"] == "ack" else "rejected_id"
@@ -428,7 +473,9 @@ class DataGen:
     def _bulletin(self, d: dict) -> None:
         rng = self.rng
         if rng.random() < 0.3:
-            d["addressee"] = "BLN" + rng.choice("0123456789ABCZ") + rng.choice(["", "WX", "GROUP", "12345"])
+            ident = rng.choice("0123456789ABCZ")
+            group = rng.choice(["", "WX", "GROUP", "12345"]) if ident.isdigit() or rng.random() < 0.05 else ""
+            d["addressee"] = "BLN" + ident + group
         if rng.random() < 0.5:
             d["text"] = text(rng, self.pool, "bulletin.text")
         if rng.random() < 0.1:
@@ -464,8 +511,10 @@ class DataGen:
 
     def _telemetry(self, d: dict) -> None:
         rng = self.rng
-        if rng.random() < 0.5:
+        if rng.random() < 0.5 or len(d.get("analog", [])) != 5:
             d["analog"] = [rng.choice([None, 0, 1, 255, 999, 1.5, -1, 0.25, rng.randint(0, 255), rng.randint(0, 99999) / 100]) for _ in range(5)]
+        if "bits" not in d and rng.random() < 0.95:
+            d["bits"] = "".join(rng.choice("01") for _ in range(8))
         if rng.random() < 0.3:
             d["sequence"] = rng.choice(["000", "1", "999", "MIC", "12345", "A1", str(rng.randint(0, 999)).zfill(3)])
         if rng.random() < 0.3:
@@ -509,8 +558,9 @@ class DataGen:
         if rng.random() < 0.5:
             caps = []
             for _ in range(rng.randint(1, 5)):
-                token = rng.choice(["IGATE", "MSG_CNT", "LOC_CNT", "A", "tok en", "x=y", "", "T,U"])
-                caps.append([token] if rng.random() < 0.4 else [token, rng.choice(["1", "43", " v", "a b", "x,y", "", "\x01"])])
+                token = rng.choice(["IGATE", "MSG_CNT", "LOC_CNT", "A", "TX"]) if rng.random() < 0.9 else rng.choice(["tok en", "x=y", "", "T,U"])
+                value = rng.choice(["1", "43", "a b", "v1.2"]) if rng.random() < 0.9 else rng.choice([" v", "x,y", "", "\x01"])
+                caps.append([token] if rng.random() < 0.4 else [token, value])
             d["capabilities"] = caps
 
     def _maidenhead_beacon(self, d: dict) -> None:
