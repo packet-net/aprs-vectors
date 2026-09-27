@@ -1151,6 +1151,19 @@
         "diagnostics": ["error:invalid-general-query"]
       },
       "strict": "same"
+    },
+    {
+      "id": "query/footprint-value-starting-with-a-decimal-point",
+      "description": "A footprint value is a number as a telemetry value is: an optional minus sign, then digits with an optional decimal point and at least one digit, so -.1715 is a longitude.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["a-general-query-footprint-is-a-real-place"],
+      "input": {"info": "?APRS? 34.02,-.1715,0200"},
+      "expect": {
+        "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.02, "longitude": -0.1715, "radius_miles": 200}}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
     }
   ]
 }
