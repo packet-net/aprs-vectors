@@ -1139,6 +1139,18 @@
         "diagnostics": ["error:invalid-general-query"]
       },
       "strict": "same"
+    },
+    {
+      "id": "query/space-before-a-negative-latitude",
+      "description": "APRS12c: \"Note the leading space in the latitude, as its value is positive\". The space marks a positive value, so a space before -34.02 is not a number: invalid-general-query.",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-09-27)",
+      "authority": "spec",
+      "input": {"info": "?APRS? -34.02,117.15,0200"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-general-query"]
+      },
+      "strict": "same"
     }
   ]
 }
