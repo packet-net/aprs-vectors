@@ -23,7 +23,14 @@ APRS12c §9 computes `190463 x (180 - 72.75) = 20427156` for the worked example,
 
 ## Delimiters at the start of free text
 
-APRS12c §18: "any free text field that begins with either of these two delimiters [space or `/`] ... can be ignored and the beginning of the text field begins after them." After the structured elements are lifted out of a position, object, item or Mic-E comment, **one** leading space or `/` is dropped. This covers `PHG7440/DigiPeater` and `r/RV46 PRIJEDOR` (FAP does the same) and Mic-E `' KJ6TMS` (direwolf and FAP both give `KJ6TMS`). A `/` that begins `/A=` is an altitude, not a delimiter. The encoder writes a `/` before a comment that itself starts with a space or `/`, or that would otherwise read as a data extension, so every comment round-trips.
+APRS12c §18: "any free text field that begins with either of these two delimiters [space or `/`] ... can be ignored and the beginning of the text field begins after them." After the structured elements are lifted out of a position, object, item or Mic-E comment, **one** leading space or `/` is dropped. This covers `PHG7440/DigiPeater` and `r/RV46 PRIJEDOR` (FAP does the same) and Mic-E `' KJ6TMS` (direwolf and FAP both give `KJ6TMS`). A `/` that begins `/A=` is an altitude, not a delimiter. The encoder writes a `/` before a comment that itself starts with a space or `/`, or that would otherwise read as a data extension, so every comment round-trips; and only then, so a comment that reads back as itself is written straight on.
+
+## Where a voice frequency goes
+
+- APRS12c ch. 18 adds a voice frequency "as a fixed formatted field in the first 10 bytes of the existing free-field position comment text", laid out for the 10-character displays of radios, which read it there. `/A=` may be anywhere in the comment (APRS12c ch. 6). The signpost and corridor examples put their braces straight after the symbol or the area extension (`)I91 3N!4903.50N\07201.75Wm{55}`, `;FLIGHTPTH*4903.50N\07201.75W l 610/310{100}`, APRS12c ch. 11). Base-91 telemetry comes after the free text and before a DAO, which comes last (APRS12c ch. 13).
+- After a data extension the spec lists `$CSE/SPD/FFF.FFFMHz`, `$PHGphgd/FFF.FFFMHz` and `$DFSshgd/FFF.FFFMHz` first, then the same with a space, then with no delimiter: "an optional delimiter is added to make the packet more readable". A PHGR is "an extra character followed by a mandatory / character" (APRS12c ch. 7), so it already ends in one.
+
+**Decision:** a decoder reads all of these. An encoder writes one: after the data extension, the comment of a position, object or item report is the voice frequency with its fields, the signpost or corridor braces, the `/A=` altitude, the free text (after a space when a frequency or its fields come before it), base-91 telemetry and the `!DAO!`, in that order. A frequency straight after a seven-byte data extension (course and speed, PHG, RNG, DFS, area) follows a `/`, the form the spec lists first; after a PHGR, which ends in `/`, after a compressed position, or at the start, it follows straight on. Mic-E status text keeps its own order (the altitude first, as the radios send it), and a frequency after a PHG or RNG there follows a `/` too.
 
 ## Compressed course 0 is north
 
@@ -38,6 +45,8 @@ Both belong to a position: APRS12c ch. 13 puts base-91 telemetry in "the comment
 ## `!DAO!` on a compressed position
 
 Compressed positions already resolve to about 0.3 m. A `!DAO!` on one is kept (its datum is information) but its extra digits are not applied.
+
+The data therefore does not carry the digits, and an encoder chooses them. As with the longitude digits a decoder ignores under ambiguity, they are written to agree with the position reported, so a reader that did apply them would land on it: the digits a DAO of that precision gives the position written uncompressed. Base-91, v = (the position in ninety-firsts of a hundredth of a minute, rounded to the nearest) mod 91; human-readable, d = (the position in thousandths of a minute, rounded to the nearest) mod 10.
 
 ## Mic-E type codes
 
@@ -94,7 +103,7 @@ APRS 1.2 reassigned `` ` `` and `'` after the symbol to "messaging capable" and 
 - Some values have no place in the cs bytes at all: a range under 2 miles, a course and speed together with a range, or a compression type with neither wind nor course to carry.
 - A GGA altitude in the cs bytes is 1.002^cs feet, so it cannot be 0 feet or below and is rarely exact; a `/A=` altitude wins over it.
 
-**Decision:** a value the cs bytes carry in steps (a wind direction or speed, a range) is rounded to the nearest step, as a compressed course or speed given by an application is (103 degrees is written as 104). This is the only change of value an encoder may make, so such a report does not re-encode `identical` or `equivalent`, and its case says nothing about re-encoding; an implementation may round or refuse. A value the cs bytes cannot hold at all is refused, not moved to the nearest value they can hold. An altitude is different, because a `/A=` keeps it exact: the cs bytes carry the nearest altitude they can (1 foot for 0 feet or below) and a `/A=` carries the altitude itself, so the report re-encodes `equivalent`.
+**Decision:** a value the cs bytes carry in steps (a wind direction or speed, a range) is rounded to the nearest step, as a compressed course or speed given by an application is (103 degrees is written as 104). This is the only change of value an encoder may make, so such a report re-encodes `rounded`: the encoder writes the case's `canonical_info` exactly, and the data read back differs by the rounding. The encoder rounds; it does not refuse. Halves round away from zero, and a direction that rounds to 360 degrees is north, which the cs bytes write as 0 (read back as 360 for a course, and as 0 for a wind direction, [above](#wind-in-a-compressed-weather-position)). A value the cs bytes cannot hold at all is refused, not moved to the nearest value they can hold. An altitude is different, because a `/A=` keeps it exact: the cs bytes carry the nearest altitude they can (1 foot for 0 feet or below) and a `/A=` carries the altitude itself, so the report re-encodes `equivalent`.
 
 ## `!DAO!` base-91 digits
 
@@ -220,7 +229,7 @@ APRS 1.2 reassigned `` ` `` and `'` after the symbol to "messaging capable" and 
 
 - APRS12c ch. 13: telemetry values are often "much longer variable width values including decimal points, optionally preceded by a minus sign". The `EQNS.` format gives no number syntax at all.
 
-**Decision:** a telemetry value is an optional `-`, then digits with an optional decimal point, with at least one digit: no `+`, no spaces, and no NUL or other byte after it. An `EQNS.` coefficient is the same, and may also have spaces (U+0020 only) around it and an exponent (`e` or `E`, an optional sign, digits). A coefficient is a floating-point number: `10E60` is 1e61, and `0eN` is 0 however large N is. One that is not a finite number (`1e400`) is not a coefficient, so the `EQNS.` is a plain message with an `invalid-telemetry-metadata` info.
+**Decision:** a telemetry value is an optional `-`, then digits with an optional decimal point, with at least one digit: no `+`, no spaces, and no NUL or other byte after it. An `EQNS.` coefficient is the same, and may also have spaces (U+0020 only) around it and an exponent (`e` or `E`, an optional sign, digits). A coefficient is a floating-point number: `10E60` is 1e61, and `0eN` is 0 however large N is. One that is not a finite number (`1e400`) is not a coefficient, so the `EQNS.` is a plain message with an `invalid-telemetry-metadata` info. Each keeps its text as sent, so a report re-encodes byte for byte (`073`, `190.0`, `.53`, `0510`), and so does each number of a general query's footprint, which is read as a telemetry value is (`34.0`, `-.1715`, with or without a leading space before a positive value).
 
 ## A general query footprint is a real place
 

@@ -565,7 +565,7 @@
         "data": {"type": "telemetry-coefficients", "addressee": "N0QBF-11", "coefficients": [0, 1e+61, 0]}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "identical"
     },
     {
       "id": "telemetry-metadata/zero-with-a-huge-exponent",
@@ -579,7 +579,7 @@
         "data": {"type": "telemetry-coefficients", "addressee": "N0QBF-11", "coefficients": [0, 0, 0]}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "identical"
     },
     {
       "id": "telemetry-metadata/coefficient-too-large",

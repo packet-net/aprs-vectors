@@ -223,8 +223,7 @@
         "data": {"type": "telemetry-coefficients", "addressee": "N0QBF-11", "coefficients": [0, 5.2, 0, 0, 0.53, -32, 3, 4.39, 49, -32, 3, 18, 1, 2, 3]}
       },
       "strict": "same",
-      "reencode": "equivalent",
-      "canonical_info": ":N0QBF-11 :EQNS.0,5.2,0,0,0.53,-32,3,4.39,49,-32,3,18,1,2,3"
+      "reencode": "identical"
     },
     {
       "id": "weather-telemetry/bit-sense-and-project-name",
@@ -318,7 +317,8 @@
         "diagnostics": ["warning:wind-fields-instead-of-extension", "warning:non-standard-weather-field-width"]
       },
       "strict": {"rejected_by": "wind-fields-instead-of-extension"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W_022/004g005t077"
     },
     {
       "id": "weather/wind-direction-without-speed-is-incomplete",
@@ -331,7 +331,8 @@
         "diagnostics": ["warning:wind-fields-instead-of-extension", "warning:incomplete-weather"]
       },
       "strict": {"rejected_by": "wind-fields-instead-of-extension"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W_220/...g005t077"
     },
     {
       "id": "weather/bare-c-is-not-wind-fields",
@@ -359,7 +360,8 @@
         "diagnostics": ["warning:wind-fields-instead-of-extension", "warning:non-standard-weather-field-width", "warning:incomplete-weather", "warning:incomplete-weather"]
       },
       "strict": {"rejected_by": "wind-fields-instead-of-extension"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W_035/...g...t..."
     },
     {
       "id": "weather/second-s-is-snowfall",
@@ -399,7 +401,8 @@
         "diagnostics": ["info:obsolete-format", "warning:out-of-range-value"]
       },
       "strict": {"rejected_by": "out-of-range-value"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "_10090556c...s004g005t077"
     },
     {
       "id": "weather/extra-field-run-ends-in-a-dot",
@@ -426,7 +429,8 @@
         "diagnostics": ["warning:non-standard-weather-field-width"]
       },
       "strict": {"rejected_by": "non-standard-weather-field-width"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W_220/004g005t077h50"
     },
     {
       "id": "telemetry/comment-telemetry-binary-is-8-bits",
@@ -438,7 +442,8 @@
         "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 0, "analog": [0, 0, 0, 0, 0], "digital": 199}, "comment": "Hi"}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W-Hi|!!!!!!!!!!!!#2|"
     },
     {
       "id": "weather/positionless-comment-keeps-dao-text",
@@ -466,7 +471,8 @@
         "diagnostics": ["info:obsolete-format"]
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "_10090556c220s004g005t077"
     },
     {
       "id": "weather/repeated-extra-field-letter",
@@ -545,7 +551,7 @@
         "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 0.5}}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "identical"
     },
     {
       "id": "weather/dots-read-up-to-the-field-width",
@@ -587,7 +593,8 @@
         "diagnostics": ["warning:incomplete-weather"]
       },
       "strict": {"rejected_by": "incomplete-weather"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W_.../...g005t077s002"
     },
     {
       "id": "weather/software-unit-that-would-read-as-fields",
@@ -669,7 +676,36 @@
         "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 0.32}}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "identical"
+    },
+    {
+      "id": "position/compressed-speed-byte-90",
+      "description": "A compressed speed byte of { (90) is a speed, which re-encodes as it came.",
+      "source": "APRS12c ch. 9",
+      "authority": "spec",
+      "input": {"tnc2": "WD4HMR>APU25N,TCPIP*,qAC,SIXTH:@260520z/=M?$8WCS_[{!"},
+      "expect": {
+        "data": {"type": "position", "latitude": 33.64499929120092, "longitude": -86.63566676992382, "symbol": "/_", "compressed": true, "compression": {"fix": "old", "source": "other", "origin": "compressed"}, "weather": {"wind_direction_degrees": 232, "wind_speed_mph": 1171.3957645744867}, "timestamp": "260520z", "messaging": true},
+        "diagnostics": ["warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "incomplete-weather"},
+      "reencode": "equivalent",
+      "canonical_info": "@260520z/=M?$8WCS_[{!g...t..."
+    },
+    {
+      "id": "weather/compressed-wind-of-358-degrees-rounds-to-north",
+      "description": "A wind of 358 degrees moved into compressed cs bytes rounds to the nearest step, north, which the cs bytes write as 0.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"tnc2": "N0CALL>APZ001:!/5L!!<*e7_ !G358/005g010t070"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.5, "longitude": -72.75000393777269, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 358, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 70}},
+        "diagnostics": ["warning:wind-extension-after-compressed"]
+      },
+      "strict": {"rejected_by": "wind-extension-after-compressed"},
+      "reencode": "rounded",
+      "canonical_info": "!/5L!!<*e7_!7Cg010t070"
     }
   ]
 }

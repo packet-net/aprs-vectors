@@ -541,7 +541,8 @@
         "diagnostics": ["warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "non-utf8-text"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "<Ã©,é"
     },
     {
       "id": "query/type-with-a-digit",
@@ -1163,7 +1164,46 @@
         "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.02, "longitude": -0.1715, "radius_miles": 200}}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "identical"
+    },
+    {
+      "id": "query/footprint-numbers-as-sent",
+      "description": "A footprint number keeps its text as sent, so 34.0 re-encodes as 34.0.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["numbers-in-telemetry"],
+      "input": {"tnc2": "N0CALL>APZ001:?APRS? 34.0,-117.15,0200"},
+      "expect": {
+        "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.0, "longitude": -117.15, "radius_miles": 200}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "query/footprint-positive-longitude-without-a-space",
+      "description": "A positive longitude sent without a leading space keeps its text as sent.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["numbers-in-telemetry"],
+      "input": {"tnc2": "N0CALL>APZ001:?APRS? 10.02,117.15,0200"},
+      "expect": {
+        "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 10.02, "longitude": 117.15, "radius_miles": 200}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "query/footprint-trailing-zero-and-leading-point",
+      "description": "Footprint numbers with a trailing zero and a leading decimal point keep their text as sent.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["numbers-in-telemetry"],
+      "input": {"tnc2": "N0CALL>APZ001:?APRS? 34.360,-.1715,0200"},
+      "expect": {
+        "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.36, "longitude": -0.1715, "radius_miles": 200}}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

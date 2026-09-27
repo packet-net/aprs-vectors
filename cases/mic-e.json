@@ -500,7 +500,8 @@
         "diagnostics": ["warning:out-of-range-value", "warning:kenwood-ff-padding"]
       },
       "strict": {"rejected_by": "out-of-range-value"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "`c0\u001dmz\u001c>/]\"4T}="
     },
     {
       "id": "mic-e/ff-padding-after-destination",
@@ -556,7 +557,8 @@
         "diagnostics": ["info:obsolete-format"]
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/]\"4-}"
     },
     {
       "id": "mic-e/rev0-old-dti",
@@ -570,7 +572,8 @@
         "diagnostics": ["info:obsolete-format"]
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "'(_fn\"Oj/]\"4-}"
     },
     {
       "id": "mic-e/rev0-dti-malformed",
@@ -623,7 +626,8 @@
         "data": {"type": "mic-e", "mic_e_message": "en-route", "old_data": true, "type_code": "'", "device_suffix": "|3", "latitude": -6.41025641025641e-05, "longitude": 0, "symbol": "/^", "speed_knots": 0, "altitude_feet": 0, "dao": {"datum": "W", "precision": "base91"}, "comment": "KD0M Dale Airborn"}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "'vX\u001cl \u001c^/'\"3r}KD0M Dale Airborn!wD!!|3"
     },
     {
       "id": "mic-e/ambiguous-latitude-centre-past-90",
@@ -665,7 +669,88 @@
         "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "device_suffix": "_1", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 30105, "comment": "hello"}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=030105hello_1"
+    },
+    {
+      "id": "mic-e/frequency-after-phg",
+      "description": "In Mic-E status text a voice frequency after a PHG follows a slash, as in a position report.",
+      "source": "APRS12c ch. 18",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`\"4-}PHG5132/146.520MHz Hello"},
+      "expect": {
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 72.1784776902887, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "frequency": {"mhz": 146.52}, "comment": "Hello", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/speed-190-to-199-knots",
+      "description": "Speeds of 190-199 knots are written with /, the printable one of the two characters APRS12c ch. 10 gives.",
+      "source": "APRS12c ch. 10",
+      "authority": "spec",
+      "input": {"tnc2": "SQ7KRJ-9>UQST53,WIDE1-1,WIDE2-1,qAR,SP7PZS-2:`/Xg/:O>/\"5o}438.900MHz T077 -760 Kamil"},
+      "expect": {
+        "data": {"type": "mic-e", "latitude": 51.5755, "longitude": 19.0125, "symbol": "/>", "course_degrees": 51, "speed_knots": 193, "altitude_feet": 587.270341207349, "frequency": {"mhz": 438.9, "tone": "tone", "tone_value": 77, "offset_khz": -7600}, "comment": "Kamil", "mic_e_message": "off-duty"},
+        "diagnostics": ["info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/speed-190-to-199-knots-sent-as-del",
+      "description": "A speed of 190-199 knots sent with DEL re-encodes with /, the printable form.",
+      "source": "APRS12c ch. 10",
+      "authority": "spec",
+      "input": {"tnc2": "SQ7KRJ-9>UQST53:`/Xg\u007f:O>/\"5o}438.900MHz T077 -760 Kamil"},
+      "expect": {
+        "data": {"type": "mic-e", "latitude": 51.5755, "longitude": 19.0125, "symbol": "/>", "course_degrees": 51, "speed_knots": 193, "altitude_feet": 587.270341207349, "frequency": {"mhz": 438.9, "tone": "tone", "tone_value": 77, "offset_khz": -7600}, "comment": "Kamil", "mic_e_message": "off-duty"},
+        "diagnostics": ["info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`/Xg/:O>/\"5o}438.900MHz T077 -760 Kamil"
+    },
+    {
+      "id": "mic-e/0x1d-comment-after-legacy-telemetry",
+      "description": "After Rev 0 telemetry, a comment starting with 0x1D is text and is written straight on.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["mic-e-rev-0-binary-telemetry"],
+      "input": {"tnc2": "N1JCM-9>TRQP7T:`c'wl|+>/\u001dABCD/\u001dABCDEhello"},
+      "expect": {
+        "data": {"type": "mic-e", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "comment": "\u001dABCDEhello", "mic_e_message": "off-duty", "legacy_telemetry": [65, 66, 67, 68, 47]},
+        "diagnostics": ["info:obsolete-format", "info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/comment-after-type-code-needs-no-slash",
+      "description": "A comment that reads back as itself straight after the type code is written without a delimiter.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/]wO91SX/G Hello"},
+      "expect": {
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "wO91SX/G Hello", "mic_e_message": "returning", "type_code": "]"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/frequency-then-comment-starting-with-nul",
+      "description": "A comment after a voice frequency follows a space, even when it starts with 0x00.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes"],
+      "input": {"tnc2": "KB3AWQ-9>T1QW8Q,WIDE1-1,qAR,KB3AWQ-10:`i[Yl*\u001cP\\`\"6,}444.900MHz \u0000173 +500 4.7V S06"},
+      "expect": {
+        "data": {"type": "mic-e", "latitude": 41.29683333333333, "longitude": -77.06016666666666, "symbol": "\\P", "speed_knots": 1, "altitude_feet": 666.0104986876639, "frequency": {"mhz": 444.9}, "comment": "\u0000173 +500 4.7V S06", "mic_e_message": "in-service", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

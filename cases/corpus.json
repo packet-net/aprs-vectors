@@ -557,8 +557,7 @@
         "data": {"type": "telemetry", "sequence": "102", "analog": [2, 0, 0, 54, 12.43], "bits": "00000000", "comment": ",@ 20 41 35 25 9 2026"}
       },
       "strict": "same",
-      "reencode": "equivalent",
-      "canonical_info": "T#102,002,000,000,054,12.43,00000000,@ 20 41 35 25 9 2026"
+      "reencode": "identical"
     },
     {
       "id": "corpus/0043",
@@ -8814,7 +8813,9 @@
         "data": {"type": "position", "latitude": 42.15500123383544, "longitude": -83.61400376976106, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 103, "wind_speed_mph": 0, "wind_gust_mph": 2, "temperature_f": 68, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0, "humidity_percent": 48, "pressure_mbar": 1026.8, "luminosity_w_m2": 153}},
         "diagnostics": ["warning:wind-extension-after-compressed"]
       },
-      "strict": {"rejected_by": "wind-extension-after-compressed"}
+      "strict": {"rejected_by": "wind-extension-after-compressed"},
+      "reencode": "rounded",
+      "canonical_info": "!/91p09Apr_;!Cg002t068r000p000P000h48b10268L153"
     },
     {
       "id": "corpus/0629",
@@ -14054,7 +14055,7 @@
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
       "reencode": "equivalent",
-      "canonical_info": "T#124,000,046,000,000,000,00000000¥2"
+      "canonical_info": "T#124,0,46,0,0,0,00000000¥2"
     },
     {
       "id": "corpus/0993",

@@ -278,7 +278,8 @@
         "diagnostics": ["warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "non-utf8-text"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": ")I91 3N!4903.50N\\07201.75Wm{5ÿ5}"
     },
     {
       "id": "object/overlaid-m-is-not-a-signpost",
@@ -302,7 +303,8 @@
         "data": {"type": "item", "name": "I91 3N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "55", "comment": "{5Wm"}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": ")I91 3N!4903.50N\\07201.75Wm{55}{5Wm"
     },
     {
       "id": "item/signpost-with-a-space",
@@ -315,7 +317,7 @@
         "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "5 "}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "identical"
     },
     {
       "id": "item/signpost-brace-before-the-braces",
@@ -328,7 +330,8 @@
         "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "5", "comment": "{"}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": ")I9153N!4903.50N\\07201.75Wm{5}{"
     },
     {
       "id": "item/signpost-after-braces-that-do-not-qualify",
@@ -341,7 +344,8 @@
         "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "AB", "comment": "{5\u00015} "}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": ")I9153N!4903.50N\\07201.75Wm{AB}{5\u00015} "
     },
     {
       "id": "object/corridor-after-braces-that-do-not-qualify",
@@ -354,7 +358,8 @@
         "data": {"type": "object", "name": "AREA", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\l", "area": {"shape": "line-down-right", "color": "blue", "lat_offset": 20, "lon_offset": 20, "corridor_width_miles": 5}, "comment": "{AB}"}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": ";AREA     *092345z4903.50N\\07201.75Wl120/120{5}{AB}"
     },
     {
       "id": "item/signpost-then-braces-in-the-comment",
@@ -367,7 +372,22 @@
         "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "5p5", "comment": "{AB}"}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": ")I9153N!4903.50N\\07201.75Wm{5p5}{AB}"
+    },
+    {
+      "id": "object/signpost-frequency-and-altitude",
+      "description": "A signpost with a frequency and an altitude: the frequency first, then the braces, then the altitude.",
+      "source": "APRS12c ch. 11, 18",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes"],
+      "input": {"tnc2": "N0CALL>APZ001:;SIGN     *092345z4903.50N\\07201.75Wm/A=000100{55}146.520MHz Hello"},
+      "expect": {
+        "data": {"type": "object", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "altitude_feet": 100, "frequency": {"mhz": 146.52}, "signpost": "55", "comment": "Hello", "name": "SIGN", "timestamp": "092345z"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": ";SIGN     *092345z4903.50N\\07201.75Wm146.520MHz{55}/A=000100 Hello"
     }
   ]
 }
