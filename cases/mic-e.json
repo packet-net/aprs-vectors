@@ -399,6 +399,20 @@
       "strict": {"rejected_by": "kenwood-ff-padding"},
       "reencode": "equivalent",
       "canonical_info": "`c0\u001DmIL>/]\"4T}="
+    },
+    {
+      "id": "mic-e/comment-that-would-read-back-as-a-device-suffix",
+      "description": "A Mic-E comment ending ':2' after the altitude is lifted out: written back, ':2' would read as the SQ8L VP-Tracker device suffix, so an encoder must refuse rather than change what the packet says.",
+      "source": "APRS12c ch. 10",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/'Test:2\"4T}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "'", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 200.1312335958005, "comment": "Test:2"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "'", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "Test:2\"4T}"}},
+      "reencode": "refused"
     }
   ]
 }

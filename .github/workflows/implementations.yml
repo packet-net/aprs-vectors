@@ -97,3 +97,25 @@ jobs:
         working-directory: aprs-ts
       - run: npm run test:vectors
         working-directory: aprs-ts
+
+  c:
+    name: pdn_aprs (C)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: vectors-under-test
+      - uses: actions/checkout@v7
+        with:
+          repository: packet-net/aprs-c
+          path: aprs-c
+      - name: Use these vectors
+        run: |
+          rm -rf aprs-c/vectors
+          cp -r vectors-under-test aprs-c/vectors
+      - run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPDN_APRS_BUILD_TOOLS=OFF -DPDN_APRS_BUILD_EXAMPLES=OFF
+        working-directory: aprs-c
+      - run: cmake --build build --target pdn_aprs_vectors -j
+        working-directory: aprs-c
+      - run: build/pdn_aprs_vectors vectors tests/known-differences.txt
+        working-directory: aprs-c
