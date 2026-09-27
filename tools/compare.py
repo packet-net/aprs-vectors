@@ -165,6 +165,7 @@ def main():
     ap.add_argument("--input", "--lines", dest="input")
     ap.add_argument("--examples", type=int, default=3)
     ap.add_argument("--json")
+    ap.add_argument("--mode", choices=["decode", "encode", "build"], help="when there is no --input to tell encode from build")
     args = ap.parse_args()
     names = args.names or [f"#{i + 1}" for i in range(len(args.dumps))]
     if len(names) != len(args.dumps):
@@ -192,7 +193,12 @@ def main():
             sys.exit(f"out of step at line {total}: n = {sorted(ns, key=str)}")
         if mode is None:
             r0 = recs[0]
-            mode = "decode" if "lenient" in r0 or "reencode" in r0 else "build" if "tnc2" in r0 or r0.get("result") == "built" else "encode"
+            if "lenient" in r0 or "reencode" in r0:
+                mode = "decode"
+            elif line is not None:
+                mode = "build" if "report" in json.loads(line) else "encode"
+            else:
+                mode = args.mode or sys.exit("an encode or build dump needs --input (or --mode) to say which it is")
         inp = json.loads(line) if line is not None and mode != "decode" else None
         total += 1
         n = recs[0].get("n", total - 1)

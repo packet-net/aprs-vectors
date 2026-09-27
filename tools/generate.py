@@ -114,6 +114,65 @@ def text(rng: random.Random, pool: Pool, key: str, awkward: float = 0.35) -> str
     return base
 
 
+def _is_step(value: float, steps) -> bool:
+    return any(abs(value - x) <= 1e-9 * max(1.0, abs(x)) for x in steps)
+
+
+_STEPS: dict[str, list[float]] = {}
+
+
+def steps(name: str) -> list[float]:
+    """The values compressed cs bytes hold: speeds (knots), ranges (miles), GGA altitudes (feet),
+    and wind speeds (mph)."""
+    if not _STEPS:
+        _STEPS["speed"] = [1.08**s - 1 for s in range(91)]
+        _STEPS["range"] = [2 * 1.08**s for s in range(91)]
+        _STEPS["altitude"] = [1.002**c for c in range(8281)]
+        _STEPS["wind"] = [v * 1852 / 1609.344 for v in _STEPS["speed"]]
+    return _STEPS[name]
+
+
+def on_steps(d: dict) -> bool:
+    """Whether every number a positioned report carries is one its format holds exactly (a report
+    recombined from parts can end up with one that is not: a range from an RNG in a compressed
+    report, a wind of 103 degrees in cs bytes)."""
+    compressed = bool(d.get("compressed"))
+    weather = d.get("weather") if isinstance(d.get("weather"), dict) else {}
+    whole = lambda v: v == int(v)
+    if compressed:
+        if "course_degrees" in d and not (d["course_degrees"] == 360 or (d["course_degrees"] % 4 == 0 and 0 < d["course_degrees"] < 360)):
+            return False
+        if "speed_knots" in d and not _is_step(d["speed_knots"], steps("speed")):
+            return False
+        if "range_miles" in d and (not _is_step(d["range_miles"], steps("range")) or "compression" not in d):
+            return False
+        if "course_degrees" in d and "compression" not in d:
+            return False
+        source = (d.get("compression") or {}).get("source")
+        if "altitude_feet" in d and source == "gga" and not _is_step(d["altitude_feet"], steps("altitude")):
+            return False
+        if "altitude_feet" in d and source != "gga" and not whole(d["altitude_feet"]):
+            return False
+        if "wind_direction_degrees" in weather and not (weather["wind_direction_degrees"] % 4 == 0 and weather["wind_direction_degrees"] < 360):
+            return False
+        if "wind_speed_mph" in weather and not _is_step(weather["wind_speed_mph"], steps("wind")):
+            return False
+    elif d["type"] != "mic-e":
+        for k in ("course_degrees", "speed_knots", "altitude_feet", "range_miles"):
+            if k in d and not whole(d[k]):
+                return False
+        for k in ("wind_direction_degrees", "wind_speed_mph", "wind_gust_mph"):
+            if k in weather and not whole(weather[k]):
+                return False
+    else:
+        if d.get("course_degrees") == 0:
+            return False  # Mic-E course 0 means none (APRS12c ch. 10)
+        for k in ("course_degrees", "speed_knots"):
+            if k in d and not whole(d[k]):
+                return False
+    return True
+
+
 def tidy(d: dict) -> None:
     """The neutral form leaves empty text out (reply_ack apart), wherever it is."""
     for k in list(d):
@@ -202,6 +261,8 @@ class DataGen:
         if exact and rng.random() < self.inexact:
             exact = not self._nudge(d)
         tidy(d)
+        if exact and d["type"] in POSITIONED:
+            exact = on_steps(d)
         return d, exact
 
     # --- positioned reports
