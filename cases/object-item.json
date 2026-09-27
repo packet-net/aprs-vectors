@@ -342,6 +342,19 @@
       },
       "strict": "same",
       "reencode": "equivalent"
+    },
+    {
+      "id": "object/corridor-after-braces-that-do-not-qualify",
+      "description": "A corridor is the first braces holding 1-3 digits: {AB} does not qualify, is comment text, and does not stop the search, so the corridor is 5 miles.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["signpost-overlays-are-printable-ascii"],
+      "input": {"info": ";AREA     *092345z4903.50N\\07201.75Wl120/120{AB}{5}"},
+      "expect": {
+        "data": {"type": "object", "name": "AREA", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\l", "area": {"shape": "line-down-right", "color": "blue", "lat_offset": 20, "lon_offset": 20, "corridor_width_miles": 5}, "comment": "{AB}"}
+      },
+      "strict": "same",
+      "reencode": "equivalent"
     }
   ]
 }
