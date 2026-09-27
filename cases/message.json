@@ -338,6 +338,34 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "message/last-brace-starts-the-id",
+      "description": "The message ID starts at the last { followed by 1-5 letters or digits; an earlier { is brace-in-message-text, and the ID is still read.",
+      "source": "APRS12c ch. 14",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001::N0CALL-7 :a{b{12"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "N0CALL-7", "text": "a{b", "message_id": "12"},
+        "diagnostics": ["warning:brace-in-message-text"]
+      },
+      "strict": {"rejected_by": "brace-in-message-text"},
+      "reencode": "refused"
+    },
+    {
+      "id": "telemetry-metadata/eqns-with-no-coefficients",
+      "description": "EQNS. with only commas carries no coefficients: a plain message with invalid-telemetry-metadata.",
+      "source": "APRS12c ch. 13",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001::N0CALL-7 :EQNS.,,,"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "N0CALL-7", "text": "EQNS.,,,"},
+        "diagnostics": ["info:invalid-telemetry-metadata"]
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

@@ -413,6 +413,32 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "status/bare-locator-is-text",
+      "description": "A status that is only a 6-character locator, with no symbol after it, is plain status text: the locator form needs its symbol (APRS12c ch. 16).",
+      "source": "APRS12c ch. 16",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:>FN01OC"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "status", "text": "FN01OC"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "agrelo-df/bearing-and-quality",
+      "description": "An Agrelo DFjr bearing report: bearing and quality.",
+      "source": "APRS12c ch. 5",
+      "authority": "spec",
+      "input": {"tnc2": "N0CALL>APZ001:%123/4"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "agrelo-df", "bearing_degrees": 123, "quality": 4}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

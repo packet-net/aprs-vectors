@@ -85,6 +85,12 @@ APRS 1.2 reassigned `` ` `` and `'` after the symbol to "messaging capable" and 
 
 **Decision:** the cs speed is converted from knots to mph for `wind_speed_mph`, so the field means the same in every report; it is the one value the neutral form converts. A direction of 0 stays 0. cs bytes that carry no wind (blank, or holding a GGA altitude or a range) mean the wind is unknown, not missing, so they add no `incomplete-weather`: otherwise a compressed report with unknown wind could never be written without a defect. Gust and temperature are still required. Wind sent some other way after a compressed position ([above](#wind-after-a-compressed-weather-position)) gets the default compression type, but only when it is known.
 
+## Re-encoding wind into compressed bytes rounds it
+
+- A LoRa weather station sends a compressed position with blank cs bytes, then `103/000` as a wind extension (KD8ZLZ-13, 103 packets in the capture). On re-encoding, the wind goes back where APRS12c puts it, in the cs bytes, which carry direction in 4 degree steps.
+
+**Decision:** the encoder rounds to the compressed format's steps (103 degrees is written as 104), as it does for a compressed course or speed given by an application. Such a report does not re-encode `identical` or `equivalent`, and its case says nothing about re-encoding; an implementation may round or refuse, and every implementation so far rounds.
+
 ## `!DAO!` base-91 digits
 
 - The `!DAO!` extension (APRS12c, from aprs.org's datum note): in the base-91 form each of the two characters carries 0-90, and the note says to multiply by 1.1 to get the two extra digits of minutes, 0-99.
