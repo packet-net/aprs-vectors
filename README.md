@@ -43,7 +43,9 @@ The submodule pins a commit, so new cases reach an implementation only when it m
 | `schema.json` | JSON Schema (2020-12) for the case files. |
 | `interpretations.md` | The decisions taken where the spec is ambiguous, contradicts itself or is wrong. |
 | `tools/check.py` | Checks the files are well formed and consistent; CI runs it on every change. |
-| `tools/compare.py` | Compares two implementations' decodings of the same capture and buckets every disagreement (see [Comparing two implementations](#comparing-two-implementations)). |
+| `tools/mutate.py` | Makes mutated packets from a capture and the cases' inputs, for differential fuzzing (see [Comparing implementations](#comparing-implementations)). |
+| `tools/generate.py` | Makes data in the neutral form, and builder recipes, for comparing encoders and builders. |
+| `tools/compare.py` | Compares any number of implementations' dumps of the same input and buckets every difference. |
 
 ## A case
 
@@ -241,27 +243,112 @@ dotnet run --project tools/Packet.Aprs.Corpus -c Release -- vectors from-samples
 
 `curate` picks one or two packets of every distinct shape; `from-samples` adds the ones not already in the file after the existing cases, which keep their ids. When Packet.Aprs changes on purpose, `vectors refresh <files>` works out every observed case again, so the change can be reviewed as a diff.
 
-## Comparing two implementations
+## Comparing implementations
 
-The cases say what a decoder should make of a packet of every shape they cover. To find what they do not cover, run two implementations over a whole capture and compare them packet by packet. Each writes one JSON object per packet, in order, with its lenient and strict results in the neutral form and how the lenient data re-encodes (`identical`, `equivalent`, `refused`, `fails`, or `none` when there is nothing to re-encode: a header error, or unrecognized data):
+The cases say what to make of every shape of packet they cover. To find what they do not cover, run the implementations side by side over many inputs and compare what each makes of every one. Each implementation has a dump tool with three modes, and `tools/compare.py` compares any number of dumps of the same input:
+
+| Mode | Input | Each output record |
+|---|---|---|
+| decode | packets, one hex-encoded TNC2 line per line: a capture, or fuzzed packets from `tools/mutate.py` | the lenient and strict results, the bytes the lenient data re-encodes to, and the API view |
+| encode | data in the neutral form, one object per line, from `tools/generate.py` | the bytes written, or a refusal, and what they decode to |
+| build | builder recipes, one per line, from `tools/generate.py --recipes` | the TNC2 line built, or a refusal, and what it decodes to |
+
+Every file is gzip-compressed JSON lines, and the output keeps the input's order.
 
 ```sh
-# packet.net: extract the capture once, as one hex-encoded TNC2 line per line, and decode it
+# packet.net: extract a capture once, as one hex-encoded TNC2 line per line
 dotnet run --project tools/Packet.Aprs.Corpus -c Release -- diff lines ~/aprs-corpus lines.hex.gz
-dotnet run --project tools/Packet.Aprs.Corpus -c Release -- diff dump lines.hex.gz cs.jsonl.gz
-# aprs-rs, aprs-py, aprs-ts and aprs-c: decode the same lines
-cargo run --release --example diff_dump -- lines.hex.gz rs.jsonl.gz
-python3 tools/diff_dump.py lines.hex.gz py.jsonl.gz
-npm ci && npm run build && node scripts/diff-dump.mjs lines.hex.gz ts.jsonl.gz
-cmake -S . -B build && cmake --build build --target pdn_aprs_diffdump && zcat lines.hex.gz | build/pdn_aprs_diffdump | gzip > c.jsonl.gz
-# here: bucket the disagreements
-python3 tools/compare.py cs.jsonl.gz rs.jsonl.gz --names C# Rust --lines lines.hex.gz --json summary.json
-```
-
-`compare.py` needs only Python's standard library. It groups disagreements by which fields and diagnostics differ, with a count and example packets for each, and exits 1 if there are any. When one side re-encodes byte for byte and the other only equivalently, both round-trip and the encoders merely write different bytes; that is reported as an encoder choice, not a disagreement. A new implementation needs only the dump: read the lines file, decode each line, and write the same JSON. To judge a re-encoding, decode the bytes written again under a well-formed header (for Mic-E, the destination the encoder computed), so that a defect in the original header is not counted against the encoder. Each rule a disagreement over real packets settles becomes a case in `differential.json`; a rule found by fuzzing, whose packets are made up, becomes a case in the file for its area, with the source `differential fuzzing` and the date.
-
-Real traffic only exercises the packets people send. To reach the rest, `tools/mutate.py` makes mutated packets from a capture's lines file and the cases' own inputs: cut short, bytes changed to ones APRS gives meaning to, fields spliced in from other packets, numbers pushed to their limits, the data type changed. Dump them with each implementation and compare as above; the same arguments always give the same packets.
-
-```sh
+# here: fuzzed packets, neutral data and builder recipes
 python3 tools/mutate.py lines.hex.gz fuzz.hex.gz --seeds 50000 --count 2000000 --seed 1
+python3 tools/generate.py data.jsonl.gz --count 1000000 --seed 1
+python3 tools/generate.py recipes.jsonl.gz --recipes --count 1000000 --seed 1
+# each implementation: decode (the default), --encode or --build
+dotnet run --project tools/Packet.Aprs.Corpus -c Release -- diff dump lines.hex.gz cs.jsonl.gz    # or diff encode / diff build
+cargo run --release --example diff_dump -- lines.hex.gz rs.jsonl.gz                               # aprs-rs
+python3 tools/diff_dump.py lines.hex.gz py.jsonl.gz                                              # aprs-py
+npm ci && npm run build && node scripts/diff-dump.mjs lines.hex.gz ts.jsonl.gz                   # aprs-ts
+zcat lines.hex.gz | build/pdn_aprs_diffdump | gzip > c.jsonl.gz                                  # aprs-c
+# here: compare them
+python3 tools/compare.py cs.jsonl.gz rs.jsonl.gz py.jsonl.gz ts.jsonl.gz c.jsonl.gz --input lines.hex.gz --json summary.json
 ```
+
+`compare.py` needs only Python's standard library. It groups the inputs on which the implementations differ by what differs and by which implementations side together, with a count and examples for each, and exits 1 if there are any. A new implementation needs only the dump tool. Each rule a disagreement over real packets settles becomes a case in `differential.json`; one found by fuzzing, generated data or recipes becomes a case in the file for its area, with the source `differential fuzzing` and the date.
+
+### Decode records
+
+```json
+{"n": 0, "lenient": R, "strict": R, "reencode": "equivalent", "written": "21343231362e...", "api": A}
+```
+
+- `lenient` and `strict` are `{"header", "data", "diagnostics"}` in the neutral form, or `{"header_error": [...]}` when the header is unusable.
+- `reencode` says how the lenient data encodes again: `identical`, `equivalent`, `refused`, `fails` (it wrote bytes that do not decode, leniently and cleanly, to the same data), or `none` when there is nothing to re-encode (a header error, or unrecognized data). To judge it, decode the bytes written under a well-formed header (for Mic-E, the destination the encoder computed), so that a defect in the original header is not counted against the encoder.
+- `written` is the information field the encoder wrote, as hex, whenever it wrote one; `written_destination` is the destination it computed for Mic-E. The implementations should write the same bytes, byte for byte: see the Encoding rule.
+- `api` is the API view of the lenient packet (below), when there is one.
+
+### The API view
+
+What a library's own API offers beyond the neutral form, read through the public API a program would call, not through the code that writes the neutral form (which the cases already test). An implementation writes only the keys its API offers, and `compare.py` compares each key among the implementations that write it.
+
+| Key | What |
+|---|---|
+| `source`, `destination` | The header addresses, from the packet's accessors. |
+| `path` | The path, each entry as text with a `*` when it is used. |
+| `q_construct` | `{"construct": "qAR", "station": "N0CALL"}` from the q-construct accessor, or `null` for none. |
+| `third_party` | `true` for a packet carried inside a third-party packet, from the accessor that says so. |
+| `has_errors`, `has_warnings` | The packet's own accessors for its diagnostics. |
+| `tnc2` | The packet written back as a TNC2 line by the library, as hex: its header and the information field as received. |
+| `ax25` | The packet as an AX.25 UI frame (hex, without flags or FCS), or `"refused"` when the library will not write one (an address AX.25 cannot carry). |
+| `device` | The device the library identifies from the destination or the Mic-E bytes: `vendor`, `model` and `class` as the aprs-deviceid database gives them (each left out when it gives none), or `null`. |
+| `symbol` | `{"description": "Car"}`: the library's description of the symbol in the data, when there is one. |
+| `phg` | For data with a PHG, what the library derives from its codes: `watts`, `height_feet`, `gain_db`, `directivity_degrees` (`null` for omnidirectional). |
+| `inner` | The same view of a third-party packet's inner packet. |
+
+### Encode records
+
+`tools/generate.py` writes one object per line: `{"n": 0, "data": D, "exact": true}`. `D` is data in the neutral form, recombined from the cases' own data with new values, text chosen to be awkward, and fields dropped. With `"exact": true`, every value is one its format holds exactly, so the bytes written must decode to `D` itself; with `false`, some value lies between the steps its format holds and is rounded as the Encoding rule says. Each implementation converts `D` to its own data, encodes it, and writes:
+
+```json
+{"n": 0, "result": "written", "info": "21343231362e...", "destination": "APZ001", "again": {"data": D2, "diagnostics": [...]}}
+```
+
+- `result` is `written`, `refused` (the Encoding rule declines the data), or `unsupported` with a `reason` (the implementation's own data cannot hold something in `D`, which `compare.py` skips).
+- `info` is the information field written, as hex; `destination` is the Mic-E destination the encoder computed, and `APZ001` for everything else.
+- `again` is `info` decoded leniently under `N0CALL>` and that destination, in the neutral form.
+
+### Build records
+
+`tools/generate.py --recipes` writes one builder recipe per line: what to build, with every input given (the time included, so the result does not depend on the clock):
+
+```json
+{"n": 0, "station": {"source": "N0CALL", "destination": "APZ001", "path": ["WIDE1-1"]}, "report": "position",
+ "args": {"latitude": 51.50735, "longitude": -0.12776, "symbol": "/>", "speed_kmh": 42.5, "comment": "hello"}}
+```
+
+| `report` | `args` |
+|---|---|
+| `position` | `latitude`, `longitude` in degrees, `messaging`, `timestamp`, and the positioned options |
+| `object` | `name`, `latitude`, `longitude`, `timestamp`, `killed`, and the positioned options |
+| `item` | `name`, `latitude`, `longitude`, `killed`, and the positioned options |
+| `mic-e` | `latitude`, `longitude`, `mic_e_message`, `messaging`, and the positioned options |
+| `weather` | `timestamp`, the weather values, and `latitude`, `longitude` and `symbol` for a report with a position (without them, a positionless report) |
+| `message` | `addressee`, `text`, `message_id`, `reply_ack` |
+| `ack`, `reject` | `addressee`, `message_id` |
+| `bulletin` | `id` (one character), `group`, `text` |
+| `status` | `text`, `timestamp`, `locator` with `symbol`, `beam` (`heading_code`, `power_code`) |
+| `telemetry` | `sequence` (a number), `analog` (five numbers, `null` for an empty channel), `bits` (eight `0` or `1`), `comment` |
+| `telemetry-names`, `telemetry-units` | `names` or `units` (text), `addressee` (the station itself when absent) |
+| `telemetry-coefficients` | `coefficients` (numbers), `addressee` |
+| `telemetry-bits` | `bits`, `project`, `addressee` |
+
+- The positioned options: `symbol` (`"/>"`), `course_degrees`, `speed_knots` or `speed_kmh`, `altitude_feet` or `altitude_m`, `comment`, `phg` (codes as in the data form), `range_miles`, `frequency` (`mhz`, and optionally `tone` (`tone`, `ctcss` or `dcs`) with `tone_value`, and `offset_khz`), `compressed`, `ambiguity` (1-4), `dao` (`true`: add a `!DAO!`, datum `W`, base-91), `telemetry` (`sequence`, `analog`, `digital`).
+- The weather values: `wind_direction_degrees`, `wind_speed_mph`, `wind_gust_mph`, `temperature_f` or `temperature_c`, `rain_1h_in`, `rain_24h_in`, `rain_midnight_in` (or `rain_1h_mm` and so on), `humidity_percent`, `pressure_mbar`, `luminosity_w_m2`, `snow_24h_in`.
+- `timestamp` is `{"utc": "2026-09-27T09:23:45Z", "format": "dhm"}`, the format being `dhm` (day, hours, minutes, zulu), `hms` or `mdhm` (a positionless weather report's).
+- Values are as a program would have them: a latitude from a GPS receiver, a speed in km/h. What a builder makes of them is settled like any other disagreement; the rules so far are in the Encoding rule.
+
+Each implementation calls its builder as a program would (the fluent builder, the station methods, whatever its API offers) and writes:
+
+```json
+{"n": 0, "result": "built", "tnc2": "4e3043414c4c3e...", "again": {"header": H, "data": D, "diagnostics": [...]}}
+```
+
+`result` is `built`, `refused` (the builder or encoder declined), or `unsupported` with a `reason` (the builder has no way to say something in the recipe); `tnc2` is the line built, as hex; `again` is that line decoded leniently.
