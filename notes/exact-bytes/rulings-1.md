@@ -1,0 +1,47 @@
+# Exact bytes, batch 1 (2026-09-27)
+
+Measured: every implementation's decode dump now records the bytes its encoder writes (`written`, and `written_destination` for Mic-E). Over the vectors' 1,812 decode cases the five wrote different bytes for 14; over a fresh 2,000,000-packet fuzz set (tools/mutate.py seed 8) for 18,961. Only packet.net's test runner compared `canonical_info` byte for byte; the other four accepted any bytes that decode back to the same data.
+
+Every ruling below comes from the spec (APRS12c, UAP) or, where the spec leaves a free choice, from stated reasoning. None comes from what an implementation, or a majority of them, did.
+
+## The principle
+
+`canonical_info` becomes binding. An encoder writes exactly the bytes the Encoding rule gives; where the spec allows several forms, the rule now names one. Test runners compare the bytes written with `canonical_info` byte for byte. A new `reencode` value, `rounded`, covers a value the format holds only in steps (compressed cs bytes): the encoder rounds it and writes `canonical_info` exactly, and the data read back differs from the original by that rounding.
+
+## Rulings
+
+E1. **Numbers as sent, everywhere a number is free-form.** Telemetry values and `EQNS.` coefficients keep their text as sent, as the README already says ("identical re-encoding needs the text as sent (073, 190.0, .53), so keep it"). packet.net pads telemetry values (`2` written as `002`) and rewrites coefficients (`.53` as `0.53`, `0510` as `510`); it must write the text as sent. A general query's footprint numbers are "a number as a telemetry value is" (round 7), so they keep their text as sent too, including a leading space or its absence: `?APRS? 34.0,-117.15,0200`, `?APRS? 34.360,-.1715,0200` and `?APRS? 10.02,117.15,0200` all re-encode identical. aprs-rs, aprs-py, aprs-ts and aprs-c normalise them today and must keep them.
+
+E2. **`!DAO!` digits on a compressed position.** interpretations.md: a DAO on a compressed position "is kept (its datum is information) but its extra digits are not applied". The data does not carry the digits, so the encoder chooses them. By the same reasoning as the ambiguity rule ("writes the centre it reports into the longitude digits a decoder ignores"), digits a decoder ignores are written to agree with the position reported, so a reader that did apply them would land on it. The digits are those a DAO of that precision gives the position written uncompressed: base-91, v = (the position in ninety-firsts of a hundredth of a minute, rounded to the nearest) mod 91; human-readable, d = (the position in thousandths of a minute, rounded to the nearest) mod 10. packet.net and aprs-c do this (`corpus/1032`: `!sCp!`); aprs-rs, aprs-py and aprs-ts write `!!` and must change.
+
+E3. **The order of a position, object or item report's comment.** APRS12c ch. 18 puts a voice frequency in "the first 10 bytes of the existing free-field position comment text", which is what radios read; APRS12c's signpost and corridor examples put the braces straight after the symbol or area extension (`)I91 3N!4903.50N\07201.75Wm{55}`, `;FLIGHTPTH*4903.50N\07201.75W l 610/310{100}`); `/A=` may be anywhere; base-91 telemetry comes after the free text and before a DAO, which comes last (APRS12c ch. 13). So after the data extension the comment is written in this order: the voice frequency with its fields, the signpost or corridor braces, the `/A=` altitude, the free text, base-91 telemetry, the `!DAO!`. Every implementation now writes `/A=` before the frequency (`j006/058/A=000889146.520MHz Dayton Bound`), which puts the frequency outside the first 10 bytes; all five change: the altitude follows the frequency and its fields straight on, and the free text follows after a space (`j006/058/146.520MHz/A=000889 Dayton Bound`). The braces: aprs-rs, aprs-py and aprs-c already put them first; packet.net (only sometimes) and aprs-ts must. Mic-E status text is not changed by this ruling.
+
+E4. **A frequency after a data extension.** APRS12c ch. 18 lists `$CSE/SPD/FFF.FFFMHz`, `$PHGphgd/FFF.FFFMHz` and `$DFSshgd/FFF.FFFMHz` first, then the same with a space, then with no delimiter, and says "an optional delimiter is added to make the packet more readable". All are valid; the rule names the first: straight after a seven-byte data extension (course/speed, PHG, RNG, DFS, area), the frequency is written after a `/`. A PHGR (`PHG72604/`, "an extra character followed by a mandatory / character") already ends in `/`, so the frequency follows it straight on; so does a frequency after a compressed position. The same holds in Mic-E status text: a PHG or RNG, then `/`, then the frequency. aprs-rs and aprs-py write `PHG33403//145.225MHz` and must not double the slash; packet.net writes `PHG7530145.425MHz` in Mic-E and must add it.
+
+E5. **Mic-E speed 190-199 knots.** APRS12c ch. 10's SP+28 table gives two characters for each speed band; for 190-199 knots they are `/` and DEL. The README's rule is "the printable forms APRS12c ch. 10 allows", and DEL is a control character, so 190-199 knots is `/`. Every other band keeps the +80 form the README gives. aprs-py already writes `/`; the other four write DEL and must change. (Longitude degrees 9 and 99, and course xx99, have only one form, DEL, which stays.)
+
+E6. **Mic-E status text starting with 0x1D.** The rule ("Mic-E status text that would start with a type code character or 0x1D is written after a `/`") is about the start of the status text, where 0x1D and five bytes are Rev 0 telemetry. After that telemetry, a comment starting with 0x1D is text and is written straight on: `` `c'wl|+>/\x1dABCD/\x1dABCDEhello `` re-encodes identical. packet.net and aprs-c add a `/` there and must not; aprs-rs does not apply the rule at all (`mic-e/legacy-binary-telemetry-too-short`) and must.
+
+E7. **A delimiter only where it is needed.** interpretations.md: "The encoder writes a / before a comment that itself starts with a space or /, or that would otherwise read as a data extension". Only then: a comment that reads back as itself without one is written straight on. aprs-c adds a `/` before `.../...g...` text after a compressed position with a non-weather symbol, and after the Mic-E type code `]` before `wO91SX/G`; neither needs it. aprs-c also drops the space between a frequency and a comment starting with 0x00 (`444.900MHz\x00173`); the rule gives a space unless the comment would then read as one of the frequency's fields.
+
+E8. **Snowfall's three characters.** A whole number is three digits (`002`), a number under 1 is `.` and two digits (0.5 as `.50`, 0.32 as `.32`), and any other is a digit, `.` and a digit (2.5 as `2.5`). The rule already writes 0.32 as `.32`; one form for every value under 1 means 0.5 is `.50`, as `weather/snowfall-with-a-decimal-point` sends it (so that case re-encodes identical). aprs-rs, aprs-py, aprs-ts and aprs-c write `0.5` and must change.
+
+E9. **Rounding into compressed cs bytes is not optional.** interpretations.md already says a value the cs bytes carry in steps "is rounded to the nearest step, as a compressed course or speed given by an application is"; it then allowed refusing too. It no longer does: the encoder rounds, halves away from zero, and a course that rounds to 360 is written as north (c = 0, which reads as 360). aprs-py refuses a late `RNG` range moving into the cs bytes and must round; aprs-c refuses a 358-degree wind and must round.
+
+E10. **A compressed speed byte of `{`.** APRS12c ch. 9 limits c to `!`-`z` (0-89) for a course but gives s no range beyond its being base 91, so s = `{` (90) is a speed every decoder reads (1.08^90 - 1 knots). packet.net refuses to write it back and must write it.
+
+E11. **No size limit.** The rules set none (round 5: "no information-field size rule"). `refused` means the Encoding rule declines the data, never that an implementation's buffer is full. aprs-c refuses information fields over 512 bytes (long Latin-1 text written as UTF-8); it must write any length the caller's buffer holds, and its dump tool must give it a buffer large enough.
+
+## Cases (vectors branch exact-bytes, coming)
+
+- `corpus/0042`, `corpus/0992` and `weather-telemetry/equation-coefficients-scale-199-to-10-348-volts` re-encode identical.
+- `weather/snowfall-with-a-decimal-point` re-encodes identical.
+- The 30 `equivalent` cases without `canonical_info` get one.
+- Cases whose canonical_info changes under E3 (a frequency and an altitude together) are updated.
+- New cases for E1 (footprints), E4 (PHGR then a frequency; Mic-E PHG then a frequency), E5, E6, E7, E9 (`rounded`), E10.
+
+## Added after the first brief
+
+E12. **A separating space is written, not refused.** The Encoding rule said that where the only clean form needs a separating space (a Mic-E comment that would join a later PHG's digits into an altitude run), "an encoder may write the space or refuse". A clean form exists, so refusing is not needed: the encoder writes the space and refuses only data no clean form holds. Example (round 1, A8f): `JA1YKX-1>SUSPU4:'C=?l <1C>#S]PH}#S]PHG33302/W1,KNn-N YOKOHAMA 1200bps=`; aprs-c writes the space; aprs-rs, aprs-py and aprs-ts refuse, packet.net writes bytes that read back differently. All but aprs-c change.
+
+E9 wording: a wind direction that rounds to 360 is written as c = 0, which a compressed wind reads back as 0 (a compressed course reads it as 360); both are north.
