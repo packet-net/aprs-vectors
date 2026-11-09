@@ -42,17 +42,17 @@ jobs:
           path: vectors-under-test
       - uses: actions/checkout@v7
         with:
-          repository: packet-net/packet.net
-          path: packet.net
+          repository: packet-net/aprs-cs
+          path: aprs-cs
       - name: Use these vectors
         run: |
-          rm -rf packet.net/spec/aprs
-          cp -r vectors-under-test packet.net/spec/aprs
+          rm -rf aprs-cs/spec/aprs
+          cp -r vectors-under-test aprs-cs/spec/aprs
       - uses: actions/setup-dotnet@v6
         with:
-          global-json-file: packet.net/global.json
+          global-json-file: aprs-cs/global.json
       - run: dotnet test tests/Packet.Aprs.Tests
-        working-directory: packet.net
+        working-directory: aprs-cs
 
   python:
     name: pdn-aprs (Python)
