@@ -242,7 +242,7 @@ APRS 1.2 reassigned `` ` `` and `'` after the symbol to "messaging capable" and 
 
 ## Where these decisions and Ham::APRS::FAP differ
 
-Found by comparing Packet.Aprs with FAP on the same 33,000 APRS-IS packets (see [packet.net's validation notes](https://github.com/packet-net/packet.net/blob/main/docs/aprs-validation.md#5-against-hamaprsfap)):
+Found by comparing Packet.Aprs with FAP on the same 33,000 APRS-IS packets (see [aprs-cs's validation notes](https://github.com/packet-net/aprs-cs/blob/main/docs/aprs-validation.md#5-against-hamaprsfap)):
 
 | Case | FAP | These vectors | Why |
 |---|---|---|---|
