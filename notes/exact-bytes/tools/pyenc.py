@@ -1,6 +1,6 @@
 """Quick encode-mode stand-in using the pristine aprs-py: data lines in, a summary out."""
 import sys, json, gzip, collections
-sys.path.insert(0, '/home/tf/.claude/jobs/a4805be3/tmp/pristine-py/src')
+sys.path.insert(0, '/home/tf/aprs-exact/pristine-py/src')
 from pdn_aprs import decode_tnc2, ParseOptions, EncodeError, MicEReport, HeaderError
 from pdn_aprs.neutral import from_neutral, to_neutral
 from pdn_aprs.encode import encode_info, mic_e_destination

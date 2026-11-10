@@ -2,6 +2,15 @@
 
 Paused on Tom's word ("a bit token heavy for the allowance I have left"). Nothing is merged or released. All work is on pushed `exact-bytes` branches (unfinished work as commits titled WIP). This note, the brief, the rulings and the helper scripts are on aprs-vectors branch `exact-bytes-notes` (folder notes/exact-bytes); a local copy with a text copy of APRS12c is in ~/src/M0LTE.Aprs/.research/exact-bytes. This folder holds the brief, the rulings, the helper scripts and a text copy of APRS12c.
 
+
+## Resumed 2026-11-10: where it stands
+
+Batch 1 and batch 2 are implemented in all five, and every vectors case passes in each. Rulings E1-E12 are in `rulings-1.md`; F1-F17, B1-B8, A1-A2 and the follow-ups G1-G3 in `rulings-2.md`; later run rulings (default compression type C, Mic-E altitude looked for before the DAO, the strict Mic-E join check, storm fields are digits, AX.25 addresses as sent) went straight into the README with a case each, one vectors commit per run.
+
+Branches (all pushed, no PRs): vectors `exact-bytes` 9c01dbd; aprs-cs `exact-bytes` 4f15bf8 (fresh repo, tooling ported from packet.net's stale branch); aprs-rs `exact-bytes` dda9d70; aprs-py `exact-bytes` 5e4d04f; aprs-ts `exact-bytes` 6d71228; aprs-c `exact-bytes-2` 3af0f9d (the old `exact-bytes` holds the WIP history; a force-push was blocked, so the rewritten branch went to a new name).
+
+Runs are on root@proxmox0 in /root/aprs-exact (toolchains installed under that folder, `env.sh`; `run.sh <prefix> <data> <recipes>` with FUZZ=..., `run6.sh` for fuzz plus the 11M capture). aprs-ts's dump tool loads `dist/`, which is not in git: build it fresh before a run. Five-way results: run 1 (seed 2) 68k encode and 267k build differences; run 5 (seed 5) 0 and 0; fuzz down to a handful of strict Mic-E edge cases, all ruled.
+
 ## The goal
 
 Tom asked for the three follow-ups from the grading of the differential-fuzzing round:

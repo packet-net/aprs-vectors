@@ -1,6 +1,6 @@
 """Drafts a case's expect/strict from the pristine aprs-py decoder. Usage: import draft; draft.case(...)"""
 import sys, json
-sys.path.insert(0, '/home/tf/.claude/jobs/a4805be3/tmp/pristine-py/src')
+sys.path.insert(0, '/home/tf/aprs-exact/pristine-py/src')
 from pdn_aprs import decode_tnc2, ParseOptions, HeaderError
 from pdn_aprs.neutral import packet_to_neutral
 
