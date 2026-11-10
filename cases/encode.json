@@ -1106,6 +1106,59 @@
         "info": "`(_fn\"Oj/`RNG0050IO91SX/G",
         "destination": "S32UVT"
       }
+    },
+    {
+      "id": "encode/course-0-uncompressed",
+      "description": "An uncompressed course of 0 is written 000, which APRS12c ch. 7 gives as unknown and reads back as 0.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 0, "speed_knots": 36}},
+      "expect": {
+        "info": "!4903.50N/07201.75W>000/036"
+      }
+    },
+    {
+      "id": "encode/refuses-a-mic-e-course-of-0",
+      "description": "A Mic-E course of 0 reads back as no course (APRS12c ch. 10: unknown or indefinite), so it is refused.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 0, "speed_knots": 20}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-compressed-course-of-0",
+      "description": "A compressed c of 0 reads back as 360, so a course of 0 is refused.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["compressed-course-0-is-north"],
+      "input": {"encode": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 0, "speed_knots": 36.23201216883807}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/a-course-that-rounds-to-0-uncompressed",
+      "description": "A course of -0.3 rounds to 0, written 000 in an uncompressed report.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": -0.3, "speed_knots": 36}},
+      "expect": {
+        "info": "!4903.50N/07201.75W>000/036"
+      }
+    },
+    {
+      "id": "encode/a-mic-e-course-that-rounds-to-0",
+      "description": "A Mic-E course of -0.3 rounds to 0, which Mic-E cannot hold as a course, so it is refused.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": -0.3, "speed_knots": 20}},
+      "expect": {
+        "refused": true
+      }
     }
   ]
 }
