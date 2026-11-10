@@ -896,6 +896,20 @@
       "strict": {"data": {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "device_suffix": "_1", "latitude": 52.1455, "longitude": 20.828, "symbol": "/>", "course_degrees": 134, "speed_knots": 7, "comment": "RNG001\"4m}145.500MHz JANEK"}, "diagnostics": []},
       "reencode": "equivalent",
       "canonical_info": "`0M`lg>>/`\"4m}RNG001145.500MHz JANEK_1"
+    },
+    {
+      "id": "mic-e/an-altitude-from-a-later-a-is-written-back-as-a",
+      "description": "The /A= altitude wins over the Mic-E altitude bytes \"4P}, so the altitude came from the comment and is written back as /A=, not moved into the Mic-E altitude bytes.",
+      "source": "differential fuzzing 2026-11-11",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"info": "`)?rm B>/`\"4P}18.99Wi/A=00000070c45.500MHz Dieter Y14 _%", "destination": "UR4P64"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "device_suffix": "_%", "latitude": 52.67733333333334, "longitude": 13.597666666666667, "symbol": "/>", "course_degrees": 38, "speed_knots": 10, "altitude_feet": 0, "comment": "18.99Wi70c45.500MHz Dieter Y14 "}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`)?rm B>/`/A=00000018.99Wi70c45.500MHz Dieter Y14 _%"
     }
   ]
 }
