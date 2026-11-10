@@ -1159,6 +1159,62 @@
       "expect": {
         "refused": true
       }
+    },
+    {
+      "id": "encode/mic-e-phg-after-a-locator-is-not-an-altitude",
+      "description": "A PHG straight after a Mic-E locator and its space is lifted before a later altitude is looked for, so its digits 060} are not read as one.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91SX", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "}AB", "phg": {"power": 1, "height": 0, "gain": 6, "directivity": 0}}},
+      "expect": {
+        "info": "`(_fn\"Oj/`IO91SX/G PHG1060}AB",
+        "destination": "S32UVT"
+      }
+    },
+    {
+      "id": "encode/a-compressed-speed-just-below-0",
+      "description": "A compressed speed of -0.03 knots is nearest the step s = 0 and is written as 0.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "speed_knots": -0.03}},
+      "expect": {
+        "info": "!/5`=k<;>x>7!C"
+      }
+    },
+    {
+      "id": "encode/refuses-a-negative-compressed-speed",
+      "description": "A compressed speed of -0.3 knots is nearest s = -5 on the cs speed scale, outside the byte, so it is refused rather than moved to 0.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "speed_knots": -0.3}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/a-compressed-range-just-below-2-miles",
+      "description": "A compressed range of 1.95 miles is nearer the step 2 miles (s = 0) than 1.852 (s = -1), so it is written as 2.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.95}},
+      "expect": {
+        "info": "!/5`=k<;>x>{!C"
+      }
+    },
+    {
+      "id": "encode/refuses-a-compressed-range-nearer-a-step-below-2-miles",
+      "description": "A compressed range of 1.9 miles is nearest the step s = -1 (1.852 miles), outside the byte, so it is refused.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.9}},
+      "expect": {
+        "refused": true
+      }
     }
   ]
 }
