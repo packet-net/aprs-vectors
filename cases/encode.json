@@ -1269,6 +1269,17 @@
       "expect": {
         "refused": true
       }
+    },
+    {
+      "id": "encode/refuses-a-compressed-course-past-360-in-whole-degrees",
+      "description": "A compressed course of 360.6 degrees is 361 in whole degrees, outside 1-360, so it is refused, though its nearest 4-degree step would be north; 360.4 is 360 and is written as north.",
+      "source": "APRS12c ch. 7, 9 (differential testing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["a-builders-course-of-0-is-unknown"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "course_degrees": 360.6}},
+      "expect": {
+        "refused": true
+      }
     }
   ]
 }
