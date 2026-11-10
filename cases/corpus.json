@@ -516,7 +516,8 @@
         "data": {"type": "position", "latitude": 32.298833333333334, "longitude": -97.40883333333333, "symbol": "R-", "altitude_feet": 813, "phg": {"power": 8, "height": 2, "gain": 7, "directivity": 0}, "frequency": {"mhz": 147.49}, "comment": "Tone 100.0, AllStar Node 518071 Murphy Radio Network(MRN)"}
       },
       "strict": "same",
-      "reencode": "identical"
+      "reencode": "equivalent",
+      "canonical_info": "!3217.93NR09724.53W-PHG8270/147.490MHz/A=000813 Tone 100.0, AllStar Node 518071 Murphy Radio Network(MRN)"
     },
     {
       "id": "corpus/0040",
@@ -1363,7 +1364,8 @@
         "data": {"type": "position", "latitude": 32.3365, "longitude": -97.42116666666666, "symbol": "R-", "altitude_feet": 804, "phg": {"power": 8, "height": 2, "gain": 7, "directivity": 0}, "frequency": {"mhz": 223.75}, "comment": "Tone 100.0, AllStar Node 518071  Murphy Radio Network(MRN)"}
       },
       "strict": "same",
-      "reencode": "identical"
+      "reencode": "equivalent",
+      "canonical_info": "!3220.19NR09725.27W-PHG8270/223.750MHz/A=000804 Tone 100.0, AllStar Node 518071  Murphy Radio Network(MRN)"
     },
     {
       "id": "corpus/0101",
@@ -12981,7 +12983,8 @@
         "diagnostics": ["warning:multiple-used-markers"]
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
-      "reencode": "identical"
+      "reencode": "equivalent",
+      "canonical_info": "!4026.02N\\07423.30Wh143/038/146.520MHz/A=000019"
     },
     {
       "id": "corpus/0919",
