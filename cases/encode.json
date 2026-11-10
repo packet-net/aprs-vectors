@@ -1236,6 +1236,50 @@
       "expect": {
         "info": ":BLN0     :  ADRAD Bastel Owend al \ud83d\udce1Donneschden um 17h Rue du Couvent n\u00b04,Digi"
       }
+    },
+    {
+      "id": "encode/a-compressed-course-near-north-is-north",
+      "description": "A compressed course of 1.2 degrees is 1 in whole degrees, so it is known, and its nearest 4-degree step is north, written c = 0.",
+      "source": "APRS12c ch. 7, 9 (differential testing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["a-builders-course-of-0-is-unknown"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "course_degrees": 1.2}},
+      "expect": {
+        "info": "!/5`=k<;>x>!!C"
+      }
+    },
+    {
+      "id": "encode/refuses-a-compressed-course-that-is-0-in-whole-degrees",
+      "description": "A compressed course of 0.3 degrees is 0 in whole degrees, an unknown course, which the cs bytes cannot hold.",
+      "source": "APRS12c ch. 7, 9 (differential testing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["a-builders-course-of-0-is-unknown"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "course_degrees": 0.3}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-compressed-course-below-0",
+      "description": "A compressed course of -0.7 degrees is -1 in whole degrees, outside 1-360, so it is refused, though its nearest 4-degree step would be north.",
+      "source": "APRS12c ch. 7, 9 (differential testing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["a-builders-course-of-0-is-unknown"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "course_degrees": -0.7}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-compressed-course-past-360-in-whole-degrees",
+      "description": "A compressed course of 360.6 degrees is 361 in whole degrees, outside 1-360, so it is refused, though its nearest 4-degree step would be north; 360.4 is 360 and is written as north.",
+      "source": "APRS12c ch. 7, 9 (differential testing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["a-builders-course-of-0-is-unknown"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "course_degrees": 360.6}},
+      "expect": {
+        "refused": true
+      }
     }
   ]
 }
