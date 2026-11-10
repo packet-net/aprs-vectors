@@ -18,7 +18,7 @@ About 250 cases cover every example packet printed in APRS12c and UAP, the encod
 
 | Implementation | Language | Repository | Package |
 |---|---|---|---|
-| Packet.Aprs | C# (.NET) | [packet-net/packet.net](https://github.com/packet-net/packet.net) | [NuGet `Packet.Aprs`](https://www.nuget.org/packages/Packet.Aprs) |
+| Packet.Aprs | C# (.NET) | [packet-net/aprs-cs](https://github.com/packet-net/aprs-cs) | [NuGet `Packet.Aprs`](https://www.nuget.org/packages/Packet.Aprs) |
 | pdn-aprs | Rust (`no_std` + `alloc`) | [packet-net/aprs-rs](https://github.com/packet-net/aprs-rs) | [crates.io `pdn-aprs`](https://crates.io/crates/pdn-aprs) |
 | pdn-aprs | Python (3.10+) | [packet-net/aprs-py](https://github.com/packet-net/aprs-py) | [PyPI `pdn-aprs`](https://pypi.org/project/pdn-aprs/) |
 | pdn-aprs | TypeScript (Node 20+, browsers) | [packet-net/aprs-ts](https://github.com/packet-net/aprs-ts) | [npm `@packet-net/pdn-aprs`](https://www.npmjs.com/package/@packet-net/pdn-aprs) |
@@ -226,16 +226,16 @@ A new diagnostic code goes in `codes.json` in the same pull request. A new inter
 
 ### Drafting with Packet.Aprs
 
-packet.net has this repository as a submodule at `spec/aprs`, and its corpus tool writes into it. From a packet.net checkout:
+aprs-cs has this repository as a submodule at `spec/aprs`, and its corpus tool writes into it. From an aprs-cs checkout:
 
 ```sh
 git submodule update --init spec/aprs
 dotnet run --project tools/Packet.Aprs.Corpus -- vectors fill spec/aprs/cases/position.json
 ```
 
-`fill` completes every decode case that has no `expect` yet (`expect`, `strict`, `reencode`) and leaves the others alone. Commit inside `spec/aprs`, push a branch of this repository, and open the pull request here; once it merges, packet.net moves its pin on.
+`fill` completes every decode case that has no `expect` yet (`expect`, `strict`, `reencode`) and leaves the others alone. Commit inside `spec/aprs`, push a branch of this repository, and open the pull request here; once it merges, aprs-cs moves its pin on.
 
-Real packets come from the APRS-IS capture that packet.net's `aprs-corpus collect` writes:
+Real packets come from the APRS-IS capture that aprs-cs's `aprs-corpus collect` writes:
 
 ```sh
 dotnet run --project tools/Packet.Aprs.Corpus -c Release -- curate ~/aprs-corpus samples.txt
@@ -257,7 +257,7 @@ The cases say what to make of every shape of packet they cover. To find what the
 Every file is gzip-compressed JSON lines, and the output keeps the input's order.
 
 ```sh
-# packet.net: extract a capture once, as one hex-encoded TNC2 line per line
+# aprs-cs: extract a capture once, as one hex-encoded TNC2 line per line
 dotnet run --project tools/Packet.Aprs.Corpus -c Release -- diff lines ~/aprs-corpus lines.hex.gz
 # here: fuzzed packets, neutral data and builder recipes
 python3 tools/mutate.py lines.hex.gz fuzz.hex.gz --seeds 50000 --count 2000000 --seed 1
