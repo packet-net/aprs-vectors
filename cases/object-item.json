@@ -388,6 +388,20 @@
       "strict": "same",
       "reencode": "equivalent",
       "canonical_info": ";SIGN     *092345z4903.50N\\07201.75Wm146.520MHz{55}/A=000100 Hello"
+    },
+    {
+      "id": "object-item/late-range-after-an-area",
+      "description": "An area does not count as the data extension, so a well-formed RNG later in the comment is the range, read with data-extension-in-comment; a strict decoder leaves it as text. Only one extension follows the symbol, so the report cannot be written back.",
+      "source": "APRS12c ch. 7, UAP 5.15 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["an-area-df-bearing-or-storm-is-not-the-data-extension"],
+      "input": {"info": ";SEARCH   *092345z4903.50N\\07201.75Wl710/310RNG12 RNG0050"},
+      "expect": {
+        "data": {"type": "object", "name": "SEARCH", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\l", "range_miles": 50, "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}, "comment": "RNG12 "},
+        "diagnostics": ["warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "object", "name": "SEARCH", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\l", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}, "comment": "RNG12 RNG0050"}},
+      "reencode": "refused"
     }
   ]
 }

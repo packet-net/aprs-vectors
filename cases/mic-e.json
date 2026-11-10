@@ -767,6 +767,32 @@
       "strict": {"data": {"type": "mic-e", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "C1", "course_degrees": 32, "speed_knots": 0, "comment": "#S]PH}#S]PHG33302/W1,KNn-N YOKOHAMA 1200bps", "mic_e_message": "off-duty", "old_data": true, "type_code": ">", "device_suffix": "="}, "diagnostics": []},
       "reencode": "equivalent",
       "canonical_info": "'C=?l <1C>]PH}PHG33302/#S#S]W1,KNn-N YOKOHAMA 1200bps="
+    },
+    {
+      "id": "mic-e/locator-text-after-a-phg-is-comment",
+      "description": "A locator is read only at the start of the status text or straight after a Mic-E altitude, so IO91SX/G after a PHG is comment text.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"info": "`(_fn\"Oj/]PHG3330IO91SX/G", "destination": "S32UVT"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "]", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": "IO91SX/G"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/locator-then-telemetry-has-no-missing-space",
+      "description": "Base-91 telemetry is lifted out of the status text before the locator is read, so a locator followed straight by telemetry has nothing after it: no missing-space-after-locator.",
+      "source": "APRS12c ch. 10, 13 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"info": "`(_fn\"Oj/`IO91/G|!:&0'p|", "destination": "S32UVT"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 25, "analog": [470, 625]}}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

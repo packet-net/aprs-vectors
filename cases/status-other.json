@@ -1204,6 +1204,19 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "query/footprint-coordinates-of-0-take-the-space",
+      "description": "A footprint coordinate of 0 may have the leading space, as a positive one does: one space is allowed before any value that is not negative.",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["a-footprint-coordinate-of-0-takes-the-space"],
+      "input": {"info": "?APRS? 0, 0,0200"},
+      "expect": {
+        "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 0, "longitude": 0, "radius_miles": 200}}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }
