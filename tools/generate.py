@@ -167,7 +167,7 @@ def on_steps(d: dict) -> bool:
     else:
         if d.get("course_degrees") == 0:
             return False  # Mic-E course 0 means none (APRS12c ch. 10)
-        for k in ("course_degrees", "speed_knots"):
+        for k in ("course_degrees", "speed_knots", "range_miles"):
             if k in d and not whole(d[k]):
                 return False
     return True
