@@ -838,6 +838,19 @@
       "strict": {"rejected_by": "mic-e-altitude-not-first"},
       "reencode": "equivalent",
       "canonical_info": "`0)18\\9h0II!}654.57S/10742fl!3>/'\";X!w3|!wII|"
+    },
+    {
+      "id": "mic-e/strict-reads-as-lenient-with-no-later-altitude",
+      "description": "The status text has no later altitude, so a strict decoder has nothing to decline and reads it as a lenient one does: lifting the telemetry |)>%v| leaves RWJ}, which is comment text, not a reason to reject.",
+      "source": "differential fuzzing 2026-11-10",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"info": "`j.po_Tk/`\"=K3RW|)>%v|J}146.520MHz 146.970(127.3)_6", "destination": "D83X2S"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "custom3", "type_code": "`", "device_suffix": "_6", "latitude": 38.637166666666666, "longitude": -78.314, "symbol": "/k", "course_degrees": 356, "speed_knots": 36, "telemetry": {"sequence": 757, "analog": [449]}, "comment": "\"=K3RWJ}146.520MHz 146.970(127.3)"}
+      },
+      "strict": "same",
+      "reencode": "refused"
     }
   ]
 }

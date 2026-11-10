@@ -402,6 +402,20 @@
       },
       "strict": {"data": {"type": "object", "name": "SEARCH", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\l", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}, "comment": "RNG12 RNG0050"}},
       "reencode": "refused"
+    },
+    {
+      "id": "object-item/storm-data-with-a-space-in-a-field-is-text",
+      "description": "Storm data's fields are digits; > 90 holds a space, so none of it is storm data and it stays in the comment.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["an-area-df-bearing-or-storm-is-not-the-data-extension"],
+      "input": {"tnc2": "N0CALL>APZ001:;BRENDA   *092345z4903.50N\\07202.75W@088/036/HC/150^200/0980> 90&030%040"},
+      "expect": {
+        "data": {"type": "object", "name": "BRENDA", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.04583333333333, "symbol": "\\@", "course_degrees": 88, "speed_knots": 36, "comment": "HC/150^200/0980> 90&030%040"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": ";BRENDA   *092345z4903.50N\\07202.75W@088/036HC/150^200/0980> 90&030%040"
     }
   ]
 }
