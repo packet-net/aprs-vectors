@@ -881,6 +881,21 @@
       "strict": {"rejected_by": "mic-e-altitude-not-first"},
       "reencode": "equivalent",
       "canonical_info": "`0)1879h0II!}654.57S/10742fl!X>/'\";X|!w3!wII!"
+    },
+    {
+      "id": "mic-e/an-rng-reached-only-by-lifting-an-altitude-is-late",
+      "description": "The RNG comes straight after the type code only once the later altitude \"4m} is lifted; in the status text as sent it follows the altitude, so it is a late data extension.",
+      "source": "differential fuzzing 2026-11-10",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"info": "`0M`lg>>/`RNG001\"4m}145.500MHz JANEK_1", "destination": "UR0X73"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "device_suffix": "_1", "latitude": 52.1455, "longitude": 20.828, "symbol": "/>", "course_degrees": 134, "speed_knots": 7, "altitude_feet": 282.1522309711286, "range_miles": 11, "comment": "45.500MHz JANEK"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "device_suffix": "_1", "latitude": 52.1455, "longitude": 20.828, "symbol": "/>", "course_degrees": 134, "speed_knots": 7, "comment": "RNG001\"4m}145.500MHz JANEK"}, "diagnostics": []},
+      "reencode": "equivalent",
+      "canonical_info": "`0M`lg>>/`\"4m}RNG001145.500MHz JANEK_1"
     }
   ]
 }

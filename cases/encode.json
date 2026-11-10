@@ -1226,6 +1226,16 @@
       "expect": {
         "info": "!/5`=k<;>x>{!C"
       }
+    },
+    {
+      "id": "encode/the-67-character-limit-counts-code-points",
+      "description": "Bulletin text of 67 characters is written: the limit counts characters (code points), and this text is 67 of them though it is 68 UTF-16 units and 71 bytes.",
+      "source": "APRS12c ch. 14 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "bulletin", "addressee": "BLN0", "text": "  ADRAD Bastel Owend al \ud83d\udce1Donneschden um 17h Rue du Couvent n\u00b04,Digi"}},
+      "expect": {
+        "info": ":BLN0     :  ADRAD Bastel Owend al \ud83d\udce1Donneschden um 17h Rue du Couvent n\u00b04,Digi"
+      }
     }
   ]
 }
