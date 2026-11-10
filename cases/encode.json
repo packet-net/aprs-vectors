@@ -1215,6 +1215,17 @@
       "expect": {
         "refused": true
       }
+    },
+    {
+      "id": "encode/refuses-compressed-cs-values-without-a-compression-type",
+      "description": "A compressed position with a range but no compression type is refused: the T byte written with the range reads back as a compression type the data does not have.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "range_miles": 2}},
+      "expect": {
+        "refused": true
+      }
     }
   ]
 }

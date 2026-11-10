@@ -793,6 +793,21 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "mic-e/altitude-is-looked-for-before-the-dao-is-lifted",
+      "description": "A later Mic-E altitude is looked for in the status text before the !DAO! is lifted: !7e} is the altitude, and the !w*@ before it, sharing its !, is not a DAO. Lifting the DAO first would join the V before it and 7e} after it into an altitude that is not in the bytes.",
+      "source": "differential fuzzing 2026-11-10",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"info": "`lX\u001fn\"C>/]\"13.7V!w*@!7e}=", "destination": "SWQR1T"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "type_code": "]", "device_suffix": "=", "latitude": 37.202333333333335, "longitude": -80.0005, "symbol": "/>", "course_degrees": 239, "speed_knots": 20, "altitude_feet": -26017.060367454065, "comment": "\"13.7V!w*@"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"rejected_by": "mic-e-altitude-not-first"},
+      "reencode": "equivalent",
+      "canonical_info": "`lX\u001fn\"C>/]!7e}\"13.7V!w*@="
     }
   ]
 }
