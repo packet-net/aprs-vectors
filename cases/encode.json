@@ -107,7 +107,7 @@
       "authority": "spec",
       "input": {"encode": {"type": "position", "timestamp": "092345z", "messaging": true, "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 88, "speed_knots": 36, "altitude_feet": 1234, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 25, "analog": [470, 625]}, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "Hello"}},
       "expect": {
-        "info": "@092345z4903.50N/07201.75W>088/036/A=001234146.520MHz T100 Hello|!:&0'p|!w!!!"
+        "info": "@092345z4903.50N/07201.75W>088/036/146.520MHz T100/A=001234 Hello|!:&0'p|!w!!!"
       }
     },
     {
@@ -635,6 +635,606 @@
       "input": {"encode": {"type": "directed-query", "addressee": "KH2Z", "query_type": "FOO", "target": "N0QBF"}},
       "expect": {
         "info": ":KH2Z     :?FOO N0QBF"
+      }
+    },
+    {
+      "id": "encode/a-half-within-the-tolerance-rounds-away-from-zero",
+      "description": "A pressure of 986.9499999999999 mbar is within 1e-6 of a step's half, so it is the half 9869.5 tenths and is written 9870, away from zero.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "pressure_mbar": 986.9499999999999}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W_220/004g005t077b09870"
+      }
+    },
+    {
+      "id": "encode/a-negative-half-rounds-away-from-zero",
+      "description": "A temperature of -0.5 F lies halfway between -1 and 0 and rounds away from zero, to -1.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": -0.5}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W_220/004g005t-01"
+      }
+    },
+    {
+      "id": "encode/minutes-from-degrees-round-once-at-the-half",
+      "description": "0.9764166666666666 degrees is 58.584999999999996 minutes, the half 58.585 within the tolerance, so both the latitude and the (negative) longitude are written 58.59 minutes, rounded once from the degrees given.",
+      "source": "APRS12c ch. 6 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 0.9764166666666666, "longitude": -0.9764166666666666, "symbol": "/-"}},
+      "expect": {
+        "info": "!0058.59N/00058.59W-"
+      }
+    },
+    {
+      "id": "encode/a-negative-altitude-half-rounds-away-from-zero",
+      "description": "An altitude of -0.5 feet rounds away from zero to -1 foot.",
+      "source": "APRS12c ch. 6 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "altitude_feet": -0.5}},
+      "expect": {
+        "info": "!4903.50N/07201.75W-/A=-00001"
+      }
+    },
+    {
+      "id": "encode/a-gust-that-rounds-inside-its-field",
+      "description": "A gust of 999.4 mph rounds to 999, which the three-digit field holds.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 999.4, "temperature_f": 77}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W_220/004g999t077"
+      }
+    },
+    {
+      "id": "encode/a-gust-that-rounds-outside-its-field",
+      "description": "A gust of 999.5 mph rounds to 1000, which the three-digit field cannot hold, so it is refused.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 999.5, "temperature_f": 77}}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/a-humidity-that-rounds-to-100",
+      "description": "A humidity of 99.7 percent rounds to 100, written h00.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 99.7}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W_220/004g005t077h00"
+      }
+    },
+    {
+      "id": "encode/a-rainfall-half-hundredth",
+      "description": "0.005 inches of rain is half a hundredth and rounds up to r001.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "rain_1h_in": 0.005}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W_220/004g005t077r001"
+      }
+    },
+    {
+      "id": "encode/a-range-half-mile",
+      "description": "An RNG range of 24.5 miles rounds to 25.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "range_miles": 24.5}},
+      "expect": {
+        "info": "!4903.50N/07201.75W-RNG0025"
+      }
+    },
+    {
+      "id": "encode/a-mic-e-speed-half-knot",
+      "description": "A Mic-E speed of 0.5 knots rounds up to 1 knot.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 0.5}},
+      "expect": {
+        "info": "`(_fl,Oj/",
+        "destination": "S32UVT"
+      }
+    },
+    {
+      "id": "encode/a-footprint-radius-half-mile",
+      "description": "A footprint radius of 199.5 miles rounds to 200 whole miles.",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 199.5}}},
+      "expect": {
+        "info": "?APRS? 34.02,-117.15,0200"
+      }
+    },
+    {
+      "id": "encode/a-course-just-over-360",
+      "description": "A course of 360.4 degrees rounds to 360, which is north and is written.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 360.4, "speed_knots": 10}},
+      "expect": {
+        "info": "!4903.50N/07201.75W>360/010"
+      }
+    },
+    {
+      "id": "encode/a-snowfall-that-rounds-to-a-whole-inch",
+      "description": "0.995 inches rounds to 1.00 in hundredths and 1.0 in tenths, a whole number, so it is written as three digits.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 0.995}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W_220/004g005t077s001"
+      }
+    },
+    {
+      "id": "encode/a-snowfall-that-rounds-to-10-inches",
+      "description": "9.96 inches rounds to 10.0 in tenths, not under 10, so it is written whole.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 9.96}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W_220/004g005t077s010"
+      }
+    },
+    {
+      "id": "encode/a-snowfall-that-rounds-past-999",
+      "description": "999.5 inches rounds to 1000, which three characters cannot hold.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "snow_24h_in": 999.5}}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-dao-on-an-ambiguous-position",
+      "description": "A !DAO! with no extra digits (!W  !) on an ambiguous position still reads back with dao-with-ambiguity, so there is no clean form.",
+      "source": "APRS12c ch. 6 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "ambiguity": 1, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-compressed-course-without-a-speed",
+      "description": "The cs bytes hold a course and a speed together, so a course alone would add a speed the data does not have.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-compressed-speed-without-a-course",
+      "description": "The cs bytes hold a course and a speed together, so a speed alone would add a course the data does not have.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "speed_knots": 36.23201216883807}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-humidity-of-0",
+      "description": "h00 is 100 percent (APRS12c ch. 12), so 0 percent has no form.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 0}}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-humidity-that-rounds-to-0",
+      "description": "A humidity of 0.4 percent rounds to 0, which has no form.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 0.4}}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-course-and-speed-with-a-phg",
+      "description": "Only one data extension follows the symbol; a PHG after a course/speed could only go later in the comment, where it reads back with data-extension-in-comment.",
+      "source": "APRS12c ch. 7, UAP 5.15 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-df-bearing-with-a-range",
+      "description": "A DF bearing extends the course/speed, so an RNG with it could only go later in the comment, where it reads back with data-extension-in-comment.",
+      "source": "APRS12c ch. 7, UAP 5.15 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["an-area-df-bearing-or-storm-is-not-the-data-extension"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/\\", "course_degrees": 88, "speed_knots": 36, "df_bearing": {"bearing_degrees": 270, "number": 7, "range": 2, "quality": 9}, "range_miles": 50}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-late-range-text-after-an-area",
+      "description": "An area does not count as the data extension, so a well-formed RNG later in the comment reads back as a range: the text has no clean form.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["an-area-df-bearing-or-storm-is-not-the-data-extension"],
+      "input": {"encode": {"type": "object", "name": "SEARCH", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\l", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}, "comment": "RNG12 RNG0050"}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/df-bearing-without-course-and-speed",
+      "description": "A DF bearing with no course and speed goes after .../..., the unknown form; 000/000 would be a fixed DF station.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/\\", "df_bearing": {"bearing_degrees": 270, "number": 7, "range": 2, "quality": 9}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W\\.../.../270/729"
+      }
+    },
+    {
+      "id": "encode/storm-data-without-course-and-speed",
+      "description": "Storm data with no course and speed goes after .../..., the form that reads back as unknown.",
+      "source": "APRS12c ch. 7, 12 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "object", "name": "BRENDA", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\@", "storm": {"type": "hurricane", "sustained_wind_knots": 150, "gust_knots": 200, "central_pressure_mbar": 980, "hurricane_radius_nm": 90, "tropical_storm_radius_nm": 30, "whole_gale_radius_nm": 40}}},
+      "expect": {
+        "info": ";BRENDA   *092345z4903.50N\\07201.75W@.../.../HC/150^200/0980>090&030%040"
+      }
+    },
+    {
+      "id": "encode/frequency-after-a-df-bearing",
+      "description": "A voice frequency after a DF bearing follows a /, as after a seven-byte extension.",
+      "source": "APRS12c ch. 7, 18 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/\\", "course_degrees": 88, "speed_knots": 36, "df_bearing": {"bearing_degrees": 270, "number": 7, "range": 2, "quality": 9}, "frequency": {"mhz": 146.52}}},
+      "expect": {
+        "info": "!4903.50N/07201.75W\\088/036/270/729/146.520MHz"
+      }
+    },
+    {
+      "id": "encode/frequency-after-storm-data",
+      "description": "A voice frequency after storm data follows a /, as after a seven-byte extension.",
+      "source": "APRS12c ch. 12, 18 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes"],
+      "input": {"encode": {"type": "object", "name": "BRENDA", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\@", "course_degrees": 88, "speed_knots": 36, "frequency": {"mhz": 146.52}, "storm": {"type": "hurricane", "sustained_wind_knots": 150, "gust_knots": 200, "central_pressure_mbar": 980, "hurricane_radius_nm": 90, "tropical_storm_radius_nm": 30, "whole_gale_radius_nm": 40}}},
+      "expect": {
+        "info": ";BRENDA   *092345z4903.50N\\07201.75W@088/036/HC/150^200/0980>090&030%040/146.520MHz"
+      }
+    },
+    {
+      "id": "encode/third-party-inner-packet-with-an-info-diagnostic",
+      "description": "An inner packet that reads back with only an info diagnostic (a plain message whose text starts ?APRSM) is written: an info is not a defect.",
+      "source": "APRS12c ch. 17 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP*"], "data": {"type": "message", "addressee": "KC5FM-9", "text": "?APRSM for the last 10"}, "diagnostics": ["info:invalid-query"]}}},
+      "expect": {
+        "info": "}N0CALL>APZ001,TCPIP*::KC5FM-9  :?APRSM for the last 10"
+      }
+    },
+    {
+      "id": "encode/telemetry-values-given-as-numbers",
+      "description": "Analog values given as numbers: a whole number from 0 to 999 is three digits (5, 0, 190.0), any other the shortest plain decimal (1.5, 1000).",
+      "source": "APRS12c ch. 13 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["numbers-given-without-their-text"],
+      "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [5, 0, 190.0, 1.5, 1000], "bits": "00000000"}},
+      "expect": {
+        "info": "T#001,005,000,190,1.5,1000,00000000"
+      }
+    },
+    {
+      "id": "encode/telemetry-values-given-as-numbers-2",
+      "description": "0.53 has a 0 before its point, -5 is not padded, 91.0 is whole and three digits.",
+      "source": "APRS12c ch. 13 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["numbers-given-without-their-text"],
+      "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [0.53, -5, 91.0, 999, 12.25], "bits": "10101010"}},
+      "expect": {
+        "info": "T#001,0.53,-5,091,999,12.25,10101010"
+      }
+    },
+    {
+      "id": "encode/coefficients-given-as-numbers",
+      "description": "EQNS. coefficients given as numbers: no trailing .0, and 1e61 as a 1 and 61 zeros, with no exponent.",
+      "source": "APRS12c ch. 13 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["numbers-given-without-their-text"],
+      "input": {"encode": {"type": "telemetry-coefficients", "addressee": "N0CALL", "coefficients": [0.53, 190.0, 1e+61]}},
+      "expect": {
+        "info": ":N0CALL   :EQNS.0.53,190,10000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "encode/coefficients-given-as-numbers-2",
+      "description": "-94.0 is -94 and 1e-7 is 0.0000001, with no exponent.",
+      "source": "APRS12c ch. 13 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["numbers-given-without-their-text"],
+      "input": {"encode": {"type": "telemetry-coefficients", "addressee": "N0CALL", "coefficients": [0, -94.0, 1e-07]}},
+      "expect": {
+        "info": ":N0CALL   :EQNS.0,-94,0.0000001"
+      }
+    },
+    {
+      "id": "encode/footprint-numbers-given-as-numbers",
+      "description": "A footprint latitude of 34.0 given as a number is 34, after the leading space a positive value takes.",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["numbers-given-without-their-text"],
+      "input": {"encode": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.0, "longitude": -117.15, "radius_miles": 200}}},
+      "expect": {
+        "info": "?APRS? 34,-117.15,0200"
+      }
+    },
+    {
+      "id": "encode/footprint-positive-longitude-gets-a-space",
+      "description": "A positive longitude gets a leading space as a positive latitude does, and the radius is four digits.",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["numbers-given-without-their-text"],
+      "input": {"encode": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 51.5, "longitude": 0.12, "radius_miles": 5}}},
+      "expect": {
+        "info": "?APRS? 51.5, 0.12,0005"
+      }
+    },
+    {
+      "id": "encode/refuses-telemetry-mic-with-an-empty-first-channel",
+      "description": "No form reads back with the first channel empty after MIC (T#MIC,,033 reads back otherwise), so there is no clean form.",
+      "source": "APRS12c ch. 13 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["telemetry-sequence-numbers-are-not-3-characters"],
+      "input": {"encode": {"type": "telemetry", "sequence": "MIC", "analog": [null, 33, 1, 2, 3], "bits": "00000000"}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-nmea-fields-that-disagree-with-the-sentence",
+      "description": "A latitude that disagrees with the sentence's would read back as the sentence's.",
+      "source": "APRS12c ch. 5 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["reading-the-fields-of-an-nmea-sentence"],
+      "input": {"encode": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true, "latitude": 40.0, "longitude": -117.00620166666667, "fix": "valid", "course_degrees": 89.3, "speed_knots": 43.022, "time": "06:39:09"}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/compressed-weather-gga-altitude-rounds",
+      "description": "A compressed weather report has no comment for a /A=, so a GGA altitude of 10000 feet goes in the cs bytes as the nearest step, 1.002^4610 (about 10004.5) feet.",
+      "source": "APRS12c ch. 9, 12 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "software"}, "altitude_feet": 10000, "weather": {"wind_gust_mph": 5, "temperature_f": 77}}},
+      "expect": {
+        "info": "!/5L!!<*e8_S]Sg005t077"
+      }
+    },
+    {
+      "id": "encode/footprint-coordinates-of-0",
+      "description": "A footprint latitude and longitude of 0 each take the leading space, as north and east do.",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["a-footprint-coordinate-of-0-takes-the-space"],
+      "input": {"encode": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 0, "longitude": 0, "radius_miles": 200}}},
+      "expect": {
+        "info": "?APRS? 0, 0,0200"
+      }
+    },
+    {
+      "id": "encode/footprint-latitude-of-0-after-a-query-type",
+      "description": "Without its space a latitude of 0 would join the query type (?WX?0).",
+      "source": "APRS12c ch. 15 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["a-footprint-coordinate-of-0-takes-the-space"],
+      "input": {"encode": {"type": "query", "query_type": "WX", "footprint": {"latitude": 0, "longitude": -117.15, "radius_miles": 200}}},
+      "expect": {
+        "info": "?WX? 0,-117.15,0200"
+      }
+    },
+    {
+      "id": "encode/mic-e-locator-then-telemetry",
+      "description": "A Mic-E locator followed by base-91 telemetry, with no comment: telemetry is lifted before the locator is read, so it is written straight after it.",
+      "source": "APRS12c ch. 10, 13 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 25, "analog": [470, 625]}}},
+      "expect": {
+        "info": "`(_fn\"Oj/`IO91/G|!:&0'p|",
+        "destination": "S32UVT"
+      }
+    },
+    {
+      "id": "encode/mic-e-locator-then-dao",
+      "description": "A Mic-E locator followed by a !DAO!, with no comment, is written straight after it.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91SX", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "dao": {"datum": "W", "precision": "base91"}}},
+      "expect": {
+        "info": "`(_fn\"Oj/`IO91SX/G!w!!!",
+        "destination": "S32UVT"
+      }
+    },
+    {
+      "id": "encode/mic-e-phg-then-locator-text",
+      "description": "A locator is only read at the start of the status text, so comment text that looks like one after a PHG is written straight on.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "]", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": "IO91SX/G"}},
+      "expect": {
+        "info": "`(_fn\"Oj/]PHG3330IO91SX/G",
+        "destination": "S32UVT"
+      }
+    },
+    {
+      "id": "encode/mic-e-rng-then-locator-text",
+      "description": "Comment text that looks like a locator after an RNG is text, written straight on.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "range_miles": 50, "comment": "IO91SX/G"}},
+      "expect": {
+        "info": "`(_fn\"Oj/`RNG0050IO91SX/G",
+        "destination": "S32UVT"
+      }
+    },
+    {
+      "id": "encode/course-0-uncompressed",
+      "description": "An uncompressed course of 0 is written 000, which APRS12c ch. 7 gives as unknown and reads back as 0.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 0, "speed_knots": 36}},
+      "expect": {
+        "info": "!4903.50N/07201.75W>000/036"
+      }
+    },
+    {
+      "id": "encode/refuses-a-mic-e-course-of-0",
+      "description": "A Mic-E course of 0 reads back as no course (APRS12c ch. 10: unknown or indefinite), so it is refused.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 0, "speed_knots": 20}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/refuses-a-compressed-course-of-0",
+      "description": "A compressed c of 0 reads back as 360, so a course of 0 is refused.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["compressed-course-0-is-north"],
+      "input": {"encode": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 0, "speed_knots": 36.23201216883807}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/a-course-that-rounds-to-0-uncompressed",
+      "description": "A course of -0.3 rounds to 0, written 000 in an uncompressed report.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": -0.3, "speed_knots": 36}},
+      "expect": {
+        "info": "!4903.50N/07201.75W>000/036"
+      }
+    },
+    {
+      "id": "encode/a-mic-e-course-that-rounds-to-0",
+      "description": "A Mic-E course of -0.3 rounds to 0, which Mic-E cannot hold as a course, so it is refused.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": -0.3, "speed_knots": 20}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/mic-e-phg-after-a-locator-is-not-an-altitude",
+      "description": "A PHG straight after a Mic-E locator and its space is lifted before a later altitude is looked for, so its digits 060} are not read as one.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91SX", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "}AB", "phg": {"power": 1, "height": 0, "gain": 6, "directivity": 0}}},
+      "expect": {
+        "info": "`(_fn\"Oj/`IO91SX/G PHG1060}AB",
+        "destination": "S32UVT"
+      }
+    },
+    {
+      "id": "encode/a-compressed-speed-just-below-0",
+      "description": "A compressed speed of -0.03 knots is nearest the step s = 0 and is written as 0.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "speed_knots": -0.03}},
+      "expect": {
+        "info": "!/5`=k<;>x>7!C"
+      }
+    },
+    {
+      "id": "encode/refuses-a-negative-compressed-speed",
+      "description": "A compressed speed of -0.3 knots is nearest s = -5 on the cs speed scale, outside the byte, so it is refused rather than moved to 0.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "speed_knots": -0.3}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/a-compressed-range-just-below-2-miles",
+      "description": "A compressed range of 1.95 miles is nearer the step 2 miles (s = 0) than 1.852 (s = -1), so it is written as 2.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.95}},
+      "expect": {
+        "info": "!/5`=k<;>x>{!C"
+      }
+    },
+    {
+      "id": "encode/refuses-a-compressed-range-nearer-a-step-below-2-miles",
+      "description": "A compressed range of 1.9 miles is nearest the step s = -1 (1.852 miles), outside the byte, so it is refused.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.9}},
+      "expect": {
+        "refused": true
+      }
+    },
+    {
+      "id": "encode/compressed-cs-values-without-a-compression-type-get-the-default",
+      "description": "A compressed position with a range but no compression type gets the default type byte C (current fix, other source, software), as a late RNG moved into the cs bytes does.",
+      "source": "APRS12c ch. 9 (differential fuzzing 2026-11-10)",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "range_miles": 2}},
+      "expect": {
+        "info": "!/5`=k<;>x>{!C"
+      }
+    },
+    {
+      "id": "encode/the-67-character-limit-counts-code-points",
+      "description": "Bulletin text of 67 characters is written: the limit counts characters (code points), and this text is 67 of them though it is 68 UTF-16 units and 71 bytes.",
+      "source": "APRS12c ch. 14 (differential fuzzing 2026-11-10)",
+      "authority": "spec",
+      "input": {"encode": {"type": "bulletin", "addressee": "BLN0", "text": "  ADRAD Bastel Owend al \ud83d\udce1Donneschden um 17h Rue du Couvent n\u00b04,Digi"}},
+      "expect": {
+        "info": ":BLN0     :  ADRAD Bastel Owend al \ud83d\udce1Donneschden um 17h Rue du Couvent n\u00b04,Digi"
       }
     }
   ]

@@ -8,7 +8,7 @@ Needs the jsonschema package (pip install jsonschema). Checks, beyond the schema
 - every diagnostic names a code in codes.json, with a valid severity;
 - every interpretation a case links to is a heading in interpretations.md;
 - an interpretation case links at least one interpretation;
-- canonical_info appears only with an equivalent re-encoding;
+- canonical_info appears exactly with an equivalent or rounded re-encoding;
 - every tolerable code has a case showing both sides of it: a strict result that differs from
   the lenient one, where that code is the only tolerance the lenient decoding used.
 """
@@ -109,8 +109,10 @@ def main():
             if isinstance(strict, dict) and "rejected_by" in strict and strict["rejected_by"] not in codes:
                 problem(f"rejected_by '{strict['rejected_by']}' is not in codes.json")
 
-            if "canonical_info" in case and case.get("reencode") != "equivalent":
-                problem("canonical_info belongs with reencode 'equivalent'")
+            if case.get("reencode") in ("equivalent", "rounded") and "canonical_info" not in case:
+                problem(f"reencode '{case['reencode']}' needs canonical_info, the bytes an encoder writes")
+            if "canonical_info" in case and case.get("reencode") not in ("equivalent", "rounded"):
+                problem("canonical_info belongs with reencode 'equivalent' or 'rounded'")
 
             tolerated = {
                 d.partition(":")[2]

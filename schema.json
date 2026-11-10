@@ -105,7 +105,7 @@
             }
           ]
         },
-        "reencode": { "enum": ["identical", "equivalent", "refused"] },
+        "reencode": { "enum": ["identical", "equivalent", "rounded", "refused"] },
         "canonical_info": { "type": "string" }
       }
     }

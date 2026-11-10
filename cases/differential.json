@@ -138,7 +138,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=4023.77N/00340.02W[075/000/A=002169144.800MHz // QTH: IN80dj"
+      "canonical_info": "=4023.77N/00340.02W[075/000/144.800MHz/A=002169 // QTH: IN80dj"
     },
     {
       "id": "differential/eqns-trailing-commas",

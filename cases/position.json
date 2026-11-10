@@ -509,7 +509,8 @@
         "diagnostics": ["warning:data-extension-in-comment"]
       },
       "strict": {"data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "comment": "PHG12 digi PHG5132"}},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W#PHG5132PHG12 digi "
     },
     {
       "id": "position/late-rng-after-a-malformed-rng",
@@ -523,7 +524,8 @@
         "diagnostics": ["warning:data-extension-in-comment"]
       },
       "strict": {"data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "comment": "RNG12 RNG0050"}},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W#RNG0050RNG12 "
     },
     {
       "id": "position/dfs-height-code-above-9",
@@ -575,7 +577,8 @@
         "data": {"type": "position", "latitude": 49.5, "longitude": -72.75000393777269, "symbol": "/>", "compressed": true, "compression": {"fix": "old", "source": "gga", "origin": "compressed"}, "altitude_feet": -59}
       },
       "strict": "same",
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "!/5L!!<*e7>!!1/A=-00059"
     },
     {
       "id": "position/lower-case-band-letter-is-not-a-frequency",
@@ -667,7 +670,8 @@
         "diagnostics": ["warning:out-of-range-value"]
       },
       "strict": {"rejected_by": "out-of-range-value"},
-      "reencode": "equivalent"
+      "reencode": "equivalent",
+      "canonical_info": "=4903.50N/07201.75W\\000/036"
     },
     {
       "id": "position/ambiguous-longitude-centre-past-180",
@@ -694,6 +698,88 @@
         "diagnostics": ["error:invalid-compressed-position"]
       },
       "strict": "same"
+    },
+    {
+      "id": "position/frequency-after-phg",
+      "description": "A voice frequency straight after a PHG follows a slash, the first form APRS12c ch. 18 lists.",
+      "source": "APRS12c ch. 18",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W#PHG5132/146.520MHz Digi"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "frequency": {"mhz": 146.52}, "comment": "Digi"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/frequency-after-phgr",
+      "description": "A PHGR ends in a slash, so a voice frequency follows it straight on.",
+      "source": "APRS12c ch. 7, 18",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W#PHG51324/146.520MHz Digi"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2, "beacons_per_hour": 4}, "frequency": {"mhz": 146.52}, "comment": "Digi"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/frequency-before-altitude",
+      "description": "A voice frequency is written first in the comment, where radios read it, and the altitude after it.",
+      "source": "APRS12c ch. 18",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W>090/013/A=001234146.520MHz Hello"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 90, "speed_knots": 13, "altitude_feet": 1234, "frequency": {"mhz": 146.52}, "comment": "Hello"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>090/013/146.520MHz/A=001234 Hello"
+    },
+    {
+      "id": "position/frequency-then-altitude",
+      "description": "A voice frequency, then the altitude, then the text re-encodes byte for byte.",
+      "source": "APRS12c ch. 18",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W>090/013/146.520MHz/A=001234 Hello"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 90, "speed_knots": 13, "altitude_feet": 1234, "frequency": {"mhz": 146.52}, "comment": "Hello"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/compressed-comment-that-looks-like-a-wind-extension",
+      "description": "After a compressed position without the weather symbol, .../... is comment text and needs no delimiter.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "ON2ACO-26>APLRG1,TCPIP*,qAC,T2POLAND:!L4a^FO<i>b  G.../...g...t055h.._10194LoRa_APRS I-Gate"},
+      "expect": {
+        "data": {"type": "position", "latitude": 51.00706961457081, "longitude": 3.208465686248786, "symbol": "Lb", "compressed": true, "comment": ".../...g...t055h.._10194LoRa_APRS I-Gate"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!L4a^FO<i>b sT.../...g...t055h.._10194LoRa_APRS I-Gate"
+    },
+    {
+      "id": "position/late-range-rounds-into-the-cs-bytes",
+      "description": "A range from a late RNG goes into the cs bytes, rounded to the nearest step; refusing is not an option.",
+      "source": "differential fuzzing 2026-09-27",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"tnc2": "VK6DUG-1>APGRWO,TCPIP*,qAS,VK6DC-10:!/^l'(kfiXD  C/A=0&RNG0034 DMR-Bran00095Graywolf/0.14.13"},
+      "expect": {
+        "data": {"type": "position", "latitude": -32.30579955161895, "longitude": 115.81729784787598, "symbol": "/D", "compressed": true, "range_miles": 34, "comment": "A=0& DMR-Bran00095Graywolf/0.14.13"},
+        "diagnostics": ["warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "position", "latitude": -32.30579955161895, "longitude": 115.81729784787598, "symbol": "/D", "compressed": true, "comment": "A=0&RNG0034 DMR-Bran00095Graywolf/0.14.13"}, "diagnostics": []},
+      "reencode": "rounded",
+      "canonical_info": "!/^l'(kfiXD{FCA=0& DMR-Bran00095Graywolf/0.14.13"
     }
   ]
 }
