@@ -808,6 +808,21 @@
       "strict": {"rejected_by": "mic-e-altitude-not-first"},
       "reencode": "equivalent",
       "canonical_info": "`lX\u001fn\"C>/]!7e}\"13.7V!w*@="
+    },
+    {
+      "id": "mic-e/strict-takes-the-dao-a-later-altitude-overlaps",
+      "description": "Lenient decoding takes the later altitude II!} first, so the !wII! sharing its bytes is not a DAO. A strict decoder reads the altitude as text and lifts the DAO; nothing joins across it (| is not base-91), so it does not reject.",
+      "source": "differential fuzzing 2026-11-10",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"info": "`0)1839h0654.57S/10742fl!X>/'\";X|!wII!}3", "destination": "U5TVQS"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 55.76883333333333, "longitude": -120.22016666666667, "symbol": "0h", "course_degrees": 329, "speed_knots": 282, "altitude_feet": 1065879.2650918635, "comment": "654.57S/10742fl!X>/'\";X|!w3"},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 55.76890659340659, "longitude": -120.22023992673994, "symbol": "0h", "course_degrees": 329, "speed_knots": 282, "dao": {"datum": "W", "precision": "base91"}, "comment": "654.57S/10742fl!X>/'\";X|}3"}, "diagnostics": ["info:mic-e-missing-device-type"]},
+      "reencode": "equivalent",
+      "canonical_info": "`0)1879h0II!}654.57S/10742fl!X>/'\";X|!w3"
     }
   ]
 }
