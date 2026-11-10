@@ -34,6 +34,8 @@ git submodule add https://github.com/packet-net/aprs-vectors vectors
 
 The submodule pins a commit, so new cases reach an implementation only when it moves the pin on, and its own CI shows whether it still passes. Dependabot's `gitsubmodule` ecosystem can open that pull request.
 
+**Versions.** The vectors are released as tagged versions (a zip of the files is attached to each [release](https://github.com/packet-net/aprs-vectors/releases)). The five implementations above share the vectors' major and minor version: an implementation at 1.0.x passes the vectors at 1.0. A new round of rulings is a minor version for the vectors and all five together; a fix in one implementation is that implementation's own patch version; a change that breaks a public API is a new major version.
+
 ## Files
 
 | File | What |
