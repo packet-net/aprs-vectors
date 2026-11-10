@@ -1013,7 +1013,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=4540.38N\\09410.49Wj006/058/A=000889146.520MHz Dayton Bound"
+      "canonical_info": "=4540.38N\\09410.49Wj006/058/146.520MHz/A=000889 Dayton Bound"
     },
     {
       "id": "corpus/0076",
@@ -1447,7 +1447,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=3706.39N/03722.89Ee/A=003061144.850MHz 73!..."
+      "canonical_info": "=3706.39N/03722.89Ee144.850MHz/A=003061 73!..."
     },
     {
       "id": "corpus/0107",
@@ -1611,7 +1611,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=3529.93N/10514.68W4317/042/A=006295146.520MHz Railroad mobile"
+      "canonical_info": "=3529.93N/10514.68W4317/042/146.520MHz/A=006295 Railroad mobile"
     },
     {
       "id": "corpus/0119",
@@ -2624,7 +2624,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=1458.0 N/08931.9 W>018/000/A=000708146.640MHz ORIENTE DE GUAT"
+      "canonical_info": "=1458.0 N/08931.9 W>018/000/146.640MHz/A=000708 ORIENTE DE GUAT"
     },
     {
       "id": "corpus/0191",
@@ -3114,7 +3114,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=3733.97N\\12115.82E>/A=000061439.110MHz 哥哥们出发了！！！"
+      "canonical_info": "=3733.97N\\12115.82E>439.110MHz/A=000061 哥哥们出发了！！！"
     },
     {
       "id": "corpus/0226",
@@ -3660,7 +3660,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": ";145.2875L*111111z4709.81N/02736.66Er/A=000328145.287MHz T103 R01k teste RoLink Network"
+      "canonical_info": ";145.2875L*111111z4709.81N/02736.66Er145.287MHz T103 R01k/A=000328 teste RoLink Network"
     },
     {
       "id": "corpus/0265",
@@ -3984,7 +3984,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": ";443.150/R*111111z4302.82N/07609.35Wr/A=002019443.150MHz +5 C071 R45m Allstar 28458 Voter/Simulcast System - Cortland,Solon,Syracuse NY"
+      "canonical_info": ";443.150/R*111111z4302.82N/07609.35Wr443.150MHz/A=002019 +5 C071 R45m Allstar 28458 Voter/Simulcast System - Cortland,Solon,Syracuse NY"
     },
     {
       "id": "corpus/0288",
@@ -4069,7 +4069,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": ";145.6375R*111111z4706.0 N/02739.9 Er/A=001207145.637MHz T088 -060 R80k YO8M-R1X Iași (C4FM/FM)"
+      "canonical_info": ";145.6375R*111111z4706.0 N/02739.9 Er145.637MHz T088 -060 R80k/A=001207 YO8M-R1X Iași (C4FM/FM)"
     },
     {
       "id": "corpus/0294",
@@ -4126,7 +4126,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "!R8I+291/[& sT/A=000751147.000MHz T103 +060 Raspberry Pi iGate via RTL-SDR and Direwatch"
+      "canonical_info": "!R8I+291/[& sT147.000MHz T103 +060/A=000751 Raspberry Pi iGate via RTL-SDR and Direwatch"
     },
     {
       "id": "corpus/0298",
@@ -4698,7 +4698,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "!/:4D=9P[W# sT/A=000800144.390MHz Digipeater, Tidradio H8, AIOC, Graywolf/0.14.2"
+      "canonical_info": "!/:4D=9P[W# sT144.390MHz/A=000800 Digipeater, Tidradio H8, AIOC, Graywolf/0.14.2"
     },
     {
       "id": "corpus/0338",
@@ -5078,7 +5078,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=1857.8 N/09913.5 Wr/A=005754146.850MHz CVA"
+      "canonical_info": "=1857.8 N/09913.5 Wr146.850MHz/A=005754 CVA"
     },
     {
       "id": "corpus/0365",
@@ -5973,7 +5973,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "!3447.1 NA08644.2 W0/A=000767441.075MHz Toff +000 DMR CC1 simplex gateway HAAT 6ft "
+      "canonical_info": "!3447.1 NA08644.2 W0441.075MHz Toff +000/A=000767 DMR CC1 simplex gateway HAAT 6ft "
     },
     {
       "id": "corpus/0428",
@@ -6910,7 +6910,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "!4623.33NL01628.43Ea/A=000524433.775MHz|#.!?|"
+      "canonical_info": "!4623.33NL01628.43Ea433.775MHz/A=000524|#.!?|"
     },
     {
       "id": "corpus/0494",
@@ -8224,7 +8224,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": ";ER-IR1ZYD*111111z4424.53NE00902.03E0PHG3390/A=002736430.737MHz T110 +500 R32k Gruppo Radio Liguria IQ1ZW"
+      "canonical_info": ";ER-IR1ZYD*111111z4424.53NE00902.03E0PHG3390/430.737MHz T110 +500 R32k/A=002736 Gruppo Radio Liguria IQ1ZW"
     },
     {
       "id": "corpus/0587",
@@ -8670,7 +8670,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "!4148.  N/12321.  E-PHG5040/A=000009438.500MHz via DM9100"
+      "canonical_info": "!4148.  N/12321.  E-PHG5040/438.500MHz/A=000009 via DM9100"
     },
     {
       "id": "corpus/0619",
@@ -8786,7 +8786,7 @@
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
       "reencode": "equivalent",
-      "canonical_info": "=4154.14N\\11130.29Wk351/008/A=008229146.520MHz On an adventure"
+      "canonical_info": "=4154.14N\\11130.29Wk351/008/146.520MHz/A=008229 On an adventure"
     },
     {
       "id": "corpus/0627",
@@ -10114,7 +10114,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=334 .  N/0871 .  W$028/001/A=000157147.390MHz Hamnut  Skywarn  "
+      "canonical_info": "=334 .  N/0871 .  W$028/001/147.390MHz/A=000157 Hamnut  Skywarn  "
     },
     {
       "id": "corpus/0720",
@@ -10965,7 +10965,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "!5319.86ND01432.93E&RNG0001/A=000010438.800MHz -7.6MHz Szczecin"
+      "canonical_info": "!5319.86ND01432.93E&RNG0001/438.800MHz/A=000010 -7.6MHz Szczecin"
     },
     {
       "id": "corpus/0779",
@@ -11358,7 +11358,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=/;nI079\"n$IT[/A=001149146.520MHz aprsdroid.org BTECH UV-Pro 73 Winlink "
+      "canonical_info": "=/;nI079\"n$IT[146.520MHz/A=001149 aprsdroid.org BTECH UV-Pro 73 Winlink "
     },
     {
       "id": "corpus/0806",
@@ -13331,7 +13331,7 @@
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
       "reencode": "equivalent",
-      "canonical_info": "!5314.75N/00026.96W#PHG5140/A=000072144.800MHz Lincoln Digipeater, mcbainsite.co.uk"
+      "canonical_info": "!5314.75N/00026.96W#PHG5140/144.800MHz/A=000072 Lincoln Digipeater, mcbainsite.co.uk"
     },
     {
       "id": "corpus/0943",
@@ -15011,7 +15011,7 @@
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
       "reencode": "equivalent",
-      "canonical_info": "=2333.85S/05128.34W$/A=002521146.520MHz 27.015MHz Jean"
+      "canonical_info": "=2333.85S/05128.34W$146.520MHz/A=002521 27.015MHz Jean"
     },
     {
       "id": "corpus/1059",
@@ -15759,7 +15759,7 @@
       },
       "strict": "same",
       "reencode": "equivalent",
-      "canonical_info": "=/9qQ921jy[%![/A=004171146.520MHz"
+      "canonical_info": "=/9qQ921jy[%![146.520MHz/A=004171"
     },
     {
       "id": "corpus/1110",
@@ -16078,7 +16078,7 @@
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
       "reencode": "equivalent",
-      "canonical_info": "!1854.99S/04700.41W#/A=004101146.810MHz T071 -060 Rede Mineira de APRS"
+      "canonical_info": "!1854.99S/04700.41W#146.810MHz T071 -060/A=004101 Rede Mineira de APRS"
     },
     {
       "id": "corpus/1132",
@@ -16515,7 +16515,7 @@
       },
       "strict": {"rejected_by": "non-utf8-text"},
       "reencode": "equivalent",
-      "canonical_info": "!5207.29NS01017.29E#PHG2400/A=000896438.787MHz -760 SZ-LichtenbergãV"
+      "canonical_info": "!5207.29NS01017.29E#PHG2400/438.787MHz -760/A=000896 SZ-LichtenbergãV"
     },
     {
       "id": "corpus/1162",
@@ -16929,7 +16929,7 @@
       },
       "strict": {"rejected_by": "non-utf8-text"},
       "reencode": "equivalent",
-      "canonical_info": "=1433.29N\\10045.73Ev181/014/A=-00084145.000MHz Goo²\"\u0085å¹.."
+      "canonical_info": "=1433.29N\\10045.73Ev181/014/145.000MHz/A=-00084 Goo²\"å¹.."
     },
     {
       "id": "corpus/1190",

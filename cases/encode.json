@@ -107,7 +107,7 @@
       "authority": "spec",
       "input": {"encode": {"type": "position", "timestamp": "092345z", "messaging": true, "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 88, "speed_knots": 36, "altitude_feet": 1234, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 25, "analog": [470, 625]}, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "Hello"}},
       "expect": {
-        "info": "@092345z4903.50N/07201.75W>088/036/A=001234146.520MHz T100 Hello|!:&0'p|!w!!!"
+        "info": "@092345z4903.50N/07201.75W>088/036/146.520MHz T100/A=001234 Hello|!:&0'p|!w!!!"
       }
     },
     {
