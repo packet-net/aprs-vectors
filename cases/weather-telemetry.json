@@ -706,6 +706,19 @@
       "strict": {"rejected_by": "wind-extension-after-compressed"},
       "reencode": "rounded",
       "canonical_info": "!/5L!!<*e7_!7Cg010t070"
+    },
+    {
+      "id": "weather/unknown-snowfall-after-a-compressed-gga-position",
+      "description": "After a compressed position with the weather symbol, s and three spaces is a snowfall sent as unknown, which counts as present: it is a weather field, not comment text.",
+      "source": "differential fuzzing 2026-11-10",
+      "authority": "interpretation",
+      "input": {"tnc2": "KA7HOS-10>APDW16,qAR,KA7HOS-10:=Aid_15oum_wuxs   *111111z3714.14N/11338.11W+`STG Marathon Aid Station 15"},
+      "expect": {
+        "data": {"type": "position", "latitude": -53.90615762641562, "longitude": -97.43772806266834, "symbol": "A_", "compressed": true, "compression": {"fix": "old", "source": "gga", "origin": "digipeater-conversion"}, "altitude_feet": 7305960.3680275455, "weather": {}, "comment": "*111111z3714.14N/11338.11W+`STG Marathon Aid Station 15", "messaging": true},
+        "diagnostics": ["warning:compression-type-reserved-bits", "warning:incomplete-weather", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "compression-type-reserved-bits"},
+      "reencode": "refused"
     }
   ]
 }
