@@ -82,9 +82,14 @@ def parts_of(mode, r):
         p["reencode"] = json.dumps(r.get("reencode"))
         if r.get("reencode") not in ("refused", "none"):
             p["written"] = json.dumps([r.get("written"), r.get("written_destination")])
+        if r.get("reencode") == "refused" and "reencode_refusal" in r:
+            p["reencode_refusal"] = json.dumps(r["reencode_refusal"])
         p.update(api_parts("api", r.get("api")))
         return p
     p = {"result": r.get("result")}
+    if r.get("result") == "refused" and "refusal" in r:
+        # compared only among the dumps that write it, so a 1.0.0 dump without the field still compares
+        p["refusal"] = json.dumps(r["refusal"])
     if mode == "encode":
         if r.get("result") == "written":
             p["info"] = json.dumps([r.get("info"), r.get("destination")])
