@@ -13,8 +13,8 @@ Needs the jsonschema package (pip install jsonschema). Checks, beyond the schema
   the lenient one, where that code is the only tolerance the lenient decoding used;
 - every `refusal` (in expect) and `reencode_refusal` names an id in the `refusals` list of codes.json,
   and no case names the fallback `does-not-read-back`;
-- every refusal id except the exempt ones (EXEMPT_REFUSALS) is named by at least one case (once the codes are filled in;
-  until then a refusal id with no case is reported as a note only, not a problem).
+- every refusal id except the exempt ones (EXEMPT_REFUSALS) is named by at least one case;
+- every refused case names its refusal code (REFUSALS_REQUIRED).
 """
 
 import json
