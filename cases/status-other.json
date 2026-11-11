@@ -1063,7 +1063,8 @@
         "data": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ", "path": ["WIDE1-1*", "WIDE2-1*"], "data": {"type": "status", "text": "x"}, "diagnostics": ["warning:multiple-used-markers"]}}
       },
       "strict": {"rejected_by": "invalid-third-party"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-third-party-header"
     },
     {
       "id": "nmea/proprietary-four-character-address",

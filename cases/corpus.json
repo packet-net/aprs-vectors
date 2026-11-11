@@ -18986,7 +18986,8 @@
         "diagnostics": ["warning:multiple-used-markers", "warning:invalid-telemetry"]
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "malformed"
     },
     {
       "id": "corpus/1317",

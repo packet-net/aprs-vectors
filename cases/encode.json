@@ -49,7 +49,8 @@
       "authority": "spec",
       "input": {"encode": {"type": "telemetry-names", "addressee": "N0CALL", "names": ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14"]}},
       "expect": {
-        "refused": true
+        "refused": true,
+        "refusal": "too-long"
       }
     },
     {
@@ -162,7 +163,8 @@
       "authority": "spec",
       "input": {"encode": {"type": "ack", "addressee": "N0CALL", "acked_id": "1", "message_id": "2"}},
       "expect": {
-        "refused": true
+        "refused": true,
+        "refusal": "field-not-allowed"
       }
     },
     {
@@ -348,7 +350,8 @@
       "authority": "spec",
       "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [1, 2, 3, 4], "bits": "00000000"}},
       "expect": {
-        "refused": true
+        "refused": true,
+        "refusal": "malformed"
       }
     },
     {
@@ -478,7 +481,8 @@
       "interpretations": ["a-capabilities-report-lists-at-least-one-capability"],
       "input": {"encode": {"type": "capabilities", "capabilities": []}},
       "expect": {
-        "refused": true
+        "refused": true,
+        "refusal": "missing-field"
       }
     },
     {
@@ -1319,7 +1323,8 @@
       "interpretations": ["a-builders-course-of-0-is-unknown"],
       "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "course_degrees": -0.7}},
       "expect": {
-        "refused": true
+        "refused": true,
+        "refusal": "value-out-of-range"
       }
     },
     {

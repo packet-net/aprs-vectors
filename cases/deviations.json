@@ -292,7 +292,8 @@
         "diagnostics": ["warning:invalid-telemetry"]
       },
       "strict": {"rejected_by": "invalid-telemetry"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "malformed"
     },
     {
       "id": "deviation/wind-fields-instead-of-extension",
