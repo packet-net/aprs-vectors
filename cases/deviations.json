@@ -12,7 +12,8 @@
         "diagnostics": ["warning:invalid-timestamp"]
       },
       "strict": {"rejected_by": "invalid-timestamp"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-timestamp"
     },
     {
       "id": "deviation/out-of-range-value",
@@ -83,7 +84,8 @@
         "diagnostics": ["warning:letter-group-bulletin"]
       },
       "strict": {"rejected_by": "letter-group-bulletin"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-addressee"
     },
     {
       "id": "deviation/compression-type-reserved-bits",
@@ -111,7 +113,8 @@
         "diagnostics": ["warning:dao-with-ambiguity"]
       },
       "strict": {"rejected_by": "dao-with-ambiguity"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "deviation/free-text-capabilities",
@@ -125,7 +128,8 @@
         "diagnostics": ["warning:free-text-capabilities"]
       },
       "strict": {"rejected_by": "free-text-capabilities"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "malformed"
     },
     {
       "id": "deviation/kenwood-ff-padding",
@@ -155,7 +159,8 @@
         "diagnostics": ["warning:invalid-addressee-characters"]
       },
       "strict": {"rejected_by": "invalid-addressee-characters"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-addressee"
     },
     {
       "id": "deviation/empty-path-entry",
@@ -375,7 +380,8 @@
         "diagnostics": ["warning:malformed-timestamp"]
       },
       "strict": {"rejected_by": "malformed-timestamp"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "missing-field"
     },
     {
       "id": "deviation/dao-shaped-run-inside-telemetry",

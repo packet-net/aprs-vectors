@@ -412,7 +412,8 @@
         "diagnostics": ["warning:mic-e-altitude-not-first"]
       },
       "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "'", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "Test:2\"4T}"}},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
     },
     {
       "id": "mic-e/legacy-binary-telemetry",
@@ -850,7 +851,8 @@
         "data": {"type": "mic-e", "mic_e_message": "custom3", "type_code": "`", "device_suffix": "_6", "latitude": 38.637166666666666, "longitude": -78.314, "symbol": "/k", "course_degrees": 356, "speed_knots": 36, "telemetry": {"sequence": 757, "analog": [449]}, "comment": "\"=K3RWJ}146.520MHz 146.970(127.3)"}
       },
       "strict": "same",
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
     },
     {
       "id": "mic-e/strict-keeps-an-altitude-the-bytes-already-held",

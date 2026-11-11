@@ -630,7 +630,8 @@
         "diagnostics": ["warning:dao-with-ambiguity", "warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "dao-with-ambiguity"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "position/longitude-range-before-hemisphere-case",

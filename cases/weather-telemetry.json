@@ -24,7 +24,8 @@
         "diagnostics": ["warning:weather-comment"]
       },
       "strict": {"rejected_by": "weather-comment"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "telemetry/report",
@@ -346,7 +347,8 @@
         "diagnostics": ["warning:incomplete-weather", "warning:incomplete-weather", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "incomplete-weather"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "weather/short-c-at-the-end",
@@ -388,7 +390,8 @@
         "diagnostics": ["warning:weather-comment"]
       },
       "strict": {"rejected_by": "weather-comment"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "weather/c-field-over-360",
@@ -416,7 +419,8 @@
         "diagnostics": ["warning:weather-comment"]
       },
       "strict": {"rejected_by": "weather-comment"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "weather/short-dotted-snowfall",
@@ -457,7 +461,8 @@
         "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "weather-comment"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "weather/first-s-is-the-wind-speed",
@@ -565,7 +570,8 @@
         "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "weather-comment"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "weather/software-and-unit-after-compressed-telemetry",
@@ -579,7 +585,8 @@
         "diagnostics": ["warning:compression-type-reserved-bits", "warning:incomplete-weather"]
       },
       "strict": {"rejected_by": "compression-type-reserved-bits"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "weather/s-before-c-is-snowfall",
@@ -608,7 +615,8 @@
         "diagnostics": ["warning:non-standard-weather-field-width", "warning:non-standard-weather-field-width", "warning:out-of-range-value"]
       },
       "strict": {"rejected_by": "non-standard-weather-field-width"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
     },
     {
       "id": "weather/snowfall-keeps-its-width-with-a-decimal-point",
@@ -622,7 +630,8 @@
         "diagnostics": ["warning:weather-comment"]
       },
       "strict": {"rejected_by": "weather-comment"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "weather/compressed-wind-speed-without-a-direction",
@@ -636,7 +645,8 @@
         "diagnostics": ["warning:wind-extension-after-compressed", "warning:out-of-range-value", "warning:non-standard-weather-field-width"]
       },
       "strict": {"rejected_by": "wind-extension-after-compressed"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "missing-field"
     },
     {
       "id": "weather/compressed-range-and-a-wind-extension",
@@ -650,7 +660,8 @@
         "diagnostics": ["warning:wind-extension-after-compressed", "warning:non-standard-weather-field-width", "warning:incomplete-weather"]
       },
       "strict": {"rejected_by": "wind-extension-after-compressed"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "extension-conflict"
     },
     {
       "id": "weather/snowfall-dots-then-a-digit",
@@ -664,7 +675,8 @@
         "diagnostics": ["warning:weather-comment"]
       },
       "strict": {"rejected_by": "weather-comment"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "weather/snowfall-in-hundredths",
@@ -719,7 +731,8 @@
         "diagnostics": ["warning:compression-type-reserved-bits", "warning:incomplete-weather", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "compression-type-reserved-bits"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     }
   ]
 }

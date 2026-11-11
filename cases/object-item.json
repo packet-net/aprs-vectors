@@ -35,7 +35,8 @@
         "diagnostics": ["warning:malformed-timestamp"]
       },
       "strict": {"rejected_by": "malformed-timestamp"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "missing-field"
     },
     {
       "id": "object/name-with-leading-spaces",
@@ -85,7 +86,8 @@
         "diagnostics": ["warning:object-without-timestamp"]
       },
       "strict": {"rejected_by": "object-without-timestamp"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "missing-field"
     },
     {
       "id": "object-item/items",
@@ -251,7 +253,8 @@
         "diagnostics": ["warning:malformed-timestamp", "warning:out-of-range-value"]
       },
       "strict": {"rejected_by": "malformed-timestamp"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "missing-field"
     },
     {
       "id": "object/overlaid-l-is-not-an-area-object",
@@ -401,7 +404,8 @@
         "diagnostics": ["warning:data-extension-in-comment"]
       },
       "strict": {"data": {"type": "object", "name": "SEARCH", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\l", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}, "comment": "RNG12 RNG0050"}},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "extension-conflict"
     },
     {
       "id": "object-item/storm-data-with-a-space-in-a-field-is-text",
