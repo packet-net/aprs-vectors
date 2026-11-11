@@ -923,6 +923,21 @@
         "refused": true,
         "refusal": "malformed"
       }
+    },
+    {
+      "id": "mic-e/text-altitude-equal-to-the-bytes-altitude-is-written-back",
+      "description": "A Mic-E report whose altitude bytes come after a stray character, and whose text holds an /A= equal to them (000000): the text altitude wins and is written as /A=000000.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-12)",
+      "authority": "observed",
+      "input": {"tnc2_hex": "444f3142522d393e5552315157302c57494445312d312c57494445322d312c7141522c444d30444f532d31303a607e5c281c1d3b282f332233727d444f3142523657262f413d3030303030303730636d"},
+      "expect": {
+        "header": {"source": "DO1BR-9", "destination": "UR1QW0", "path": ["WIDE1-1", "WIDE2-1", "qAR", "DM0DOS-10"], "q_construct": {"construct": "qAR", "station": "DM0DOS-10"}},
+        "data": {"type": "mic-e", "latitude": 52.195, "longitude": 8.068666666666667, "symbol": "/(", "course_degrees": 131, "speed_knots": 0, "altitude_feet": 0, "comment": "3DO1BR6W&70cm", "mic_e_message": "en-route"},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 52.195, "longitude": 8.068666666666667, "symbol": "/(", "course_degrees": 131, "speed_knots": 0, "altitude_feet": 0, "comment": "3\"3r}DO1BR6W&70cm", "mic_e_message": "en-route"}, "diagnostics": ["info:mic-e-missing-device-type"]},
+      "reencode": "equivalent",
+      "canonical_info": "`~\\(l!;(//A=0000003DO1BR6W&70cm"
     }
   ]
 }

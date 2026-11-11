@@ -1349,6 +1349,28 @@
         "refused": true,
         "refusal": "invalid-message-id"
       }
+    },
+    {
+      "id": "encode/weather-comment-with-a-line-break",
+      "description": "A weather report has no place for a comment, so it is refused as field-not-allowed even when the comment also holds a line break.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-12)",
+      "authority": "spec",
+      "input": {"encode": {"type": "weather", "timestamp": "10090556", "weather": {"temperature_f": 77}, "comment": "\n"}},
+      "expect": {
+        "refused": true,
+        "refusal": "field-not-allowed"
+      }
+    },
+    {
+      "id": "encode/compressed-weather-altitude-past-the-limit",
+      "description": "A compressed weather report with a non-GGA altitude has no comment to carry its /A=, so it is refused as field-not-allowed even past 999999 feet.",
+      "source": "APRS12c ch. 12 (differential fuzzing 2026-11-12)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 19.4, "longitude": -78.7, "symbol": "/_", "compressed": true, "altitude_feet": 7305960, "weather": {"temperature_f": -1}}},
+      "expect": {
+        "refused": true,
+        "refusal": "field-not-allowed"
+      }
     }
   ]
 }
