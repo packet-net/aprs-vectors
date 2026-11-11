@@ -912,6 +912,17 @@
       "strict": "same",
       "reencode": "equivalent",
       "canonical_info": "`)?rm B>/`/A=00000018.99Wi70c45.500MHz Dieter Y14 _%"
+    },
+    {
+      "id": "mic-e/legacy-binary-telemetry-with-4-values",
+      "description": "Rev 0 binary telemetry is exactly five values; four are refused as malformed, as too few ordinary telemetry values are.",
+      "source": "APRS12c ch. 10",
+      "authority": "spec",
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "off-duty", "legacy_telemetry": [65, 66, 67, 68], "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
     }
   ]
 }
