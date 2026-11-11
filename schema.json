@@ -85,8 +85,11 @@
             },
             "info": { "type": "string" },
             "destination": { "type": "string" },
-            "refused": { "const": true }
-          }
+            "refused": { "const": true },
+            "refusal": { "$ref": "#/$defs/code" }
+          },
+          "if": { "required": ["refusal"] },
+          "then": { "required": ["refused"] }
         },
         "strict": {
           "oneOf": [
@@ -106,8 +109,11 @@
           ]
         },
         "reencode": { "enum": ["identical", "equivalent", "rounded", "refused"] },
-        "canonical_info": { "type": "string" }
-      }
+        "canonical_info": { "type": "string" },
+        "reencode_refusal": { "$ref": "#/$defs/code" }
+      },
+      "if": { "required": ["reencode_refusal"] },
+      "then": { "required": ["reencode"], "properties": { "reencode": { "const": "refused" } } }
     }
   }
 }

@@ -10,7 +10,11 @@ Needs the jsonschema package (pip install jsonschema). Checks, beyond the schema
 - an interpretation case links at least one interpretation;
 - canonical_info appears exactly with an equivalent or rounded re-encoding;
 - every tolerable code has a case showing both sides of it: a strict result that differs from
-  the lenient one, where that code is the only tolerance the lenient decoding used.
+  the lenient one, where that code is the only tolerance the lenient decoding used;
+- every `refusal` (in expect) and `reencode_refusal` names an id in the `refusals` list of codes.json,
+  and no case names the fallback `does-not-read-back`;
+- every refusal id except that fallback is named by at least one case (once the codes are filled in;
+  until then a refusal id with no case is reported as a note only, not a problem).
 """
 
 import json
@@ -25,6 +29,10 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parent.parent
 SEVERITIES = {"info", "warning", "error"}
+FALLBACK = "does-not-read-back"
+# Step 3 of the refusal-codes work sets this to True: every refused case then names its code and
+# every refusal id (but the fallback) is named by a case.
+REFUSALS_REQUIRED = False
 
 
 def slug(heading):
@@ -57,7 +65,10 @@ def diagnostics_in(case):
 def main():
     schema = json.loads((ROOT / "schema.json").read_text(encoding="utf-8"))
     validator = jsonschema.Draft202012Validator(schema)
-    catalogue = json.loads((ROOT / "codes.json").read_text(encoding="utf-8"))["codes"]
+    document_codes = json.loads((ROOT / "codes.json").read_text(encoding="utf-8"))
+    catalogue = document_codes["codes"]
+    refusal_ids = {c["id"] for c in document_codes["refusals"]}
+    named_refusals = set()
     codes = {c["id"] for c in catalogue}
     tolerable = {c["id"] for c in catalogue if c["tolerable"]}
     anchors = {
@@ -109,10 +120,26 @@ def main():
             if isinstance(strict, dict) and "rejected_by" in strict and strict["rejected_by"] not in codes:
                 problem(f"rejected_by '{strict['rejected_by']}' is not in codes.json")
 
+            if REFUSALS_REQUIRED:
+                if case.get("expect", {}).get("refused") and "refusal" not in case["expect"]:
+                    problem("a refused case must name its refusal code")
+                if case.get("reencode") == "refused" and "reencode_refusal" not in case:
+                    problem("reencode 'refused' needs reencode_refusal")
+
             if case.get("reencode") in ("equivalent", "rounded") and "canonical_info" not in case:
                 problem(f"reencode '{case['reencode']}' needs canonical_info, the bytes an encoder writes")
             if "canonical_info" in case and case.get("reencode") not in ("equivalent", "rounded"):
                 problem("canonical_info belongs with reencode 'equivalent' or 'rounded'")
+
+            for key, value in (("refusal", case.get("expect", {}).get("refusal")),
+                               ("reencode_refusal", case.get("reencode_refusal"))):
+                if value is None:
+                    continue
+                named_refusals.add(value)
+                if value not in refusal_ids:
+                    problem(f"{key} '{value}' is not in the refusals list of codes.json")
+                if value == FALLBACK:
+                    problem(f"{key} names the fallback '{FALLBACK}', which no case may expect")
 
             tolerated = {
                 d.partition(":")[2]
@@ -125,9 +152,14 @@ def main():
     for code in sorted(tolerable - shown_both_sides):
         problems.append(f"codes.json: tolerable code '{code}' has no case whose strict result differs because of it alone")
 
+    if REFUSALS_REQUIRED:
+        for rid in sorted(refusal_ids - named_refusals - {FALLBACK}):
+            problems.append(f"codes.json: refusal id '{rid}' is named by no case")
+
     for p in problems:
         print(p)
-    print(f"{count} cases in {len(files)} files, {len(codes)} codes ({len(tolerable)} tolerable), {len(anchors)} interpretations: "
+    print(f"{count} cases in {len(files)} files, {len(codes)} codes ({len(tolerable)} tolerable), "
+          f"{len(refusal_ids)} refusal ids, {len(anchors)} interpretations: "
           + ("ok" if not problems else f"{len(problems)} problems"))
     return 1 if problems else 0
 
