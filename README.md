@@ -34,6 +34,8 @@ git submodule add https://github.com/packet-net/aprs-vectors vectors
 
 The submodule pins a commit, so new cases reach an implementation only when it moves the pin on, and its own CI shows whether it still passes. Dependabot's `gitsubmodule` ecosystem can open that pull request.
 
+**Versions.** The vectors are released as tagged versions (a zip of the files is attached to each [release](https://github.com/packet-net/aprs-vectors/releases)). The five implementations above share the vectors' major and minor version: an implementation at 1.0.x passes the vectors at 1.0. A new round of rulings is a minor version for the vectors and all five together; a fix in one implementation is that implementation's own patch version; a change that breaks a public API is a new major version.
+
 ## Files
 
 | File | What |
@@ -298,7 +300,7 @@ What a library's own API offers beyond the neutral form, read through the public
 | `third_party` | `true` for a packet carried inside a third-party packet, from the accessor that says so. |
 | `has_errors`, `has_warnings` | The packet's own accessors for its diagnostics. |
 | `tnc2` | The packet written back as a TNC2 line by the library, as hex: its header and the information field as received. |
-| `ax25` | The packet as an AX.25 UI frame (hex, without flags or FCS), or `"refused"` when the library will not write one (an address AX.25 cannot carry as sent, such as an SSID written with a leading zero, `WB4APR-00`, which a frame would give back as `WB4APR`). |
+| `ax25` | The packet as an AX.25 UI frame (hex, without flags or FCS), or `"refused"` when the library will not write one (an address AX.25 cannot carry as sent: an SSID written with a leading zero, `WB4APR-00`, which a frame would give back as `WB4APR`; a call of more than six characters or with lower-case letters, such as the APRS-IS q-construct `qAC` or `T2ROMANIA`; an SSID over 15 or not a number; more than eight path entries). |
 | `device` | The device the library identifies from the destination or the Mic-E bytes: `vendor`, `model` and `class` as the aprs-deviceid database gives them (each left out when it gives none), or `null`. Every packet's view gives it, an inner packet's and an unrecognised packet's too, since it comes from the destination, not the data. The lookup is case-sensitive, as the database lists tocalls in upper case and a destination is a callsign (`APNl02` matches nothing), and its wildcard `n` is a digit. |
 | `symbol` | `{"description": "Car"}`: the library's description of the symbol in the data, when there is one. |
 | `phg` | For data with a PHG, what the library derives from its codes: `watts`, `height_feet`, `gain_db`, `directivity_degrees` (`null` for omnidirectional). |

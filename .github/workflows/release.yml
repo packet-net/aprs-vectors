@@ -1,0 +1,32 @@
+name: release
+
+# On a version tag, attaches the vectors as one zip to a GitHub release, for anyone who
+# does not take them as a git submodule.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - run: pip install jsonschema
+      - run: python tools/check.py
+      - name: Build the zip
+        run: |
+          name="aprs-vectors-${GITHUB_REF_NAME#v}"
+          mkdir "$name"
+          cp -r cases codes.json schema.json README.md interpretations.md LICENSE "$name"/
+          zip -qr "$name.zip" "$name"
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "aprs-vectors-${GITHUB_REF_NAME#v}.zip" --title "$GITHUB_REF_NAME" --notes "The APRS conformance vectors at $GITHUB_REF_NAME. Implementations that conform to this version carry the same major and minor version number."
