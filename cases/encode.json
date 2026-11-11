@@ -1371,6 +1371,17 @@
         "refused": true,
         "refusal": "field-not-allowed"
       }
+    },
+    {
+      "id": "encode/message-to-a-station-named-like-a-bulletin",
+      "description": "An addressee that starts BLN but is not in a bulletin form (BLNe) is a station; text starting ? would read back as a directed query, so it is refused.",
+      "source": "APRS12c ch. 14 (differential fuzzing 2026-11-12)",
+      "authority": "spec",
+      "input": {"encode": {"type": "message", "addressee": "BLNe", "text": "?WX"}},
+      "expect": {
+        "refused": true,
+        "refusal": "text-reads-as-field"
+      }
     }
   ]
 }
