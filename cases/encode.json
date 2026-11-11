@@ -1382,6 +1382,38 @@
         "refused": true,
         "refusal": "text-reads-as-field"
       }
+    },
+    {
+      "id": "encode/speed-alone-on-the-area-symbol",
+      "description": "A speed with no course on the area symbol is written as .../sss, which reads back as a speed on that symbol.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-12)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 32.84108241758242, "longitude": -97.31199450549451, "symbol": "\\l", "speed_knots": 12}},
+      "expect": {
+        "info": "!3250.46N\\09718.72Wl.../012"
+      }
+    },
+    {
+      "id": "encode/course-on-the-area-symbol",
+      "description": "A course and speed on the area symbol with no area would read back as an area, so the symbol disagrees with the data and the report is refused.",
+      "source": "APRS12c ch. 7 (differential fuzzing 2026-11-12)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "latitude": 32.84108241758242, "longitude": -97.31199450549451, "symbol": "\\l", "course_degrees": 1, "speed_knots": 1}},
+      "expect": {
+        "refused": true,
+        "refusal": "symbol-mismatch"
+      }
+    },
+    {
+      "id": "encode/mic-e-altitude-whose-first-byte-is-a-type-code",
+      "description": "A Mic-E altitude of 487039 m beyond what a /A= holds can only go in the altitude bytes, and its first byte is the type code character ]: it would read back as a type code, so it has no form.",
+      "source": "APRS12c ch. 10 (differential fuzzing 2026-11-12)",
+      "authority": "spec",
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "old_data": true, "latitude": 47.20366666666666, "longitude": -122.50216666666667, "symbol": "Wv", "course_degrees": 26, "speed_knots": 0, "altitude_feet": 1597896.9816272964}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
     }
   ]
 }
