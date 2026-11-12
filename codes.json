@@ -329,7 +329,7 @@
     },
     {
       "id": "ax25-cannot-carry",
-      "meaning": "An AX.25 frame cannot carry the header: a call over 6 characters or in lower case, an SSID over 15 or written with a leading zero, more than 8 path entries."
+      "meaning": "An AX.25 frame cannot carry the header: a call over 6 characters or in lower case, an SSID over 15 or written with a leading zero or as -0, more than 8 path entries."
     },
     {
       "id": "tnc2-cannot-carry",
