@@ -1,4 +1,6 @@
-# State of the APRS 1.0.1 round (refusal reason codes), 2026-11-11 evening
+# State of the APRS 1.0.1 round (refusal reason codes)
+
+**Released 2026-11-12.** Final confirming run (fuzz seed 23, 2M lines, and all cases) was clean after two last rulings (a Mic-E locator's bytes are never part of a later altitude; an SSID written `-0` is refused for AX.25). aprs-vectors#19 merged as 8e499f5; v1.0.1 tagged in all six repos and published. Scratch on this machine and proxmox0 deleted; this branch is the record.
 
 Read this first when resuming. Tom asked for this work and has given standing permission to merge and release it ("Do all of these", then "just add this to 1.0", so it ships as 1.0.1, additive).
 
