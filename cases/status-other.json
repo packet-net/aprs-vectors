@@ -453,7 +453,8 @@
         "diagnostics": ["warning:free-text-capabilities"]
       },
       "strict": {"rejected_by": "free-text-capabilities"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "malformed"
     },
     {
       "id": "capabilities/control-character-in-value",
@@ -468,7 +469,8 @@
         "diagnostics": ["warning:free-text-capabilities"]
       },
       "strict": {"rejected_by": "free-text-capabilities"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "capabilities/empty-token",
@@ -483,7 +485,8 @@
         "diagnostics": ["warning:free-text-capabilities"]
       },
       "strict": {"rejected_by": "free-text-capabilities"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "malformed"
     },
     {
       "id": "capabilities/spaces-around-equals",
@@ -513,7 +516,8 @@
         "diagnostics": ["warning:free-text-capabilities"]
       },
       "strict": {"rejected_by": "free-text-capabilities"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "malformed"
     },
     {
       "id": "capabilities/no-break-space-is-not-a-space",
@@ -1059,7 +1063,8 @@
         "data": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ", "path": ["WIDE1-1*", "WIDE2-1*"], "data": {"type": "status", "text": "x"}, "diagnostics": ["warning:multiple-used-markers"]}}
       },
       "strict": {"rejected_by": "invalid-third-party"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-third-party-header"
     },
     {
       "id": "nmea/proprietary-four-character-address",
@@ -1099,7 +1104,8 @@
         "data": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "", "data": {"type": "status", "text": "x"}, "diagnostics": ["warning:empty-destination"]}}
       },
       "strict": {"rejected_by": "invalid-third-party"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-third-party-header"
     },
     {
       "id": "nmea/number-without-a-leading-digit",

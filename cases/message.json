@@ -59,7 +59,8 @@
         "diagnostics": ["warning:brace-in-message-text"]
       },
       "strict": {"rejected_by": "brace-in-message-text"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "message/directed-query",
@@ -352,7 +353,8 @@
         "diagnostics": ["warning:brace-in-message-text"]
       },
       "strict": {"rejected_by": "brace-in-message-text"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "telemetry-metadata/eqns-with-no-coefficients",
@@ -380,7 +382,8 @@
         "diagnostics": ["warning:brace-in-message-text"]
       },
       "strict": {"rejected_by": "brace-in-message-text"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "telemetry-metadata/brace-in-project-title",
@@ -395,7 +398,8 @@
         "diagnostics": ["warning:brace-in-message-text"]
       },
       "strict": {"rejected_by": "brace-in-message-text"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "message/nws-bulletin-longer-than-67",
@@ -423,7 +427,8 @@
         "diagnostics": ["warning:brace-in-message-text"]
       },
       "strict": {"rejected_by": "brace-in-message-text"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "message/addressee-starting-with-colon",
@@ -437,7 +442,8 @@
         "diagnostics": ["warning:invalid-addressee-characters"]
       },
       "strict": {"rejected_by": "invalid-addressee-characters"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-addressee"
     },
     {
       "id": "message/ack-then-not-a-message-id",
@@ -451,7 +457,8 @@
         "diagnostics": ["warning:brace-in-message-text"]
       },
       "strict": {"rejected_by": "brace-in-message-text"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "message/bln-then-lower-case-is-a-message",
@@ -492,7 +499,8 @@
         "diagnostics": ["warning:brace-in-message-text"]
       },
       "strict": {"rejected_by": "brace-in-message-text"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "message/query-type-with-digits",
@@ -551,7 +559,8 @@
         "diagnostics": ["info:invalid-telemetry-metadata"]
       },
       "strict": "same",
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "telemetry-metadata/coefficient-with-a-large-exponent",

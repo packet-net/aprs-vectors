@@ -39,7 +39,8 @@
         "diagnostics": ["warning:invalid-telemetry"]
       },
       "strict": {"rejected_by": "invalid-telemetry"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "malformed"
     },
     {
       "id": "differential/telemetry-sequence-with-a-space",
@@ -236,7 +237,8 @@
         "diagnostics": ["warning:incomplete-weather", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "incomplete-weather"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "differential/weather-repeated-field-ends-fields",
@@ -264,7 +266,8 @@
         "diagnostics": ["warning:incomplete-weather", "warning:incomplete-weather", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "incomplete-weather"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "differential/wind-extension-unknown-replaces-cs",
@@ -279,7 +282,8 @@
         "diagnostics": ["warning:wind-extension-after-compressed", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "wind-extension-after-compressed"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "differential/wind-extension-replaces-cs",
@@ -294,7 +298,8 @@
         "diagnostics": ["warning:wind-extension-after-compressed", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "wind-extension-after-compressed"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "differential/wind-fields-after-blank-cs",
@@ -309,7 +314,8 @@
         "diagnostics": ["warning:wind-fields-instead-of-extension", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "wind-fields-instead-of-extension"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "differential/late-extension-only-without-extension",
@@ -376,7 +382,8 @@
         "diagnostics": ["warning:object-name-not-padded", "warning:object-without-timestamp"]
       },
       "strict": {"rejected_by": "object-name-not-padded"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "missing-field"
     },
     {
       "id": "differential/object-garbled-timestamp-no-position",
@@ -457,7 +464,8 @@
         "diagnostics": ["warning:free-text-capabilities"]
       },
       "strict": {"rejected_by": "free-text-capabilities"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "malformed"
     },
     {
       "id": "differential/capabilities-token-with-space",
@@ -471,7 +479,8 @@
         "diagnostics": ["warning:free-text-capabilities"]
       },
       "strict": {"rejected_by": "free-text-capabilities"},
-      "reencode": "refused"
+      "reencode": "refused",
+      "reencode_refusal": "malformed"
     },
     {
       "id": "differential/raw-weather-empty",

@@ -234,6 +234,32 @@
         "header_error": ["error:invalid-address"]
       },
       "strict": "same"
+    },
+    {
+      "id": "envelope/explicit-ssid-0-is-kept-as-sent",
+      "description": "An address written with an SSID of -0 is read as sent (N0ZO-0). An AX.25 frame cannot carry it as sent (it gives back N0ZO), exactly as WB4APR-00, so a library's AX.25 writer refuses it (ax25-cannot-carry, in the API view's ax25 key); the TNC2 text and the information field are unaffected.",
+      "source": "APRS-IS 2026-11-12",
+      "authority": "observed",
+      "input": {"tnc2": "N0ZO-0>APX220,WIDE2-1:!3309.71N/08643.18W_035/002g002t063r000p000P000h98b10133"},
+      "expect": {
+        "header": {"source": "N0ZO-0", "destination": "APX220", "path": ["WIDE2-1"]},
+        "data": {"type": "position", "latitude": 33.161833333333334, "longitude": -86.71966666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 35, "wind_speed_mph": 2, "wind_gust_mph": 2, "temperature_f": 63, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0, "humidity_percent": 98, "pressure_mbar": 1013.3}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "envelope/third-party-inner-explicit-ssid-0-is-kept-as-sent",
+      "description": "The same inside a third-party packet: the inner source N0ZO-0 is read as sent, and the inner header's AX.25 form would refuse it (ax25-cannot-carry) as the outer would.",
+      "source": "APRS-IS 2026-11-12",
+      "authority": "observed",
+      "input": {"tnc2": "N0ZO>APX220,TCPIP*,qAC,T2RDU:}N0ZO-0>APX220,WIDE-1,WIDE2-1:!3309.71N/08643.18W_035/002g002t063r000p000P000h98b10133"},
+      "expect": {
+        "header": {"source": "N0ZO", "destination": "APX220", "path": ["TCPIP*", "qAC", "T2RDU"], "q_construct": {"construct": "qAC", "station": "T2RDU"}},
+        "data": {"type": "third-party", "packet": {"source": "N0ZO-0", "destination": "APX220", "path": ["WIDE-1", "WIDE2-1"], "data": {"type": "position", "latitude": 33.161833333333334, "longitude": -86.71966666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 35, "wind_speed_mph": 2, "wind_gust_mph": 2, "temperature_f": 63, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0, "humidity_percent": 98, "pressure_mbar": 1013.3}}}}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }
