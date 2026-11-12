@@ -567,6 +567,20 @@
       "canonical_info": "!4903.  N/07201.  W-"
     },
     {
+      "id": "position/longitude-places-inside-the-ambiguity-may-exceed-59",
+      "description": "The longitude places the latitude's ambiguity blanks may hold any digits, even ones that would be more than 59 minutes; they are ignored, not range-checked.",
+      "source": "APRS12c ch. 6 (differential fuzzing 2026-11-12)",
+      "authority": "interpretation",
+      "interpretations": ["longitude-blanks-follow-the-latitude", "position-ambiguity-which-point-is-reported"],
+      "input": {"info": "!49  .  N/07291.75W-"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.5, "longitude": -72.5, "ambiguity": 4, "symbol": "/-"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!49  .  N/072  .  W-"
+    },
+    {
       "id": "position/gga-altitude-overridden-by-a-negative-altitude",
       "description": "A /A= altitude below zero wins over the GGA cs altitude and re-encodes.",
       "source": "APRS12c ch. 6, ch. 9 (differential fuzzing 2026-09-27)",
