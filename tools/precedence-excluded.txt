@@ -1,0 +1,45 @@
+# Pairs of refusal codes with no case in cases/precedence.json, and why (written by tools/precedence.py).
+# 136 pair cases for 171 pairs of the 19 codes an encode case can carry; 35 pairs no record can hold:
+invalid-addressee + invalid-name: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; invalid-name only of item, object
+invalid-addressee + invalid-timestamp: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; invalid-timestamp only of object, position, status, weather
+invalid-addressee + value-out-of-range: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; value-out-of-range only of agrelo-df, item, mic-e, object, position, query, telemetry, weather
+invalid-addressee + value-has-no-form: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; value-has-no-form only of item, mic-e, object, position, telemetry, weather
+invalid-addressee + invalid-symbol: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; invalid-symbol only of item, mic-e, object, position, status
+invalid-addressee + padding-space: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; padding-space only of capabilities, object
+invalid-addressee + invalid-nmea: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; invalid-nmea only of nmea
+invalid-addressee + extension-conflict: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; extension-conflict only of item, object, position
+invalid-addressee + symbol-mismatch: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; symbol-mismatch only of item, object, position
+invalid-name + padding-space: a padding space is a fault of an object name, which holds the wrong-length fault too: one field
+invalid-name + invalid-message-id: no report has both: invalid-name is a fault only of item, object; invalid-message-id only of ack, bulletin, message, nws-bulletin, telemetry-metadata
+invalid-name + invalid-nmea: no report has both: invalid-name is a fault only of item, object; invalid-nmea only of nmea
+invalid-timestamp + invalid-message-id: no report has both: invalid-timestamp is a fault only of object, position, status, weather; invalid-message-id only of ack, bulletin, message, nws-bulletin, telemetry-metadata
+invalid-timestamp + invalid-nmea: no report has both: invalid-timestamp is a fault only of object, position, status, weather; invalid-nmea only of nmea
+value-out-of-range + invalid-message-id: no report has both: value-out-of-range is a fault only of agrelo-df, item, mic-e, object, position, query, telemetry, weather; invalid-message-id only of ack, bulletin, message, nws-bulletin, telemetry-metadata
+value-out-of-range + invalid-nmea: no report has both: value-out-of-range is a fault only of agrelo-df, item, mic-e, object, position, query, telemetry, weather; invalid-nmea only of nmea
+value-has-no-form + invalid-message-id: no report has both: value-has-no-form is a fault only of item, mic-e, object, position, telemetry, weather; invalid-message-id only of ack, bulletin, message, nws-bulletin, telemetry-metadata
+value-has-no-form + invalid-nmea: no report has both: value-has-no-form is a fault only of item, mic-e, object, position, telemetry, weather; invalid-nmea only of nmea
+invalid-code + invalid-message-id: no report has both: invalid-code is a fault only of directed-query, item, mic-e, object, position, query, status; invalid-message-id only of ack, bulletin, message, nws-bulletin, telemetry-metadata
+invalid-code + invalid-nmea: no report has both: invalid-code is a fault only of directed-query, item, mic-e, object, position, query, status; invalid-nmea only of nmea
+invalid-symbol + invalid-message-id: no report has both: invalid-symbol is a fault only of item, mic-e, object, position, status; invalid-message-id only of ack, bulletin, message, nws-bulletin, telemetry-metadata
+invalid-symbol + invalid-nmea: no report has both: invalid-symbol is a fault only of item, mic-e, object, position, status; invalid-nmea only of nmea
+invalid-character + text-reads-as-field: the free text that can read back as a field is a report's one comment or text field, where a character fault is too: one field
+too-long + invalid-nmea: no report has both: too-long is a fault only of bulletin, item, message, object, position, telemetry, telemetry-metadata; invalid-nmea only of nmea
+padding-space + invalid-message-id: no report has both: padding-space is a fault only of capabilities, object; invalid-message-id only of ack, bulletin, message, nws-bulletin, telemetry-metadata
+padding-space + invalid-nmea: no report has both: padding-space is a fault only of capabilities, object; invalid-nmea only of nmea
+malformed + invalid-nmea: no report has both: malformed is a fault only of capabilities, item, mic-e, object, position, status, telemetry, telemetry-metadata, weather; invalid-nmea only of nmea
+invalid-message-id + invalid-nmea: no report has both: invalid-message-id is a fault only of ack, bulletin, message, nws-bulletin, telemetry-metadata; invalid-nmea only of nmea
+invalid-message-id + extension-conflict: no report has both: invalid-message-id is a fault only of ack, bulletin, message, nws-bulletin, telemetry-metadata; extension-conflict only of item, object, position
+invalid-message-id + symbol-mismatch: no report has both: invalid-message-id is a fault only of ack, bulletin, message, nws-bulletin, telemetry-metadata; symbol-mismatch only of item, object, position
+invalid-nmea + extension-conflict: no report has both: invalid-nmea is a fault only of nmea; extension-conflict only of item, object, position
+invalid-nmea + field-not-allowed: no report has both: invalid-nmea is a fault only of nmea; field-not-allowed only of ack, item, mic-e, object, position, status, weather
+invalid-nmea + symbol-mismatch: no report has both: invalid-nmea is a fault only of nmea; symbol-mismatch only of item, object, position
+invalid-nmea + missing-field: no report has both: invalid-nmea is a fault only of nmea; missing-field only of capabilities, item, message, object, position, telemetry, weather
+invalid-nmea + text-reads-as-field: no report has both: invalid-nmea is a fault only of nmea; text-reads-as-field only of item, message, mic-e, object, position, status, weather
+# Codes no encode case can carry:
+not-encodable: undecoded data has no other field to hold a second fault, and no neutral form of it is held by all six libraries
+invalid-address: needs a packet header, which an encode case does not give
+ax25-cannot-carry: needs a packet header, which an encode case does not give
+tnc2-cannot-carry: needs a packet header, which an encode case does not give
+not-a-number: JSON cannot carry NaN or infinity (generate.py --faults gives it to the dump tools)
+value-given-twice: needs builder input in two units, and a case has no builder recipe (generate.py --recipes --faults gives it to the dump tools)
+does-not-read-back: the fallback, which no case may expect

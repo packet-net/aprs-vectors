@@ -39,7 +39,7 @@ EXEMPT_REFUSALS = {
     "ax25-cannot-carry",  # needs a packet header
     "tnc2-cannot-carry",  # needs a packet header
     "value-given-twice",  # needs builder input in two units
-    "not-encodable",  # undecoded data: no form of it is held by all five libraries (rs not inside third-party, cs not at top level)
+    "not-encodable",  # undecoded data: no form of it is held by all six libraries (rs not inside third-party, cs not at top level)
 }
 # Every refused case names its code, and every refusal id is named by a case except these, each of
 # which an encode or decode case cannot produce (see the README's Refusal reasons rule).

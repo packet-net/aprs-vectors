@@ -17,12 +17,14 @@ Recipes: one {"n", "station", "report", "args"} object per line, with values as 
 have them (a position from a GPS receiver, a speed in km/h) and every input given, the time
 included.
 
-With --faults, every line has two or three faults on purpose, drawn from a list of single faults
-(a value at its exact bound, half a step either side of it, just past it; a field the report has
-no place for; a companion left out; a builder value given in two units), so that the refusal
-order (the README's "Refusal reasons") is exercised, which uniform data rarely does: most of its
-records have one fault or none. Such a line has "exact": false and "faults": the names of the
-faults it was given. --nonfinite gives that share of fault lines a NaN or an infinity, written as
+With --faults, a line gets two or three faults on purpose where its report type has that many
+to give (fewer where it has fewer, none for a type with none), each on its own field, drawn from a
+list of single faults (a value at its exact bound, half a step either side of it, just past it;
+a field the report has no place for; a companion left out; a builder value given in two units),
+so that the refusal order (the README's "Refusal reasons") is exercised, which uniform data rarely
+does: most of its records have one fault or none. A line given faults has "exact": false and
+"faults": their names. A value at its bound is sometimes in range, so a line with faults can still
+be written. --nonfinite gives that share of fault lines a NaN or an infinity, written as
 the non-standard JSON tokens NaN, Infinity and -Infinity (Python's json module writes and reads
 them; a dump tool that does not read them can skip those lines, so the option is off by default).
 
@@ -762,20 +764,65 @@ class DataGen:
             options.append(("message-id", "message_id", ["", "12345", "123456", "A-1"]))
         if d["type"] == "telemetry":
             options += [("analog-count", "analog", [[1, 2, 3, 4], [1, 2, 3, 4, 5, 6], []]),
-                        ("bits", "bits", ["0000000", "000000000", "0000000x", None])]
+                        ("bits", "bits", ["0000000", "000000000", "0000000x", None]),
+                        ("sequence", "sequence", ["", "MIC", "A B", "12,3"]),
+                        ("telemetry-comment", "comment", ["a\rb", "\n"])]
+        if d["type"] in ("telemetry-names", "telemetry-units"):
+            key = "names" if d["type"] == "telemetry-names" else "units"
+            options.append(("metadata-list", key, [[f"C{i}" for i in range(14)], ["a{b"], ["a,b"], ["a\rb"]]))
+        if d["type"] == "telemetry-coefficients":
+            options.append(("coefficient-count", "coefficients", [[1.0] * 16, [1.0, 2.0]]))
+        if d["type"] == "telemetry-bits":
+            options += [("bits", "bits", ["1111111", "11111112"]),
+                        ("project-length", "project", ["x" * 23, "x" * 24, "a{b"])]
+        if d["type"] == "status":
+            options += [("beam-code", "beam", [{"heading_code": "a", "power_code": "7"}, {"heading_code": "B", "power_code": "0"}]),
+                        ("locator", "locator", ["IO91S", "io91sx", "ZZ99"])]
+        if d["type"] == "capabilities":
+            options.append(("capabilities", "capabilities", [[], [["IG ATE"]], [["MSG_CNT", " 43"]], [["MSG_CNT", "4\x013"]], [["A,B"]]]))
+        if d["type"] in ("query", "directed-query"):
+            options.append(("query-type", "query_type", ["aprs", "APRS1", "", "X Y"]))
+        if d["type"] == "query":
+            options.append(("footprint", "footprint", [{"latitude": 90.0, "longitude": 180.0, "radius_miles": 9999},
+                                                       {"latitude": 90.00001, "longitude": 0, "radius_miles": 200},
+                                                       {"latitude": 0, "longitude": -180.00001, "radius_miles": 200},
+                                                       {"latitude": 0, "longitude": 0, "radius_miles": 10000}]))
+        if d["type"] == "directed-query":
+            options.append(("target", "target", ["", "ABCDEFGHIJ", "A B"]))
+        if d["type"] == "nmea":
+            options += [("sentence", "sentence", ["GPRMC,063909,A*00", "gprmc,1", "GPRMC,1*4G"]),
+                        ("nmea-comment", "comment", ["a\rb"]),
+                        ("nmea-course", "course_degrees", [361.0, -1.0])]
+        if d["type"] == "maidenhead-beacon":
+            options += [("maidenhead-locator", "locator", ["IO91S", "io91sx", "ZZ99"]), ("maidenhead-comment", "comment", ["a\rb"])]
+        if d["type"] == "agrelo-df":
+            options += [("bearing", "bearing_degrees", [360, 361, -1]), ("quality", "quality", [9, 10, -1])]
+        if d["type"] == "nws-bulletin":
+            options.append(("nws-addressee", "addressee", ["NWSBOT", "NWS-", "NWS_ABCDEFG"]))
+        if d["type"] == "third-party":
+            options.append(("inner-path", "packet.path", [["TCPIP", "G4ABC*"], ["TC+IP*"], ["A*", "B*"]]))
+            inner = d.get("packet", {}).get("data")
+            if isinstance(inner, dict) and inner.get("type") != "third-party":
+                options.append(("inner-faults", None, None))
         if not options:
             return []
         names = []
         used = set()
         for _ in range(rng.choice([2, 2, 3])):
-            free = [o for o in options if o[1] is None or o[1] not in used]
+            free = [o for o in options if o[0] not in used and (o[1] is None or o[1] not in used)]
             if not free:
                 break
             name, key, values = rng.choice(free)
+            used.add(name)
             if key is not None:
                 used.add(key)
                 value = copy.deepcopy(rng.choice(values))
-                obj, leaf = (d.setdefault("weather", {}), key[8:]) if key.startswith("weather.") else (d, key)
+                if key.startswith("packet."):
+                    obj, leaf = d["packet"], key[7:]
+                elif key.startswith("weather."):
+                    obj, leaf = d.setdefault("weather", {}), key[8:]
+                else:
+                    obj, leaf = d, key
                 if value is None:
                     obj.pop(leaf, None)
                 else:
@@ -792,6 +839,12 @@ class DataGen:
             elif name == "speed-without-course":
                 d["speed_knots"] = 10
                 d.pop("course_degrees", None)
+            elif name == "inner-faults":
+                options = [o for o in options if o[0] != "inner-faults"]
+                inner = self._faults(d["packet"]["data"])[:1]
+                if not inner:
+                    continue
+                name = "inner:" + inner[0]
             names.append(name)
         if self.nonfinite and rng.random() < self.nonfinite:
             numeric = [k for k in self.EDGES if (k[8:] in d.get("weather", {}) if k.startswith("weather.") else k in d)]
@@ -923,26 +976,52 @@ class RecipeGen:
     TWICE = [("altitude_feet", "altitude_m", 100.0, 30.48), ("temperature_f", "temperature_c", 77.0, 25.0),
              ("rain_1h_in", "rain_1h_mm", 0.1, 2.54), ("speed_knots", "speed_kmh", 10.0, 18.52)]
 
+    # Faults for the reports with no position or weather: (name, arg, values).
+    OTHER_FAULTS = {
+        "message": [("addressee", "addressee", ["", "ABCDEFGHIJ", "A B"]), ("text", "text", ["x" * 68, "a{b", "a\rb"]),
+                    ("message-id", "message_id", ["", "123456", "A-1"]), ("reply-ack", "reply_ack", ["AB", "ABCDEF"])],
+        "ack": [("addressee", "addressee", ["", "ABCDEFGHIJ"]), ("message-id", "message_id", ["", "123456", "A-1"])],
+        "bulletin": [("id", "id", ["", "AB", "a"]), ("group", "group", ["TOOLONG", "a b"]), ("text", "text", ["x" * 68, "a{b"])],
+        "status": [("text", "text", ["a\rb", "x" * 63]), ("timestamp", "timestamp", [{"utc": "2026-09-27T09:23:45Z", "format": "hms"}]),
+                   ("locator", "locator", ["IO91S", "io91sx"]), ("beam", "beam", [{"heading_code": "a", "power_code": "7"}])],
+        "telemetry": [("sequence", "sequence", [1000, -1]), ("analog", "analog", [[1, 2, 3, 4], [1, 2, 3, 4, 5, 6], [256.5, 0, 0, 0, 0]]),
+                      ("bits", "bits", ["0000000", "0000000x"]), ("comment", "comment", ["a\rb"])],
+        "telemetry-names": [("names", "names", [[f"C{i}" for i in range(14)], ["a{b"], ["a,b"]]), ("addressee", "addressee", ["ABCDEFGHIJ"])],
+        "telemetry-units": [("units", "units", [[f"U{i}" for i in range(14)], ["a{b"]]), ("addressee", "addressee", ["ABCDEFGHIJ"])],
+        "telemetry-coefficients": [("coefficients", "coefficients", [[1.0] * 16, [1.0, 2.0]]), ("addressee", "addressee", ["ABCDEFGHIJ"])],
+        "telemetry-bits": [("bits", "bits", ["1111111", "11111112"]), ("project", "project", ["x" * 24, "a{b"]),
+                           ("addressee", "addressee", ["ABCDEFGHIJ"])],
+    }
+    OTHER_FAULTS["reject"] = OTHER_FAULTS["ack"]
+
     def faults(self, recipe: dict, nonfinite: float) -> list[str]:
+        """Gives the recipe up to three faults, each on its own argument; returns their names."""
         rng = self.rng
         args = recipe["args"]
         names = []
         weather = recipe["report"] == "weather"
         positioned = recipe["report"] in ("position", "object", "item", "mic-e")
-        if not weather and not positioned:
-            return names
-        wx_keys = {"wind_direction_degrees", "humidity_percent", "temperature_c", "wind_gust_mph"}
-        keys = [k for k in self.RECIPE_EDGES if (k in wx_keys) == weather and (k not in ("latitude", "longitude") or "latitude" in args)]
-        twice = [t for t in self.TWICE if (t[0] in ("temperature_f", "rain_1h_in")) == weather]
+        options = []
+        if weather or positioned:
+            wx_keys = {"wind_direction_degrees", "humidity_percent", "temperature_c", "wind_gust_mph"}
+            for k in self.RECIPE_EDGES:
+                if (k in wx_keys) == weather and (k not in ("latitude", "longitude") or "latitude" in args):
+                    options.append(("edge:" + k, (k,), [[v] for v in self.RECIPE_EDGES[k]]))
+            for a, b, va, vb in self.TWICE:
+                if (a in ("temperature_f", "rain_1h_in")) == weather and not (a == "speed_knots" and recipe["report"] == "weather"):
+                    options.append(("twice:" + a, (a, b), [[va, vb]]))
+        for name, key, values in self.OTHER_FAULTS.get(recipe["report"], []):
+            options.append((name, (key,), [[v] for v in values]))
+        used: set = set()
         for _ in range(rng.choice([2, 2, 3])):
-            if rng.random() < 0.25:
-                a, b, va, vb = rng.choice(twice)
-                args[a], args[b] = va, vb
-                names.append("twice:" + a)
-                continue
-            key = rng.choice(keys)
-            args[key] = rng.choice(self.RECIPE_EDGES[key])
-            names.append("edge:" + key)
+            free = [o for o in options if not used & set(o[1])]
+            if not free:
+                break
+            name, keys, values = rng.choice(free)
+            used |= set(keys)
+            for k, v in zip(keys, rng.choice(values)):
+                args[k] = copy.deepcopy(v)
+            names.append(name)
         if nonfinite and rng.random() < nonfinite:
             numeric = [k for k, v in args.items() if isinstance(v, (int, float)) and not isinstance(v, bool)]
             if numeric:

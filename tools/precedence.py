@@ -27,6 +27,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "cases", "precedence.json")
+EXCLUDED = os.path.join(HERE, "precedence-excluded.txt")
 
 # The README's "Refusal reasons" order (R1): the refusal names the first code that applies.
 ORDER = [
@@ -136,6 +137,10 @@ fault("missing-field", "compressed", "a course with no speed",
       {"course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}})
 fault("text-reads-as-field", "compressed", "comment text that reads as an altitude", {"comment": "/A=001234"})
 fault("invalid-character", "compressed", "a CR in the comment", {"comment": "a\rb"})
+fault("invalid-timestamp", "compressed", "a day of 32", {"timestamp": "322345z"})
+fault("too-long", "compressed", "six base-91 telemetry values", {"telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}})
+fault("malformed", "compressed", "base-91 telemetry with no analog values", {"telemetry": {"sequence": 1, "analog": []}})
+fault("invalid-code", "compressed", "a !DAO! datum of !", {"dao": {"datum": "!", "precision": "none"}})
 # Mic-E.
 fault("value-has-no-form", "mic-e", "a course of 0", {"course_degrees": 0})
 fault("value-out-of-range", "mic-e", "a speed of 800 knots", {"speed_knots": 800})
@@ -149,6 +154,7 @@ fault("value-has-no-form", ("weather-position", "weather", "weather-compressed")
 fault("invalid-timestamp", "weather-position", "a day of 32", {"timestamp": "322345z"})
 fault("invalid-symbol", "weather-position", "symbol table x", {"symbol": "x_"})
 fault("extension-conflict", "weather-position", "wind and PHG", {"phg": PHG})
+fault("symbol-mismatch", "weather-position", "weather on a symbol that is not the weather station", {"symbol": "/-"})
 fault("field-not-allowed", ("weather-position", "weather", "weather-compressed"), "a comment", {"comment": "hello"})
 fault("extension-conflict", "weather-compressed", "wind and a range in the cs bytes", {"range_miles": 2})
 fault("field-not-allowed", "weather-compressed", "PHG on a compressed report", {"phg": PHG})
@@ -188,6 +194,7 @@ fault("value-has-no-form", "telemetry", "T#MIC with an empty first channel", {"s
 fault("missing-field", "telemetry", "no bits", {"bits": DELETE})
 fault("invalid-character", "telemetry", "a CR in the comment", {"comment": "a\rb"})
 fault("malformed", "telemetry-bits", "bits of 7 characters", {"bits": "1111111"})
+fault("invalid-message-id", "telemetry-bits", "a message ID of 6 characters", {"message_id": "123456"})
 fault("too-long", "telemetry-bits", "a project title of 24 characters", {"project": "abcdefghijklmnopqrstuvwx"})
 fault("invalid-character", "telemetry-bits", "a { in the project title", {"project": "a{b"})
 # Status.
@@ -209,9 +216,11 @@ fault("invalid-nmea", "nmea", "a checksum that does not match", {"sentence": "GP
 fault("invalid-nmea", "nmea", "a course that disagrees with the sentence", {"course_degrees": 90})
 fault("invalid-character", "nmea", "a CR in the comment", {"comment": "a\rb"})
 # Third-party: every report above, inside one, keeps its faults, and gains one in the inner header.
-for _name in list(BASES):
+# Not Mic-E: an inner Mic-E report's position is half in its destination, which the third-party
+# header gives as APZ001, so the record would contradict itself.
+for _name in [n for n in BASES if n != "mic-e"]:
     BASES["third-party-" + _name] = tp(_name)
-for _code, _base, _label, _patch in list(FAULTS):
+for _code, _base, _label, _patch in [f for f in FAULTS if f[1] != "mic-e"]:
     fault(_code, "third-party-" + _base, _label + " in the inner packet", {"packet.data." + k: v for k, v in _patch.items()})
 fault("invalid-third-party-header", [b for b in BASES if b.startswith("third-party-")],
       "an inner path entry, before a used one, not marked used", {"packet.path": ["TCPIP", "G4ABC*"]})
@@ -273,12 +282,41 @@ def bases_of(code: str) -> list[str]:
     return sorted({f[1] for f in FAULTS if f[0] == code and not f[1].startswith("third-party-")})
 
 
+# Where each code can be a fault at all, from codes.json's meanings and the data form, read by hand
+# (not from the catalogue above): a pair whose codes have no report in common cannot be held by one
+# record. A third-party packet holds one inner report, so it adds no pair beyond its header's code.
+WHERE = {
+    "invalid-addressee": {"message", "ack", "bulletin", "nws-bulletin", "telemetry-metadata", "directed-query"},
+    "invalid-message-id": {"message", "ack", "bulletin", "nws-bulletin", "telemetry-metadata"},
+    "invalid-name": {"object", "item"},
+    "invalid-timestamp": {"position", "object", "status", "weather"},
+    "value-out-of-range": {"position", "object", "item", "mic-e", "weather", "query", "agrelo-df", "telemetry"},
+    "value-has-no-form": {"position", "object", "item", "mic-e", "weather", "telemetry"},
+    "invalid-code": {"position", "object", "item", "mic-e", "status", "query", "directed-query"},
+    "invalid-symbol": {"position", "object", "item", "mic-e", "status"},
+    "padding-space": {"object", "capabilities"},
+    "too-long": {"position", "object", "item", "message", "bulletin", "telemetry-metadata", "telemetry"},
+    "malformed": {"position", "object", "item", "mic-e", "status", "telemetry", "telemetry-metadata", "capabilities", "weather"},
+    "invalid-nmea": {"nmea"},
+    "extension-conflict": {"position", "object", "item"},
+    "symbol-mismatch": {"position", "object", "item"},
+    "field-not-allowed": {"position", "object", "item", "mic-e", "status", "weather", "ack"},
+    "missing-field": {"position", "object", "item", "message", "telemetry", "capabilities", "weather"},
+    "text-reads-as-field": {"position", "object", "item", "mic-e", "message", "status", "weather"},
+}
+ONE_FIELD = {
+    ("invalid-name", "padding-space"): "a padding space is a fault of an object name, which holds the wrong-length fault too: one field",
+    ("invalid-character", "text-reads-as-field"): "the free text that can read back as a field is a report's one comment or text field, where a character fault is too: one field",
+}
+
+
 def reason(a: str, b: str) -> str:
-    ba, bb = set(bases_of(a)), set(bases_of(b))
-    shared = ba & bb
-    if shared:
-        return f"on {', '.join(sorted(shared))} both are faults of one field"
-    return f"no report type in the catalogue has both: {a} is a fault of {', '.join(sorted(ba))}; {b} of {', '.join(sorted(bb))}"
+    """Why no record holds both, or that the catalogue has a gap (which --check refuses)."""
+    if (a, b) in ONE_FIELD:
+        return ONE_FIELD[(a, b)]
+    if a in WHERE and b in WHERE and not WHERE[a] & WHERE[b]:
+        return f"no report has both: {a} is a fault only of {', '.join(sorted(WHERE[a]))}; {b} only of {', '.join(sorted(WHERE[b]))}"
+    return "GAP: the catalogue has no record holding both, though one may exist"
 
 
 def case_for(a: str, b: str, base: str, fa, fb) -> dict:
@@ -430,22 +468,29 @@ def main() -> int:
 
     document, impossible = build()
     text = dump(document)
+    codes = [c for c in ORDER if c not in NO_CASE]
+    excluded = (f"# Pairs of refusal codes with no case in cases/precedence.json, and why (written by tools/precedence.py).\n"
+                f"# {len(document['cases']) - len(decode_cases())} pair cases for {len(codes) * (len(codes) - 1) // 2} pairs of the "
+                f"{len(codes)} codes an encode case can carry; {len(impossible)} pairs no record can hold:\n"
+                + "".join(f"{a} + {b}: {why}\n" for a, b, why in impossible)
+                + "# Codes no encode case can carry:\n"
+                + "".join(f"{code}: {why}\n" for code, why in NO_CASE.items()))
+    gaps = [p for p in impossible if p[2].startswith("GAP")]
     if args.check:
-        with open(OUT, encoding="utf-8") as f:
-            if f.read() != text:
-                print("cases/precedence.json is out of date: run python3 tools/precedence.py", file=sys.stderr)
-                return 1
+        for path, want in ((OUT, text), (EXCLUDED, excluded)):
+            with open(path, encoding="utf-8") as f:
+                if f.read() != want:
+                    print(f"{os.path.relpath(path, os.path.join(HERE, '..'))} is out of date: run python3 tools/precedence.py", file=sys.stderr)
+                    return 1
+        if gaps:
+            print(f"the fault catalogue has {len(gaps)} gaps: " + ", ".join(f"{a} + {b}" for a, b, _ in gaps), file=sys.stderr)
+            return 1
         return 0
-    with open(OUT, "w", encoding="utf-8") as f:
-        f.write(text)
+    for path, want in ((OUT, text), (EXCLUDED, excluded)):
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(want)
     if not args.quiet:
-        codes = [c for c in ORDER if c not in NO_CASE]
-        print(f"{len(document['cases'])} cases for {len(codes) * (len(codes) - 1) // 2} pairs of {len(codes)} codes; "
-              f"{len(impossible)} pairs cannot be held by one record:")
-        for a, b, why in impossible:
-            print(f"  {a} + {b}: {why}")
-        for code, why in NO_CASE.items():
-            print(f"  {code}, with any code: {why}")
+        print(excluded, end="")
     return 0
 
 

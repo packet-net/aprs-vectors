@@ -482,11 +482,11 @@
     },
     {
       "id": "precedence/invalid-timestamp-and-value-has-no-form",
-      "description": "Two faults, a day of 32 (invalid-timestamp) and a humidity of 0 (value-has-no-form): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a course of 0 (value-has-no-form): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
-      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 0}, "timestamp": "322345z"}},
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "timestamp": "322345z", "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}}},
       "expect": {
         "refused": true,
         "refusal": "invalid-timestamp"
@@ -595,6 +595,18 @@
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
       "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-missing-field",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a course with no speed (missing-field): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "timestamp": "322345z", "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
       "expect": {
         "refused": true,
         "refusal": "invalid-timestamp"
@@ -758,11 +770,11 @@
     },
     {
       "id": "precedence/value-has-no-form-and-invalid-code",
-      "description": "Two faults, a course of 0 (value-has-no-form) and a message of unknown (invalid-code): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "description": "Two faults, a course of 0 (value-has-no-form) and a !DAO! datum of ! (invalid-code): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
-      "input": {"encode": {"type": "mic-e", "mic_e_message": "unknown", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 0, "speed_knots": 9}},
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "dao": {"datum": "!", "precision": "none"}}},
       "expect": {
         "refused": true,
         "refusal": "value-has-no-form"
@@ -793,6 +805,18 @@
       }
     },
     {
+      "id": "precedence/value-has-no-form-and-too-long",
+      "description": "Two faults, a course of 0 (value-has-no-form) and six base-91 telemetry values (too-long): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
       "id": "precedence/value-has-no-form-and-padding-space",
       "description": "Two faults, a humidity of 0 (value-has-no-form) and a name ending in a space (padding-space): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -806,11 +830,11 @@
     },
     {
       "id": "precedence/value-has-no-form-and-malformed",
-      "description": "Two faults, a course of 0 (value-has-no-form) and four legacy telemetry values (malformed): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "description": "Two faults, a course of 0 (value-has-no-form) and base-91 telemetry with no analog values (malformed): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
-      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 0, "speed_knots": 9, "legacy_telemetry": [65, 66, 67, 68]}},
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "telemetry": {"sequence": 1, "analog": []}}},
       "expect": {
         "refused": true,
         "refusal": "value-has-no-form"
@@ -835,6 +859,18 @@
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
       "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-symbol-mismatch",
+      "description": "Two faults, a humidity of 0 (value-has-no-form) and weather on a symbol that is not the weather station (symbol-mismatch): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 0}}},
       "expect": {
         "refused": true,
         "refusal": "value-has-no-form"
@@ -938,11 +974,11 @@
     },
     {
       "id": "precedence/invalid-code-and-field-not-allowed",
-      "description": "Two faults, a message of unknown (invalid-code) and weather in Mic-E (field-not-allowed): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and PHG on a compressed position (field-not-allowed): the refusal names invalid-code, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
-      "input": {"encode": {"type": "mic-e", "mic_e_message": "unknown", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}}},
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "dao": {"datum": "!", "precision": "none"}, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
       "expect": {
         "refused": true,
         "refusal": "invalid-code"
@@ -962,11 +998,11 @@
     },
     {
       "id": "precedence/invalid-code-and-missing-field",
-      "description": "Two faults, a !DAO! datum of ! (invalid-code) and no timestamp (missing-field): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and a course with no speed (missing-field): the refusal names invalid-code, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
-      "input": {"encode": {"type": "object", "name": "LEADER", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}}},
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "dao": {"datum": "!", "precision": "none"}, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
       "expect": {
         "refused": true,
         "refusal": "invalid-code"
@@ -1274,11 +1310,11 @@
     },
     {
       "id": "precedence/too-long-and-missing-field",
-      "description": "Two faults, six base-91 telemetry values (too-long) and no timestamp (missing-field): the refusal names too-long, which the Refusal reasons order puts first.",
+      "description": "Two faults, six base-91 telemetry values (too-long) and a course with no speed (missing-field): the refusal names too-long, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
-      "input": {"encode": {"type": "object", "name": "LEADER", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
       "expect": {
         "refused": true,
         "refusal": "too-long"
@@ -1369,6 +1405,18 @@
       }
     },
     {
+      "id": "precedence/malformed-and-invalid-message-id",
+      "description": "Two faults, bits of 7 characters (malformed) and a message ID of 6 characters (invalid-message-id): the refusal names malformed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "telemetry-bits", "addressee": "N0CALL", "bits": "1111111", "project": "Balloon", "message_id": "123456"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
       "id": "precedence/malformed-and-extension-conflict",
       "description": "Two faults, base-91 telemetry with no analog values (malformed) and course/speed and PHG (extension-conflict): the refusal names malformed, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -1406,11 +1454,11 @@
     },
     {
       "id": "precedence/malformed-and-missing-field",
-      "description": "Two faults, base-91 telemetry with no analog values (malformed) and no timestamp (missing-field): the refusal names malformed, which the Refusal reasons order puts first.",
+      "description": "Two faults, base-91 telemetry with no analog values (malformed) and a course with no speed (missing-field): the refusal names malformed, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
-      "input": {"encode": {"type": "object", "name": "LEADER", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}}},
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "telemetry": {"sequence": 1, "analog": []}, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
       "expect": {
         "refused": true,
         "refusal": "malformed"

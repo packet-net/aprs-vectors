@@ -1417,11 +1417,11 @@
     },
     {
       "id": "encode/mic-e-course-0-and-an-altitude-past-every-form",
-      "description": "A Mic-E course of 0 (value-has-no-form) and an altitude no form holds, past /A= and not whole metres (value-out-of-range): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "description": "A Mic-E course of 0 (value-has-no-form) and an altitude of 3,000,000 feet (914,400 m), past both /A= and the Mic-E altitude bytes, which top out at 743,570 m (value-out-of-range): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
       "source": "differential fuzzing 2026-11-13",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
-      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 0, "speed_knots": 9, "altitude_feet": 1500000.7}},
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 0, "speed_knots": 9, "altitude_feet": 3000000}},
       "expect": {
         "refused": true,
         "refusal": "value-out-of-range"
@@ -1502,7 +1502,8 @@
       "id": "encode/third-party-path-entry-before-a-used-one-not-marked",
       "description": "A third-party header whose path entry comes before a used one but is not marked used reads back with both used (a path entry before a used one is used too), so the header cannot be written as given: invalid-third-party-header.",
       "source": "differential fuzzing 2026-11-13",
-      "authority": "spec",
+      "authority": "interpretation",
+      "interpretations": ["third-party-header-addresses"],
       "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "message", "addressee": "N0CALL", "text": "Hello"}}}},
       "expect": {
         "refused": true,
@@ -1544,13 +1545,13 @@
     },
     {
       "id": "encode/nmea-sentence-without-its-fields",
-      "description": "NMEA data that gives the sentence but not the fields it holds reads back with them, so it is data that disagrees with its sentence: invalid-nmea. A field not listed must not be produced.",
+      "description": "NMEA data that gives the sentence but not the fields it holds is written: the sentence determines them, so a field left out is not given, and only a field given that disagrees is refused.",
       "source": "differential fuzzing 2026-11-13",
-      "authority": "spec",
+      "authority": "interpretation",
+      "interpretations": ["nmea-data-is-its-sentence"],
       "input": {"encode": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true}},
       "expect": {
-        "refused": true,
-        "refusal": "invalid-nmea"
+        "info": "$GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52"
       }
     },
     {
@@ -1573,6 +1574,227 @@
       "expect": {
         "refused": true,
         "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "encode/ambiguous-latitude-just-under-90-degrees",
+      "description": "A latitude of 89.9999167 degrees with two levels of ambiguity is in the box 89 59, cut and not rounded first, so it is written there (centre 89 59.5) rather than refused as a box centred past the pole.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["ambiguity-cuts-a-raw-position"],
+      "input": {"encode": {"type": "position", "latitude": 89.9999167, "longitude": 10.0, "symbol": "/-", "ambiguity": 2}},
+      "expect": {
+        "info": "!8959.  N/01000.  E-"
+      }
+    },
+    {
+      "id": "encode/ambiguous-longitude-just-under-180-degrees",
+      "description": "A longitude of 179.9999167 degrees with two levels of ambiguity is in the box 179 59, cut and not rounded first.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["ambiguity-cuts-a-raw-position"],
+      "input": {"encode": {"type": "position", "latitude": 10.0, "longitude": 179.9999167, "symbol": "/-", "ambiguity": 2}},
+      "expect": {
+        "info": "!1000.  N/17959.  E-"
+      }
+    },
+    {
+      "id": "encode/ambiguous-south-west-corner",
+      "description": "A position a rounding step from both the south pole and 180 west, with one level of ambiguity, is cut into the boxes below the edges.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["ambiguity-cuts-a-raw-position"],
+      "input": {"encode": {"type": "position", "latitude": -89.9999167, "longitude": -179.9999167, "symbol": "/-", "ambiguity": 1}},
+      "expect": {
+        "info": "!8959.9 S/17959.9 W-"
+      }
+    },
+    {
+      "id": "encode/mic-e-ambiguous-position-just-under-the-edges",
+      "description": "A Mic-E position a rounding step from 90 and 180 degrees, with two levels of ambiguity, is cut into the boxes below the edges, as an uncompressed one is.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["ambiguity-cuts-a-raw-position"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 89.9999167, "longitude": 179.9999167, "ambiguity": 2, "symbol": "/>"}},
+      "expect": {
+        "info": "`kWNl \u001c>/",
+        "destination": "XY5YZL"
+      }
+    },
+    {
+      "id": "encode/compressed-wind-direction-minus-0-4-is-north",
+      "description": "A compressed wind direction of -0.4 degrees is 0 in whole degrees, in range, and rounds to the 4-degree step 0.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-wind-direction-is-judged-in-whole-degrees"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": -0.4, "wind_speed_mph": 0, "wind_gust_mph": 5, "temperature_f": 77}}},
+      "expect": {
+        "info": "!/5L!!<*e8_!!Cg005t077"
+      }
+    },
+    {
+      "id": "encode/uncompressed-wind-direction-360-5-is-out-of-range",
+      "description": "An uncompressed wind direction of 360.5 degrees rounds to 361, out of range, as it is in cs bytes.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-wind-direction-is-judged-in-whole-degrees"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "weather": {"wind_direction_degrees": 360.5, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "encode/phg-digit-10-beside-a-course",
+      "description": "A PHG power digit of 10 (value-out-of-range) given beside a course and speed, which want the same data extension (extension-conflict): the PHG's place exists, so its digits are checked first, and the refusal is value-out-of-range.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 10, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "encode/query-type-and-radius-both-wrong",
+      "description": "A general query whose type is not upper-case letters (invalid-code) and whose radius is past 9999 miles (value-out-of-range): the refusal is value-out-of-range, which the order puts first.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "query", "query_type": "X Y", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 10000}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "encode/query-without-a-type-and-radius-too-big",
+      "description": "A general query with no type (missing-field) and a radius past 9999 miles (value-out-of-range): value-out-of-range.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "query", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 10000}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "encode/sixteen-telemetry-coefficients",
+      "description": "EQNS. carries at most 15 coefficients; 16 is a list longer than its field: too-long.",
+      "source": "APRS12c ch. 13 (differential fuzzing 2026-11-14)",
+      "authority": "spec",
+      "input": {"encode": {"type": "telemetry-coefficients", "addressee": "N0CALL", "coefficients": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/maidenhead-beacon-comment-and-locator-both-wrong",
+      "description": "A Maidenhead beacon with a line break in its comment (invalid-character) and a locator of 5 characters (malformed): invalid-character, which the order puts first.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "maidenhead-beacon", "locator": "IO91S", "comment": "a\rb"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "encode/lower-case-status-locator",
+      "description": "A status locator in lower case reads back in upper case, so it is not the fixed form a locator is: malformed.",
+      "source": "APRS12c ch. 16 (differential fuzzing 2026-11-14)",
+      "authority": "spec",
+      "input": {"encode": {"type": "status", "locator": "io91sx", "symbol": "/-", "text": "Hello"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "encode/lower-case-status-locator-without-a-symbol",
+      "description": "A lower-case status locator (malformed) with no symbol (missing-field): malformed, which the order puts first.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "status", "locator": "io91sx", "text": "Hello"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "encode/dao-digit-datum-with-added-precision",
+      "description": "A !DAO! datum digit is read only with no added precision, so a digit datum with base-91 digits is a datum outside the set its precision takes: invalid-code.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["dao-datum-digits"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "1", "precision": "base91"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "encode/dao-digit-datum-with-added-precision-on-an-ambiguous-position",
+      "description": "A digit datum with base-91 digits (invalid-code) on an ambiguous position (field-not-allowed): the !DAO! has a place in the comment, so its own checks run first, and the refusal is invalid-code.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["dao-datum-digits", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "ambiguity": 2, "dao": {"datum": "1", "precision": "base91"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "encode/nmea-comment-without-a-checksum",
+      "description": "An NMEA comment follows the sentence's checksum, which ends the sentence; given with a sentence that has none, it would read back as part of the sentence. An NMEA problem of any kind is invalid-nmea.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["nmea-data-is-its-sentence"],
+      "input": {"encode": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E", "comment": "hello", "latitude": 33.823836666666665, "longitude": -117.00620166666667, "fix": "valid", "course_degrees": 89.3, "speed_knots": 43.022, "time": "06:39:09"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-nmea"
+      }
+    },
+    {
+      "id": "encode/query-target-and-type-both-wrong",
+      "description": "A directed query whose target is not one callsign (invalid-addressee) and whose type is in lower case (invalid-code): invalid-addressee.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "directed-query", "addressee": "N0CALL", "query_type": "aprs", "target": "A B"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "encode/beam-power-code-and-locator-both-wrong",
+      "description": "A beam power code of 0 (invalid-code) and a locator of 5 characters (malformed): invalid-code.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "status", "locator": "IO91S", "symbol": "/-", "beam": {"heading_code": "B", "power_code": "0"}, "text": "Hello"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "encode/compressed-weather-with-a-course",
+      "description": "A compressed weather report's cs bytes hold its wind, so a course and speed given beside the weather want the same bytes: extension-conflict.",
+      "source": "APRS12c ch. 9, 12 (differential fuzzing 2026-11-14)",
+      "authority": "spec",
+      "input": {"encode": {"type": "position", "timestamp": "092345z", "latitude": -57.46995216918771, "longitude": -61.20281104466484, "symbol": "/_", "compressed": true, "weather": {"wind_gust_mph": 729, "humidity_percent": 19}, "course_degrees": 88, "speed_knots": 10}},
+      "expect": {
+        "refused": true,
+        "refusal": "extension-conflict"
       }
     }
   ]
