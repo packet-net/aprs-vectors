@@ -23,7 +23,7 @@ About 250 cases cover every example packet printed in APRS12c and UAP, the encod
 | pdn-aprs | Python (3.10+) | [packet-net/aprs-py](https://github.com/packet-net/aprs-py) | [PyPI `pdn-aprs`](https://pypi.org/project/pdn-aprs/) |
 | pdn-aprs | TypeScript (Node 20+, browsers) | [packet-net/aprs-ts](https://github.com/packet-net/aprs-ts) | [npm `@packet-net/pdn-aprs`](https://www.npmjs.com/package/@packet-net/pdn-aprs) |
 | pdn_aprs | C (C99, no allocation) | [packet-net/aprs-c](https://github.com/packet-net/aprs-c) | [GitHub releases](https://github.com/packet-net/aprs-c/releases): `pdn_aprs.h` + `pdn_aprs.c` |
-| aprs | Go (1.24+, standard library only) | [packet-net/aprs-go](https://github.com/packet-net/aprs-go) | Go module `github.com/packet-net/aprs-go` |
+| aprs | Go (1.24+, standard library only) | [packet-net/aprs-go](https://github.com/packet-net/aprs-go) | [pkg.go.dev `github.com/packet-net/aprs-go`](https://pkg.go.dev/github.com/packet-net/aprs-go) |
 
 This repository's CI also runs each implementation against the vectors in every change, so a pull request shows which implementations already pass a new case. A failure there does not break an implementation, which only sees new cases when it moves its pin.
 

@@ -138,5 +138,9 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: aprs-go/go.mod
-      - run: go test -count=1 -run 'TestVectors$|TestCodesMatchTheVectors' .
+      - name: Run the vectors (fails if a test is skipped or missing)
+        run: |
+          go test -count=1 -v -run 'TestVectors$|TestCodesMatchTheVectors' . | tee out.txt
+          grep -q -- '--- PASS: TestVectors ' out.txt
+          grep -q -- '--- PASS: TestCodesMatchTheVectors ' out.txt
         working-directory: aprs-go
