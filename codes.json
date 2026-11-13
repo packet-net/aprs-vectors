@@ -38,7 +38,7 @@
     },
     {
       "id": "invalid-ax25-address-characters",
-      "meaning": "An AX.25 address has characters other than upper-case letters and digits.",
+      "meaning": "An AX.25 address has lower-case letters; any other character that is not an upper-case letter or digit makes it invalid-address.",
       "tolerable": true
     },
     {

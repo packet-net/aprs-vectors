@@ -4,6 +4,8 @@ builders (see the README, "Comparing implementations").
 
   python3 tools/generate.py data.jsonl.gz --count 1000000 --seed 1 [--inexact 0.05]
   python3 tools/generate.py recipes.jsonl.gz --recipes --count 1000000 --seed 1
+  python3 tools/generate.py faults.jsonl.gz --faults --count 1000000 --seed 1 [--nonfinite 0.01]
+  python3 tools/generate.py faults-recipes.jsonl.gz --recipes --faults --count 1000000 --seed 1
 
 Data: one {"n", "data", "exact"} object per line. The data is recombined from the cases' own
 decoded data (so every shape is one a decoder produces): a report takes parts from other reports
@@ -14,6 +16,15 @@ format holds, so an encoder rounds it.
 Recipes: one {"n", "station", "report", "args"} object per line, with values as a program would
 have them (a position from a GPS receiver, a speed in km/h) and every input given, the time
 included.
+
+With --faults, every line has two or three faults on purpose, drawn from a list of single faults
+(a value at its exact bound, half a step either side of it, just past it; a field the report has
+no place for; a companion left out; a builder value given in two units), so that the refusal
+order (the README's "Refusal reasons") is exercised, which uniform data rarely does: most of its
+records have one fault or none. Such a line has "exact": false and "faults": the names of the
+faults it was given. --nonfinite gives that share of fault lines a NaN or an infinity, written as
+the non-standard JSON tokens NaN, Infinity and -Infinity (Python's json module writes and reads
+them; a dump tool that does not read them can skip those lines, so the option is off by default).
 
 The same arguments always give the same lines. Standard library only.
 """
@@ -236,10 +247,11 @@ KNOT_MPH = 1852 / 1609.344
 
 
 class DataGen:
-    def __init__(self, rng: random.Random, pool: Pool, inexact: float) -> None:
+    def __init__(self, rng: random.Random, pool: Pool, inexact: float, nonfinite: float = 0.0) -> None:
         self.rng = rng
         self.pool = pool
         self.inexact = inexact
+        self.nonfinite = nonfinite
 
     WEIGHTS = {
         "position": 22, "mic-e": 12, "object": 10, "item": 6, "weather": 5, "message": 6, "ack": 2, "reject": 1,
@@ -684,6 +696,112 @@ class DataGen:
             return f"{rng.randint(0, 23):02d}{rng.randint(0, 59):02d}{rng.randint(0, 59):02d}h"
         return f"{rng.randint(1, 31):02d}{rng.randint(0, 23):02d}{rng.randint(0, 59):02d}{kind}"
 
+    # --- faults on purpose (--faults)
+
+    # Values at and around each field's bounds: the bound, half a step either side (a half is
+    # rounded away from zero, so one side is in range and the other not), and just past it.
+    EDGES = {
+        "latitude": [90.0, -90.0, 90 + 1 / 12000, -90 - 1 / 12000, 90 - 1 / 12000, 90.0001],
+        "longitude": [180.0, -180.0, 180 + 1 / 12000, -180 - 1 / 12000, 180 - 1 / 12000, -180.0001],
+        "course_degrees": [0, 0.4, 0.5, -0.4, -0.5, 1, 360, 360.4, 360.5, 361, 359.6],
+        "speed_knots": [0, -0.4, -0.5, 999, 999.4, 999.5, 1000, 799.5, 800],
+        "altitude_feet": [999999, 999999.4, 999999.5, -99999, -99999.4, -99999.5, 0.4, -0.5],
+        "range_miles": [0, 0.4, 1.9, 1.95, 9999, 9999.5, 10000],
+        "weather.wind_direction_degrees": [0, -0.4, -0.5, 360, 360.4, 360.5, 361],
+        "weather.wind_speed_mph": [0, -0.3, -0.03, -0.5, 999, 999.5],
+        "weather.wind_gust_mph": [0, -0.5, 999, 999.4, 999.5],
+        "weather.temperature_f": [-99, -99.4, -99.5, 999, 999.4, 999.5],
+        "weather.humidity_percent": [0, 0.4, 0.5, 1, 100, 100.4, 100.5],
+        "weather.pressure_mbar": [0, 9999.9, 9999.94, 9999.95, -0.05],
+        "weather.rain_1h_in": [0, 9.99, 9.994, 9.995, -0.005],
+        "weather.luminosity_w_m2": [0, 999, 1000, 1999, 1999.4, 1999.5],
+        "weather.snow_24h_in": [0.004, 0.005, 0.995, 9.95, 9.96, 999, 999.4, 999.5],
+    }
+
+    def _faults(self, d: dict) -> list[str]:
+        """Gives the record two or three faults; returns their names."""
+        rng = self.rng
+        weather = d["type"] == "weather" or isinstance(d.get("weather"), dict)
+        positioned = d["type"] in POSITIONED
+        compressed = bool(d.get("compressed"))
+        options = []
+        for key, values in self.EDGES.items():
+            if key.startswith("weather.") and not weather:
+                continue
+            if not key.startswith("weather.") and not positioned:
+                continue
+            options.append(("edge:" + key, key, values))
+        if positioned:
+            options += [
+                ("comment-with-a-line-break", "comment", ["a\rb", "\n"]),
+                ("comment-reads-as-a-field", "comment", ["/A=001234", "PHG5132", "x !W12!", "|!!!!|"]),
+                ("ambiguity-and-dao", None, None),
+                ("phg-digit-10", "phg", [{"power": 10, "height": 1, "gain": 1, "directivity": 1}]),
+                ("phg-and-course", None, None),
+                ("area-without-its-symbol", "area", [{"shape": "open-box", "color": "red", "lat_offset": 1, "lon_offset": 1}]),
+                ("invalid-symbol", "symbol", ["x-", "/\x7f", "/", ""]),
+                ("telemetry-values", "telemetry", [{"sequence": 1, "analog": []}, {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]},
+                                                   {"sequence": 8281, "analog": [1]}, {"sequence": 1, "analog": [8281]}]),
+                ("dao-datum", "dao", [{"datum": "!", "precision": "none"}, {"datum": "1", "precision": "base91"}]),
+            ]
+            if compressed:
+                options += [("course-without-speed", None, None), ("speed-without-course", None, None)]
+            if weather:
+                options += [("weather-comment", "comment", ["hello"]), ("weather-range", "range_miles", [2, 1, 10])]
+        if d["type"] in ("object", "item"):
+            options.append(("name-length", "name", ["", "AB", "ABCDEFGHI", "ABCDEFGHIJ", "OR4F ", " OR4F"]))
+        if d["type"] in ("object", "position", "status", "weather"):
+            options.append(("timestamp-edge", "timestamp", ["002345z", "322345z", "092460z", "240000h", "235960h", "13010000", "00010000", "322345/"]))
+        if d["type"] == "object":
+            options.append(("object-without-timestamp", "timestamp", [None]))
+        if "addressee" in d:
+            options.append(("addressee-length", "addressee", ["", "ABCDEFGHI", "ABCDEFGHIJ", "A B", "A:B"]))
+        if "text" in d:
+            options.append(("text-length", "text", ["x" * 67, "x" * 68, "a{b", "a\rb", " "]))
+        if d["type"] in ("message", "bulletin", "ack", "reject"):
+            options.append(("message-id", "message_id", ["", "12345", "123456", "A-1"]))
+        if d["type"] == "telemetry":
+            options += [("analog-count", "analog", [[1, 2, 3, 4], [1, 2, 3, 4, 5, 6], []]),
+                        ("bits", "bits", ["0000000", "000000000", "0000000x", None])]
+        if not options:
+            return []
+        names = []
+        used = set()
+        for _ in range(rng.choice([2, 2, 3])):
+            free = [o for o in options if o[1] is None or o[1] not in used]
+            if not free:
+                break
+            name, key, values = rng.choice(free)
+            if key is not None:
+                used.add(key)
+                value = copy.deepcopy(rng.choice(values))
+                obj, leaf = (d.setdefault("weather", {}), key[8:]) if key.startswith("weather.") else (d, key)
+                if value is None:
+                    obj.pop(leaf, None)
+                else:
+                    obj[leaf] = value
+            elif name == "ambiguity-and-dao":
+                d["ambiguity"] = rng.randint(1, 4)
+                d["dao"] = {"datum": "W", "precision": rng.choice(["none", "thousandths", "base91"])}
+            elif name == "phg-and-course":
+                d["phg"] = {"power": 5, "height": 1, "gain": 3, "directivity": 2}
+                d["course_degrees"], d["speed_knots"] = 88, 36
+            elif name == "course-without-speed":
+                d["course_degrees"] = 88
+                d.pop("speed_knots", None)
+            elif name == "speed-without-course":
+                d["speed_knots"] = 10
+                d.pop("course_degrees", None)
+            names.append(name)
+        if self.nonfinite and rng.random() < self.nonfinite:
+            numeric = [k for k in self.EDGES if (k[8:] in d.get("weather", {}) if k.startswith("weather.") else k in d)]
+            if numeric:
+                key = rng.choice(numeric)
+                obj, leaf = (d["weather"], key[8:]) if key.startswith("weather.") else (d, key)
+                obj[leaf] = rng.choice([math.nan, math.inf, -math.inf])
+                names.append("non-finite:" + key)
+        return names
+
     # --- values between steps
 
     def _nudge(self, d: dict) -> bool:
@@ -787,6 +905,51 @@ class RecipeGen:
             args["telemetry"] = {"sequence": rng.randint(0, 8280), "analog": [rng.randint(0, 8280) for _ in range(n)]}
             if n == 5 and rng.random() < 0.5:
                 args["telemetry"]["digital"] = rng.randint(0, 255)
+
+    # Builder faults (--faults): values at their bounds, and a value given in two units.
+    RECIPE_EDGES = {
+        "course_degrees": [0, 0.4, 0.5, 360, 360.4, 360.5, -0.5],
+        "speed_knots": [-0.5, 999.4, 999.5, 799.5],
+        "speed_kmh": [-1, 1850.1, 1852 * 999.6],
+        "altitude_feet": [999999.4, 999999.5, -99999.5],
+        "altitude_m": [304799.9, 304800, -30480.2],
+        "latitude": [90.0, 90.00001, -90.00001],
+        "longitude": [180.0, 180.00001, -180.00001],
+        "wind_direction_degrees": [360.4, 360.5, -0.5],
+        "humidity_percent": [0.4, 0.5, 100.4, 100.5],
+        "temperature_c": [-73.1, 537.3],
+        "wind_gust_mph": [999.4, 999.5],
+    }
+    TWICE = [("altitude_feet", "altitude_m", 100.0, 30.48), ("temperature_f", "temperature_c", 77.0, 25.0),
+             ("rain_1h_in", "rain_1h_mm", 0.1, 2.54), ("speed_knots", "speed_kmh", 10.0, 18.52)]
+
+    def faults(self, recipe: dict, nonfinite: float) -> list[str]:
+        rng = self.rng
+        args = recipe["args"]
+        names = []
+        weather = recipe["report"] == "weather"
+        positioned = recipe["report"] in ("position", "object", "item", "mic-e")
+        if not weather and not positioned:
+            return names
+        wx_keys = {"wind_direction_degrees", "humidity_percent", "temperature_c", "wind_gust_mph"}
+        keys = [k for k in self.RECIPE_EDGES if (k in wx_keys) == weather and (k not in ("latitude", "longitude") or "latitude" in args)]
+        twice = [t for t in self.TWICE if (t[0] in ("temperature_f", "rain_1h_in")) == weather]
+        for _ in range(rng.choice([2, 2, 3])):
+            if rng.random() < 0.25:
+                a, b, va, vb = rng.choice(twice)
+                args[a], args[b] = va, vb
+                names.append("twice:" + a)
+                continue
+            key = rng.choice(keys)
+            args[key] = rng.choice(self.RECIPE_EDGES[key])
+            names.append("edge:" + key)
+        if nonfinite and rng.random() < nonfinite:
+            numeric = [k for k, v in args.items() if isinstance(v, (int, float)) and not isinstance(v, bool)]
+            if numeric:
+                key = rng.choice(numeric)
+                args[key] = rng.choice([math.nan, math.inf, -math.inf])
+                names.append("non-finite:" + key)
+        return names
 
     def _pick(self, good: list, bad: list, odd: float = 0.05):
         """Mostly a valid value, now and then one a builder should refuse."""
@@ -933,19 +1096,29 @@ def main() -> int:
     ap.add_argument("--count", type=int, default=1_000_000)
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--inexact", type=float, default=0.05, help="share of data lines with a value between steps")
+    ap.add_argument("--faults", action="store_true", help="two or three faults on purpose in every line, values at their bounds")
+    ap.add_argument("--nonfinite", type=float, default=0.0, help="with --faults, share of lines given a NaN or infinity")
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
     pool = Pool()
-    gen = RecipeGen(rng, pool) if args.recipes else DataGen(rng, pool, args.inexact)
+    gen = RecipeGen(rng, pool) if args.recipes else DataGen(rng, pool, args.inexact, args.nonfinite)
     with gzip.open(args.out, "wt", encoding="utf-8", compresslevel=6) as out:
         for n in range(args.count):
             if args.recipes:
                 record = {"n": n, **gen.recipe()}
+                if args.faults:
+                    record["faults"] = gen.faults(record, args.nonfinite)
             else:
                 data, exact = gen.data()
                 record = {"n": n, "data": data, "exact": exact}
-            out.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")))
+                if args.faults:
+                    names = gen._faults(data)
+                    if names:
+                        tidy(data)
+                        record["exact"] = False
+                        record["faults"] = names
+            out.write(json.dumps(record, ensure_ascii=False, separators=(",", ":"), allow_nan=bool(args.nonfinite)))
             out.write("\n")
     kind = "recipes" if args.recipes else "data objects"
     print(f"{args.out}: {args.count:,} {kind}", file=sys.stderr)

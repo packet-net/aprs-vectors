@@ -733,6 +733,21 @@
       "strict": {"rejected_by": "compression-type-reserved-bits"},
       "reencode": "refused",
       "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/dao-on-ambiguity-is-met-before-the-weather-comment",
+      "description": "A weather report with comment text and then a !DAO! on an ambiguous position: the !DAO! is lifted out before the text left is judged, so a strict decoder rejects it by dao-with-ambiguity, not weather-comment.",
+      "source": "differential fuzzing 2026-11-13",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"info": "!49  .  N/072  .  W_090/010g015t077 hello!W12!"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.5, "longitude": -72.5, "ambiguity": 4, "symbol": "/_", "dao": {"datum": "W", "precision": "thousandths"}, "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 10, "wind_gust_mph": 15, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "dao-with-ambiguity"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     }
   ]
 }

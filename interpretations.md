@@ -311,6 +311,42 @@ Snowfall has three forms (the README's Encoding rule): it is rounded to hundredt
 
 **Decision:** a builder writes `` ` `` when the program says the station can message and `'` when it does not, unless the program gives a device type, which says it instead.
 
+## Which refusal a record with two faults gets
+
+- APRS12c says what may be written, not what an encoder says when it declines. The vectors give each refusal a reason code (`codes.json`, `refusals`), and data can have several faults at once.
+
+**Decision:** the refusal names the first code that applies in the README's "Refusal reasons" order: the header first, then a field wrong on its own, then what the frame cannot hold, then the symbol and companions, then text that reads back as a field, and the fallback last. A field the report has no place for is `field-not-allowed`, and its own checks (range, characters, length) do not run, so two faults in one field are one fault; faults in different fields are judged by the order alone. One code wins whatever order a library checks in, so a program can act on it. `tools/precedence.py` makes a case for every pair of codes that one record can hold, each fault on its own field, and lists the pairs no record can hold.
+
+## A wind direction is judged in whole degrees
+
+- APRS12c gives a wind direction in whole degrees wherever it is written (`DDD/SSS`, `cDDD`, ch. 7 and 12), 0 to 360; in a compressed weather report the cs bytes hold it in 4-degree steps (ch. 9). The README's builder rule already decides a course's range in whole degrees and then rounds it once to its field's step.
+- A value between steps is rounded to the nearest step and refused only when that is outside the field ([above](#values-between-steps-are-rounded)). Read alone, that would write 360.5 degrees as north in cs bytes (its nearest 4-degree step is 360) while refusing it uncompressed (361).
+
+**Decision:** whether a wind direction is in range is decided in whole degrees, as a course's is, so the same value is in range or not whatever form it is written in: 360.4 is 360 and 360.5 is 361, refused as `value-out-of-range`; -0.4 is 0 and -0.5 is -1, refused. A direction in range is then rounded once, from the value given, to its field's step: 360.4 in cs bytes is north, c = 0. Unlike a course, a wind direction of 0 is a direction, not unknown. "The encoder rounds; it does not refuse" ([above](#re-encoding-into-compressed-bytes-rounds)) holds for a value in range.
+
+## `!DAO!` on an ambiguous position
+
+- APRS12c ch. 6: ambiguity deliberately hides digits of a position. The `!DAO!` extension adds a datum and, with letters for A and O, more digits; spaces for A and O "imply NO ADDED precision".
+- The spec says nothing of the two together.
+
+**Decision:** a `!DAO!` on an ambiguous position reads with `dao-with-ambiguity` (tolerated) whatever its precision, `!W  !` included, and an encoder refuses it (`field-not-allowed`). One rule for every precision keeps it simple to check; a station hiding its position has no use for a datum that refines it, and a decoder cannot tell a `!W  !` sent on purpose from one a tracker appends to every report.
+
+## Third-party packets nest at most four deep
+
+- APRS12c ch. 17: an IGate wraps a packet in a third-party header, and "the original Information field must not be changed", so a packet that is already a third-party packet can be wrapped again. A reader removes "everything up to and including the }" and processes what is left, which may hold another. The spec sets no limit.
+- In two APRS-IS captures (2026-09-26 and 27, 18 million packets) 525 packets are third-party packets, every one of them one level deep; none holds another.
+- With no limit, a line of `A>B:}` repeated a few thousand times makes a decoder recurse once per level, and one that copies each inner packet's text uses memory in the square of the line's length.
+
+**Decision:** a decoder reads at most four levels of third-party header: a packet in a third-party packet in a third-party packet, and so on, four `}` in all. The real traffic needs one, the spec's rewrapping a second, and four leaves room for two more gateways in a row. A fifth `}` is not read: the packet whose information field it starts is decoded as one with an unusable third-party header is (`unrecognized`, `malformed`, with `error:invalid-third-party` among its own diagnostics), and the four levels above it are kept. It re-encodes as received, like any third-party packet whose inner packet holds an error.
+
+## An AX.25 address is letters and digits
+
+- AX.25 2.2 section 3.12: "The call sign is made up of upper-case alpha and numeric ASCII characters only", padded with spaces. A frame can carry any 7-bit character there.
+- A decoded packet is often written out as TNC2 text (an IGate passing what it hears on to APRS-IS), where `,`, `:`, `>`, `*` and `-` are structure: a call holding one would write a header that reads back as a different one (`APRS,q` as a destination makes a path entry), and an IGate would pass that on.
+- The vectors already tolerate lower-case letters in an AX.25 address (`invalid-ax25-address-characters`), which TNC2 text carries without harm.
+
+**Decision:** in an AX.25 address, after the shift, each character is an upper-case letter or a digit, then spaces to the end (or NULs, `nul-padded-address`). A lower-case letter is tolerated with `invalid-ax25-address-characters`. Anything else (punctuation, a space before the last character, a control character) makes the address unusable: the header is `invalid-address`, an error in both modes, and nothing is decoded, so a TNC2 line is never written from it.
+
 ## Where these decisions and Ham::APRS::FAP differ
 
 Found by comparing Packet.Aprs with FAP on the same 33,000 APRS-IS packets (see [aprs-cs's validation notes](https://github.com/packet-net/aprs-cs/blob/main/docs/aprs-validation.md#5-against-hamaprsfap)):
