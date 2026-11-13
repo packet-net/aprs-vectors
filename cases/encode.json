@@ -1996,6 +1996,18 @@
         "refused": true,
         "refusal": "not-encodable"
       }
+    },
+    {
+      "id": "encode/third-party-nested-five-deep",
+      "description": "Third-party packets nested five deep: a decoder reads four levels, so the fifth header would read back unusable (invalid-third-party). The header cannot be written as given: invalid-third-party-header, refused before anything inside it is looked at.",
+      "source": "library round 3 2026-11-13",
+      "authority": "interpretation",
+      "interpretations": ["third-party-packets-nest-at-most-four-deep"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "status", "text": "hi"}}}}}}}}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
     }
   ]
 }
