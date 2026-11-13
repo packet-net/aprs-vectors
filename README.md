@@ -23,6 +23,7 @@ About 250 cases cover every example packet printed in APRS12c and UAP, the encod
 | pdn-aprs | Python (3.10+) | [packet-net/aprs-py](https://github.com/packet-net/aprs-py) | [PyPI `pdn-aprs`](https://pypi.org/project/pdn-aprs/) |
 | pdn-aprs | TypeScript (Node 20+, browsers) | [packet-net/aprs-ts](https://github.com/packet-net/aprs-ts) | [npm `@packet-net/pdn-aprs`](https://www.npmjs.com/package/@packet-net/pdn-aprs) |
 | pdn_aprs | C (C99, no allocation) | [packet-net/aprs-c](https://github.com/packet-net/aprs-c) | [GitHub releases](https://github.com/packet-net/aprs-c/releases): `pdn_aprs.h` + `pdn_aprs.c` |
+| aprs | Go (1.24+, standard library only) | [packet-net/aprs-go](https://github.com/packet-net/aprs-go) | [pkg.go.dev `github.com/packet-net/aprs-go`](https://pkg.go.dev/github.com/packet-net/aprs-go) |
 
 This repository's CI also runs each implementation against the vectors in every change, so a pull request shows which implementations already pass a new case. A failure there does not break an implementation, which only sees new cases when it moves its pin.
 
@@ -34,7 +35,7 @@ git submodule add https://github.com/packet-net/aprs-vectors vectors
 
 The submodule pins a commit, so new cases reach an implementation only when it moves the pin on, and its own CI shows whether it still passes. Dependabot's `gitsubmodule` ecosystem can open that pull request.
 
-**Versions.** The vectors are released as tagged versions (a zip of the files is attached to each [release](https://github.com/packet-net/aprs-vectors/releases)). The five implementations above share the vectors' major and minor version: an implementation at 1.0.x passes the vectors at 1.0. A new round of rulings is a minor version for the vectors and all five together; a fix in one implementation is that implementation's own patch version; a change that breaks a public API is a new major version.
+**Versions.** The vectors are released as tagged versions (a zip of the files is attached to each [release](https://github.com/packet-net/aprs-vectors/releases)). The six implementations above share the vectors' major and minor version: an implementation at 1.0.x passes the vectors at 1.0. A new round of rulings is a minor version for the vectors and all six together; a fix in one implementation is that implementation's own patch version; a change that breaks a public API is a new major version.
 
 ## Files
 
@@ -272,8 +273,9 @@ cargo run --release --example diff_dump -- lines.hex.gz rs.jsonl.gz             
 python3 tools/diff_dump.py lines.hex.gz py.jsonl.gz                                              # aprs-py
 npm ci && npm run build && node scripts/diff-dump.mjs lines.hex.gz ts.jsonl.gz                   # aprs-ts
 zcat lines.hex.gz | build/pdn_aprs_diffdump | gzip > c.jsonl.gz                                  # aprs-c
+go run ./cmd/aprs-diffdump lines.hex.gz go.jsonl.gz                                             # aprs-go
 # here: compare them
-python3 tools/compare.py cs.jsonl.gz rs.jsonl.gz py.jsonl.gz ts.jsonl.gz c.jsonl.gz --input lines.hex.gz --json summary.json
+python3 tools/compare.py cs.jsonl.gz rs.jsonl.gz py.jsonl.gz ts.jsonl.gz c.jsonl.gz go.jsonl.gz --input lines.hex.gz --json summary.json
 ```
 
 `compare.py` needs only Python's standard library. It groups the inputs on which the implementations differ by what differs and by which implementations side together, with a count and examples for each, and exits 1 if there are any. A new implementation needs only the dump tool. Each rule a disagreement over real packets settles becomes a case in `differential.json`; one found by fuzzing, generated data or recipes becomes a case in the file for its area, with the source `differential fuzzing` and the date.

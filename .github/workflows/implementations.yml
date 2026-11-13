@@ -119,3 +119,28 @@ jobs:
         working-directory: aprs-c
       - run: build/pdn_aprs_vectors vectors tests/known-differences.txt
         working-directory: aprs-c
+
+  go:
+    name: aprs (Go)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: vectors-under-test
+      - uses: actions/checkout@v7
+        with:
+          repository: packet-net/aprs-go
+          path: aprs-go
+      - name: Use these vectors
+        run: |
+          rm -rf aprs-go/vectors
+          cp -r vectors-under-test aprs-go/vectors
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: aprs-go/go.mod
+      - name: Run the vectors (fails if a test is skipped or missing)
+        run: |
+          go test -count=1 -v -run 'TestVectors$|TestCodesMatchTheVectors' . | tee out.txt
+          grep -q -- '--- PASS: TestVectors ' out.txt
+          grep -q -- '--- PASS: TestCodesMatchTheVectors ' out.txt
+        working-directory: aprs-go
