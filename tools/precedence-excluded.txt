@@ -36,7 +36,7 @@ invalid-nmea + symbol-mismatch: no report has both: invalid-nmea is a fault only
 invalid-nmea + missing-field: no report has both: invalid-nmea is a fault only of nmea; missing-field only of capabilities, item, message, object, position, telemetry, weather
 invalid-nmea + text-reads-as-field: no report has both: invalid-nmea is a fault only of nmea; text-reads-as-field only of item, message, mic-e, object, position, status, weather
 # Codes no encode case can carry:
-not-encodable: undecoded data has no other field to hold a second fault, and no neutral form of it is held by all six libraries
+not-encodable: undecoded data holds no other field, so it meets a second fault only inside a third-party packet, which Rust and Go cannot hold; encode/nested-third-party-ending-in-undecoded-data pins that pair by hand
 invalid-address: needs a packet header, which an encode case does not give
 ax25-cannot-carry: needs a packet header, which an encode case does not give
 tnc2-cannot-carry: needs a packet header, which an encode case does not give

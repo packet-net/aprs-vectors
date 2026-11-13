@@ -354,6 +354,12 @@ Snowfall has three forms (the README's Encoding rule): it is rounded to hundredt
 
 **Decision:** the sentence is the data, and the fields are what it determines (as the data form leaves out a symbol's description). An encoder given a sentence and no fields writes the sentence; a field given beside it must agree with it, or the data is refused as `invalid-nmea`, since written it would read back with the sentence's value. A comment goes after the checksum that ends a sentence, so a comment given with a sentence that has no checksum is `invalid-nmea` too: written, it would read back as part of the sentence. This is the one place where a field left out does not mean the field is absent.
 
+## Absent text is empty text
+
+- The data form leaves out empty strings, so data with no name, addressee, query type or symbol cannot say whether the text was empty or never given.
+
+**Decision:** text left out of a report that always has it is empty text, and is judged as such: an object or item with no name is `invalid-name`, a message or other addressed report with no addressee `invalid-addressee`, a query or directed query with no type `invalid-code` (an empty type is not upper-case letters), and a positioned report with no symbol `invalid-symbol`. A field the report needs only because another is there is a missing companion, `missing-field`: a status symbol beside a locator, a message ID beside a reply-ack. A library whose own data cannot hold the record writes `unsupported` in its dump, and the record is not compared.
+
 ## Where these decisions and Ham::APRS::FAP differ
 
 Found by comparing Packet.Aprs with FAP on the same 33,000 APRS-IS packets (see [aprs-cs's validation notes](https://github.com/packet-net/aprs-cs/blob/main/docs/aprs-validation.md#5-against-hamaprsfap)):

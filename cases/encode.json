@@ -1796,6 +1796,206 @@
         "refused": true,
         "refusal": "extension-conflict"
       }
+    },
+    {
+      "id": "encode/telemetry-report-with-no-analog-values",
+      "description": "A telemetry report with an empty analog list has too few values: malformed.",
+      "source": "APRS12c ch. 13 (library round 3 2026-11-14)",
+      "authority": "spec",
+      "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [], "bits": "00000000"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "encode/mic-telemetry-with-no-analog-values",
+      "description": "T#MIC with an empty analog list has no channels at all, too few values (malformed), not an empty first channel (value-has-no-form), which needs a list to be in.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "telemetry", "sequence": "MIC", "analog": [], "bits": "00000000"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "encode/lower-case-mic-e-locator",
+      "description": "A Mic-E locator in lower case reads back in upper case, so it is not the fixed form a locator is: malformed, as in a status.",
+      "source": "APRS12c ch. 10 (library round 3 2026-11-14)",
+      "authority": "spec",
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "locator": "io91sx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "encode/lower-case-maidenhead-beacon-locator",
+      "description": "A Maidenhead beacon's locator in lower case reads back in upper case: malformed.",
+      "source": "APRS12c ch. 16 (library round 3 2026-11-14)",
+      "authority": "spec",
+      "input": {"encode": {"type": "maidenhead-beacon", "locator": "io91sx", "comment": "Hello"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "encode/gga-compressed-weather-with-wind-out-of-range",
+      "description": "A compressed weather report whose cs bytes hold a GGA altitude, with a wind direction of 360.5 that also wants them: the wind's place exists, so its own range check runs first, value-out-of-range.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "software"}, "altitude_feet": 1000, "weather": {"wind_direction_degrees": 360.5, "wind_speed_mph": 0, "wind_gust_mph": 5, "temperature_f": 77}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "encode/compressed-course-0-beside-a-range",
+      "description": "A compressed course of 0 (value-has-no-form in cs bytes) beside a range that wants the same bytes: the course is judged in the form its place has, so value-has-no-form comes first.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 0, "speed_knots": 10, "range_miles": 2}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "encode/compressed-speed-past-the-steps-beside-a-range",
+      "description": "A compressed speed of -0.3 knots, nearest a cs step below the byte (value-out-of-range), beside a range: value-out-of-range.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "speed_knots": -0.3, "range_miles": 2}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "encode/compressed-weather-with-course-0",
+      "description": "A compressed weather report with wind and a course of 0: the course is judged in cs bytes, where 0 has no form, before it is found to want the wind's place: value-has-no-form.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 0, "speed_knots": 10, "weather": {"wind_direction_degrees": 88, "wind_speed_mph": 0, "wind_gust_mph": 5, "temperature_f": 77}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "encode/position-without-a-symbol",
+      "description": "A position with no symbol: the neutral form leaves out empty text, so an absent symbol is an empty one, invalid-symbol.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["absent-text-is-empty-text"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "encode/directed-query-without-a-type",
+      "description": "A directed query with no query type: an absent type is an empty one, not upper-case letters, invalid-code.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["absent-text-is-empty-text"],
+      "input": {"encode": {"type": "directed-query", "addressee": "N0CALL"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "encode/general-query-without-a-type",
+      "description": "A general query with no query type: invalid-code, as an empty type.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["absent-text-is-empty-text"],
+      "input": {"encode": {"type": "query", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 200}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "encode/message-without-an-addressee",
+      "description": "A message with no addressee: an empty addressee, invalid-addressee.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["absent-text-is-empty-text"],
+      "input": {"encode": {"type": "message", "text": "Hello"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "encode/object-without-a-name",
+      "description": "An object with no name: an empty name, invalid-name.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["absent-text-is-empty-text"],
+      "input": {"encode": {"type": "object", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "encode/weather-with-six-telemetry-values",
+      "description": "Base-91 telemetry has no place in a weather report, which has no comment: field-not-allowed, and its own checks (six values, too-long) do not run.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "field-not-allowed"
+      }
+    },
+    {
+      "id": "encode/weather-with-telemetry-sequence-out-of-range",
+      "description": "Base-91 telemetry with a sequence of 8281 on a weather report: field-not-allowed, unchecked.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "telemetry": {"sequence": 8281, "analog": [1]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "field-not-allowed"
+      }
+    },
+    {
+      "id": "encode/compressed-weather-with-a-range-and-no-wind",
+      "description": "A compressed weather report with a range and no wind: the cs bytes carry the range and the wind is unknown, so it is written (as corpus/1149 re-encodes).",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["wind-in-a-compressed-weather-position"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 2, "weather": {"wind_gust_mph": 5, "temperature_f": 77}}},
+      "expect": {
+        "info": "!/5L!!<*e8_{!Cg005t077"
+      }
+    },
+    {
+      "id": "encode/nested-third-party-ending-in-undecoded-data",
+      "description": "A third-party packet whose inner header cannot be written as given (invalid-third-party-header) holding one whose data is undecoded (not-encodable): not-encodable, first in the order.",
+      "source": "library round 3 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "A", "destination": "B", "path": ["TCPIP", "G4ABC*"], "data": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "unrecognized", "reason": "malformed"}}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "not-encodable"
+      }
     }
   ]
 }

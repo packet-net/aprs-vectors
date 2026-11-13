@@ -43,7 +43,7 @@ ORDER = [
 
 # Codes no encode case can carry, each for one reason (the README's "Refusal reasons").
 NO_CASE = {
-    "not-encodable": "undecoded data has no other field to hold a second fault, and no neutral form of it is held by all six libraries",
+    "not-encodable": "undecoded data holds no other field, so it meets a second fault only inside a third-party packet, which Rust and Go cannot hold; encode/nested-third-party-ending-in-undecoded-data pins that pair by hand",
     "invalid-address": "needs a packet header, which an encode case does not give",
     "ax25-cannot-carry": "needs a packet header, which an encode case does not give",
     "tnc2-cannot-carry": "needs a packet header, which an encode case does not give",
