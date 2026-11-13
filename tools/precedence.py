@@ -41,9 +41,9 @@ ORDER = [
     "does-not-read-back",
 ]
 
-# Codes no encode case can carry, each for one reason (the README's "Refusal reasons").
+# Codes the generator makes no pairs with, each for one reason (a hand-written case may still carry one).
 NO_CASE = {
-    "not-encodable": "undecoded data holds no other field, so it meets a second fault only inside a third-party packet, which Rust and Go cannot hold; encode/nested-third-party-ending-in-undecoded-data pins that pair by hand",
+    "not-encodable": "undecoded data holds no other field, so it meets a second fault only inside a third-party packet, which Rust and Go cannot hold, so the generator makes no pairs with it; encode/nested-third-party-ending-in-undecoded-data pins the pair with invalid-third-party-header by hand",
     "invalid-address": "needs a packet header, which an encode case does not give",
     "ax25-cannot-carry": "needs a packet header, which an encode case does not give",
     "tnc2-cannot-carry": "needs a packet header, which an encode case does not give",
@@ -473,7 +473,7 @@ def main() -> int:
                 f"# {len(document['cases']) - len(decode_cases())} pair cases for {len(codes) * (len(codes) - 1) // 2} pairs of the "
                 f"{len(codes)} codes an encode case can carry; {len(impossible)} pairs no record can hold:\n"
                 + "".join(f"{a} + {b}: {why}\n" for a, b, why in impossible)
-                + "# Codes no encode case can carry:\n"
+                + "# Codes the generator pairs with no other (each with the reason; a hand-written case may still carry one):\n"
                 + "".join(f"{code}: {why}\n" for code, why in NO_CASE.items()))
     gaps = [p for p in impossible if p[2].startswith("GAP")]
     if args.check:

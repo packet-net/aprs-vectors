@@ -356,9 +356,9 @@ Snowfall has three forms (the README's Encoding rule): it is rounded to hundredt
 
 ## Absent text is empty text
 
-- The data form leaves out empty strings, so data with no name, addressee, query type or symbol cannot say whether the text was empty or never given.
+- The data form leaves out empty strings, so data with no object or item name, addressee, query type or positioned symbol cannot say whether the text was empty or never given.
 
-**Decision:** text left out of a report that always has it is empty text, and is judged as such: an object or item with no name is `invalid-name`, a message or other addressed report with no addressee `invalid-addressee`, a query or directed query with no type `invalid-code` (an empty type is not upper-case letters), and a positioned report with no symbol `invalid-symbol`. A field the report needs only because another is there is a missing companion, `missing-field`: a status symbol beside a locator, a message ID beside a reply-ack. A library whose own data cannot hold the record writes `unsupported` in its dump, and the record is not compared.
+**Decision:** these four fields only are read as empty text when absent: an object or item with no name is `invalid-name`, a message or other addressed report with no addressee `invalid-addressee`, a query or directed query with no type `invalid-code` (an empty type is not upper-case letters), and a positioned report with no symbol `invalid-symbol`. Every other required field left out stays `missing-field`, as codes.json and the cases already give it: an object's timestamp, a telemetry report's bits, a capability, and a field needed only because another is there (a status symbol beside a locator, a message ID beside a reply-ack). A library whose own data cannot hold the record writes `unsupported` in its dump, and the record is not compared.
 
 ## Where these decisions and Ham::APRS::FAP differ
 
