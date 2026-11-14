@@ -1,0 +1,10 @@
+cases-dec: decode: 1,960 lines; 1,959 agree; 1 differ. 5 buckets.
+cases-enc: encode: 2,261 lines; 2,260 agree; 1 differ. 1 buckets.
+enc: encode: 1,000,000 lines; 1,000,000 agree; 0 differ. 0 buckets.
+build: build: 1,000,000 lines; 1,000,000 agree; 0 differ. 0 buckets.
+faults: encode: 1,000,000 lines; 993,676 agree; 6,324 differ. 7 buckets.
+faults-build: build: 1,000,000 lines; 873,823 agree; 126,177 differ. 68 buckets.
+nonfinite-py-c-go: encode: 200,000 lines; 198,768 agree; 1,232 differ. 5 buckets.
+fuzz: decode: 2,000,000 lines; 1,999,973 agree; 27 differ. 29 buckets.
+capture (11 chunks of 1.1M): 11,094,522 lines, all agree, 0 differ
+nonfinite (cs, rs, ts dump tools cannot read NaN/Infinity tokens): see nonfinite-py-c-go.txt

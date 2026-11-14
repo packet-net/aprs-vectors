@@ -1,0 +1,73 @@
+encode: 1,000,000 lines; 993,676 agree; 6,324 differ. 7 buckets.
+unsupported (left out): c timestamp is longer than the C field holds 17,814, c symbol is not two characters U+0000-U+00FF 17,061, rs symbol: missing, and this crate has no value for its absence 16,990, rs symbol: not a table and a code 16,947, go symbol: not a table and a code 16,947, rs path: not an address 9,822, go path: not an address 9,822, cs the data cannot be held as Packet.Aprs data: 'sequence' is required 6,147, py NeutralFormError: telemetry: TelemetryReport.__init__() missing 1 required positional argument: 'sequence' 6,147, c bits is longer than the C field holds 6,003, rs packet.data: undecoded, and its bytes are not in the neutral form 3,574, go packet.data: undecoded, and its bytes are not in the neutral form 3,574, c bearing_degrees does not fit the C field (a whole number of limited size) 3,571, rs bearing_degrees: not a whole number in the range this crate holds 3,544, go bearing_degrees: not a whole number in the range this package holds 3,544, c quality does not fit the C field (a whole number of limited size) 2,331, rs quality: not a whole number in the range this crate holds 2,315, go quality: not a whole number in the range this package holds 2,315, py NeutralFormError: ack: Ack.__init__() got an unexpected keyword argument 'message_id' 763, py NeutralFormError: reject: Reject.__init__() got an unexpected keyword argument 'message_id' 154
+
+5,972  [third-party] refusal: cs+py+ts | c
+    line 14: {"n":14,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"position","messaging":true,"latitude":-16.247666666666667,"longitude":-5.825333333333333,"symbol":"La","telemetry":{"sequence":401,"analog":[405]}
+      cs+py+ts         "invalid-third-party-header"
+      c                "invalid-timestamp"
+    line 54: {"n":54,"data":{"type":"third-party","packet":{"source":"PY2SER-R","destination":"AVRS","path":["TC+IP*"],"data":{"type":"position","latitude":-58.50197151152716,"longitude":129.9130382278973,"symbol":"/v","compressed":true,"compression":{"
+      cs+py+ts         "invalid-third-party-header"
+      c                "field-not-allowed"
+    line 218: {"n":218,"data":{"type":"third-party","packet":{"source":"N0ZO-0","destination":"APX220","path":["TC+IP*"],"data":{"type":"position","latitude":33.161833333333334,"longitude":-86.71966666666667,"symbol":"/_","weather":{"wind_direction_degre
+      cs+py+ts         "invalid-third-party-header"
+      c                "value-out-of-range"
+
+301  [third-party] refusal: cs+ts | c
+    line 1340: {"n":1340,"data":{"type":"third-party","packet":{"source":"WHO-IS","destination":"APJIW4","path":["TC+IP*"],"data":{"type":"ack","addressee":"ABCDEFGHI","acked_id":"0","message_id":"123456"}}},"exact":false,"faults":["inner:addressee-length
+      cs+ts            "invalid-third-party-header"
+      c                "field-not-allowed"
+    line 2899: {"n":2899,"data":{"type":"third-party","packet":{"source":"WHO-IS","destination":"APJIW4","path":["TC+IP*"],"data":{"type":"ack","addressee":"A:B","acked_id":"0","message_id":"12345"}}},"exact":false,"faults":["inner:message-id","inner-path
+      cs+ts            "invalid-third-party-header"
+      c                "invalid-addressee"
+    line 7459: {"n":7459,"data":{"type":"third-party","packet":{"source":"WHO-IS","destination":"APJIW4","path":["TC+IP*"],"data":{"type":"ack","addressee":"A:B","acked_id":"0","message_id":"A-1"}}},"exact":false,"faults":["inner-path","inner:addressee-le
+      cs+ts            "invalid-third-party-header"
+      c                "invalid-addressee"
+
+42  [third-party] refusal: c | ts
+    line 68459: {"n":68459,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"telemetry","analog":[1,2,3,4,5,6],"bits":"00000000","comment":"n"},"path":["TC+IP*"]}},"exact":false,"faults":["inner:analog-count","inner-pat
+      ts               "invalid-third-party-header"
+      c                "too-long"
+    line 113452: {"n":113452,"data":{"type":"third-party","packet":{"source":"PY2SP_R-R","destination":"APRS","path":["TC+IP*"],"data":{"type":"telemetry","analog":[208,310.1,1,0,999],"bits":"10000000","comment":"\n"}}},"exact":false,"faults":["inner-path",
+      ts               "invalid-third-party-header"
+      c                "invalid-character"
+    line 160968: {"n":160968,"data":{"type":"third-party","packet":{"source":"M0LTE-1","destination":"B","data":{"type":"telemetry","analog":[],"bits":"0000000x"},"path":["TC+IP*"]}},"exact":false,"faults":["inner-path","inner:analog-count"]}
+      ts               "invalid-third-party-header"
+      c                "malformed"
+
+5  [position] result: cs+py+ts | rs+c+go
+    line 412125: {"n":412125,"data":{"type":"position","messaging":true,"latitude":43.46125756708652,"longitude":-1.36065272520122,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":-99999.4,
+      cs+py+ts         written
+      rs+c+go          refused
+    line 488475: {"n":488475,"data":{"type":"position","latitude":-26.022335046701983,"longitude":52.10774271118274,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":-99999,"weather":{"tempe
+      cs+py+ts         written
+      rs+c+go          refused
+    line 622061: {"n":622061,"data":{"type":"position","latitude":-71.84234208218919,"longitude":156.55089439943714,"symbol":"A_","compressed":true,"compression":{"fix":"old","source":"gga","origin":"digipeater-conversion"},"altitude_feet":-99999,"weather":
+      cs+py+ts         written
+      rs+c+go          refused
+
+4  [position] refusal: rs+go | c
+    line 412125: {"n":412125,"data":{"type":"position","messaging":true,"latitude":43.46125756708652,"longitude":-1.36065272520122,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":-99999.4,
+      rs+go            "text-reads-as-field"
+      c                "does-not-read-back"
+    line 488475: {"n":488475,"data":{"type":"position","latitude":-26.022335046701983,"longitude":52.10774271118274,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":-99999,"weather":{"tempe
+      rs+go            "text-reads-as-field"
+      c                "does-not-read-back"
+    line 622061: {"n":622061,"data":{"type":"position","latitude":-71.84234208218919,"longitude":156.55089439943714,"symbol":"A_","compressed":true,"compression":{"fix":"old","source":"gga","origin":"digipeater-conversion"},"altitude_feet":-99999,"weather":
+      rs+go            "text-reads-as-field"
+      c                "does-not-read-back"
+
+2  [position] refusal: cs+rs+py+ts+go | c
+    line 72774: {"n":72774,"data":{"type":"position","latitude":45.88342880244457,"longitude":10.178323348891922,"symbol":"/#","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":836.5388541992596,"weather
+      cs+rs+py+ts+go   "extension-conflict"
+      c                "field-not-allowed"
+    line 968766: {"n":968766,"data":{"type":"position","latitude":45.88342880244457,"longitude":10.178323348891922,"symbol":"/j","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":836.5388541992596,"weathe
+      cs+rs+py+ts+go   "extension-conflict"
+      c                "symbol-mismatch"
+
+2  [position] result: cs+py+ts+c | rs+go
+    line 588185: {"n":588185,"data":{"type":"position","messaging":true,"latitude":89.99991666666666,"longitude":125.19773394307555,"symbol":"/_","compressed":true,"compression":{"fix":"old","source":"gga","origin":"tnc-beacon-text"},"altitude_feet":-0.5,"w
+      cs+py+ts+c       written
+      rs+go            refused
+    line 866002: {"n":866002,"data":{"type":"position","latitude":-61.40821314376021,"longitude":-71.58040144279991,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":-0.5,"weather":{"rain_1h
+      cs+py+ts+c       written
+      rs+go            refused

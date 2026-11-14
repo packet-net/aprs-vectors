@@ -1,0 +1,206 @@
+decode: 2,000,000 lines; 1,999,973 agree; 27 differ. 29 buckets.
+
+19  [third-party] api.ax25: cs+rs+py+ts+go | c
+    line 73719: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "82a0b4606062e09c60868298986103f07d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e4
+      c                "82a0b4606062e09c60868298986103f0"
+    line 81388: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "82a0b4606062e09c60868298986103f07d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e4
+      c                "82a0b4606062e09c60868298986103f0"
+    line 192164: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "82a0b4606062e09c60868298986103f07d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e4
+      c                "82a0b4606062e09c60868298986103f0"
+
+19  [third-party] api.tnc2: cs+rs+py+ts+go | c
+    line 73719: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "4e3043414c4c3e41505a3030313a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7
+      c                "4e3043414c4c3e41505a3030313a"
+    line 81388: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "4e3043414c4c3e41505a3030313a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7
+      c                "4e3043414c4c3e41505a3030313a"
+    line 192164: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "4e3043414c4c3e41505a3030313a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7
+      c                "4e3043414c4c3e41505a3030313a"
+
+19  [third-party] lenient.data: cs+rs+py+ts+go | c
+    line 73719: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"packet": {"data": {"packet": {"data": {"packet": {"data": {"packet": {"data": {"reason": "malformed", "type": "unrecognized"}, "destination": "B", "diagnostics": ["error:invalid-third-party"], "source": "A"}, "type": "third-party"}, "dest
+      c                {"reason": "malformed", "type": "unrecognized"}
+    line 81388: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"packet": {"data": {"packet": {"data": {"packet": {"data": {"packet": {"data": {"reason": "malformed", "type": "unrecognized"}, "destination": "B", "diagnostics": ["error:invalid-third-party"], "source": "A"}, "type": "third-party"}, "dest
+      c                {"reason": "malformed", "type": "unrecognized"}
+    line 192164: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"packet": {"data": {"packet": {"data": {"packet": {"data": {"packet": {"data": {"reason": "malformed", "type": "unrecognized"}, "destination": "B", "diagnostics": ["error:invalid-third-party"], "source": "A"}, "type": "third-party"}, "dest
+      c                {"reason": "malformed", "type": "unrecognized"}
+
+19  [third-party] reencode: cs+rs+py+ts+go | c
+    line 73719: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "identical"
+      c                "none"
+    line 81388: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "identical"
+      c                "none"
+    line 192164: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "identical"
+      c                "none"
+
+19  [third-party] strict.data: cs+rs+py+ts+go | c
+    line 73719: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"packet": {"data": {"packet": {"data": {"packet": {"data": {"packet": {"data": {"reason": "malformed", "type": "unrecognized"}, "destination": "B", "diagnostics": ["error:invalid-third-party"], "source": "A"}, "type": "third-party"}, "dest
+      c                {"reason": "malformed", "type": "unrecognized"}
+    line 81388: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"packet": {"data": {"packet": {"data": {"packet": {"data": {"packet": {"data": {"reason": "malformed", "type": "unrecognized"}, "destination": "B", "diagnostics": ["error:invalid-third-party"], "source": "A"}, "type": "third-party"}, "dest
+      c                {"reason": "malformed", "type": "unrecognized"}
+    line 192164: N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"packet": {"data": {"packet": {"data": {"packet": {"data": {"packet": {"data": {"reason": "malformed", "type": "unrecognized"}, "destination": "B", "diagnostics": ["error:invalid-third-party"], "source": "A"}, "type": "third-party"}, "dest
+      c                {"reason": "malformed", "type": "unrecognized"}
+
+5  [unrecognized] api.ax25: cs+rs+py+ts+go | c
+    line 282382: N0CALL>APZ001:&A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "82a0b4606062e09c60868298986103f026413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e4
+      c                "82a0b4606062e09c60868298986103f0"
+    line 980454: N0CALL>APZ001:=A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "82a0b4606062e09c60868298986103f03d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e4
+      c                "82a0b4606062e09c60868298986103f0"
+    line 1135643: N0CALL>APZ001:;A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "82a0b4606062e09c60868298986103f03b413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e4
+      c                "82a0b4606062e09c60868298986103f0"
+
+5  [unrecognized] api.tnc2: cs+rs+py+ts+go | c
+    line 282382: N0CALL>APZ001:&A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "4e3043414c4c3e41505a3030313a26413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7
+      c                "4e3043414c4c3e41505a3030313a"
+    line 980454: N0CALL>APZ001:=A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "4e3043414c4c3e41505a3030313a3d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7
+      c                "4e3043414c4c3e41505a3030313a"
+    line 1135643: N0CALL>APZ001:;A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "4e3043414c4c3e41505a3030313a3b413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7
+      c                "4e3043414c4c3e41505a3030313a"
+
+5  [unrecognized] lenient.diagnostics: cs+rs+py+ts+go | c
+    line 282382: N0CALL>APZ001:&A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   ["info:reserved-data-type"]
+      c                []
+    line 980454: N0CALL>APZ001:=A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   ["error:invalid-compressed-position"]
+      c                []
+    line 1135643: N0CALL>APZ001:;A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   ["error:invalid-object-name"]
+      c                []
+
+5  [unrecognized] strict.diagnostics: cs+rs+py+ts+go | c
+    line 282382: N0CALL>APZ001:&A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   ["info:reserved-data-type"]
+      c                []
+    line 980454: N0CALL>APZ001:=A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   ["error:invalid-compressed-position"]
+      c                []
+    line 1135643: N0CALL>APZ001:;A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   ["error:invalid-object-name"]
+      c                []
+
+4  [unrecognized] api.has_errors: cs+rs+py+ts+go | c
+    line 980454: N0CALL>APZ001:=A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   true
+      c                false
+    line 1135643: N0CALL>APZ001:;A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   true
+      c                false
+    line 1347504: N0CALL>APZ001:`A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   true
+      c                false
+
+1  [unrecognized] lenient.data: cs+rs+py+ts+go | c
+    line 282382: N0CALL>APZ001:&A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"reason": "reserved-data-type", "type": "unrecognized"}
+      c                {"reason": "malformed", "type": "unrecognized"}
+
+1  [unrecognized] strict.data: cs+rs+py+ts+go | c
+    line 282382: N0CALL>APZ001:&A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"reason": "reserved-data-type", "type": "unrecognized"}
+      c                {"reason": "malformed", "type": "unrecognized"}
+
+1  [message] api.ax25: cs+rs+py+ts+go | c
+    line 295992: N0CALL>APZ001::A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "82a0b4606062e09c60868298986103f03a413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e4
+      c                "82a0b4606062e09c60868298986103f0"
+
+1  [message] api.has_warnings: cs+rs+py+ts+go | c
+    line 295992: N0CALL>APZ001::A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   true
+      c                false
+
+1  [message] api.tnc2: cs+rs+py+ts+go | c
+    line 295992: N0CALL>APZ001::A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "4e3043414c4c3e41505a3030313a3a413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7
+      c                "4e3043414c4c3e41505a3030313a"
+
+1  [message] lenient.data: cs+rs+py+ts+go | c
+    line 295992: N0CALL>APZ001::A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"addressee": "A>B", "text": "}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:
+      c                {"reason": "malformed", "type": "unrecognized"}
+
+1  [message] lenient.diagnostics: cs+rs+py+ts+go | c
+    line 295992: N0CALL>APZ001::A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   ["warning:unpadded-addressee"]
+      c                []
+
+1  [message] reencode: cs+rs+py+ts+go | c
+    line 295992: N0CALL>APZ001::A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "refused"
+      c                "none"
+
+1  [message] strict.diagnostics: cs+rs+py+ts+go | c
+    line 295992: N0CALL>APZ001::A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   ["error:unpadded-addressee"]
+      c                []
+
+1  [user-defined] api.ax25: cs+rs+py+ts+go | c
+    line 300678: N0CALL>APZ001:{A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "82a0b4606062e09c60868298986103f07b413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e4
+      c                "82a0b4606062e09c60868298986103f0"
+
+1  [user-defined] api.tnc2: cs+rs+py+ts+go | c
+    line 300678: N0CALL>APZ001:{A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "4e3043414c4c3e41505a3030313a7b413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7
+      c                "4e3043414c4c3e41505a3030313a"
+
+1  [user-defined] lenient.data: cs+rs+py+ts+go | c
+    line 300678: N0CALL>APZ001:{A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"data": "B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>
+      c                {"reason": "malformed", "type": "unrecognized"}
+
+1  [user-defined] reencode: cs+rs+py+ts+go | c
+    line 300678: N0CALL>APZ001:{A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "identical"
+      c                "none"
+
+1  [user-defined] strict.data: cs+rs+py+ts+go | c
+    line 300678: N0CALL>APZ001:{A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"data": "B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>
+      c                {"reason": "malformed", "type": "unrecognized"}
+
+1  [test] api.ax25: cs+rs+py+ts+go | c
+    line 1653361: N0CALL>APZ001:,A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "82a0b4606062e09c60868298986103f02c413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e4
+      c                "82a0b4606062e09c60868298986103f0"
+
+1  [test] api.tnc2: cs+rs+py+ts+go | c
+    line 1653361: N0CALL>APZ001:,A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "4e3043414c4c3e41505a3030313a2c413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7d413e423a7
+      c                "4e3043414c4c3e41505a3030313a"
+
+1  [test] lenient.data: cs+rs+py+ts+go | c
+    line 1653361: N0CALL>APZ001:,A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"data": "A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      c                {"reason": "malformed", "type": "unrecognized"}
+
+1  [test] reencode: cs+rs+py+ts+go | c
+    line 1653361: N0CALL>APZ001:,A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   "identical"
+      c                "none"
+
+1  [test] strict.data: cs+rs+py+ts+go | c
+    line 1653361: N0CALL>APZ001:,A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      cs+rs+py+ts+go   {"data": "A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}A>B:}
+      c                {"reason": "malformed", "type": "unrecognized"}

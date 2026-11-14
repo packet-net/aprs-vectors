@@ -1,0 +1,10 @@
+cases-dec: decode: 1,960 lines; 1,959 agree; 1 differ. 5 buckets.
+cases-enc: encode: 2,266 lines; 2,266 agree; 0 differ. 0 buckets.
+faults: encode: 1,000,000 lines; 1,000,000 agree; 0 differ. 0 buckets.
+faults-build: build: 1,000,000 lines; 1,000,000 agree; 0 differ. 0 buckets.
+nonfinite: encode: 1,000,000 lines; 1,000,000 agree; 0 differ. 0 buckets.
+nonfinite-build: build: 1,000,000 lines; 1,000,000 agree; 0 differ. 0 buckets.
+fuzz: decode: 2,000,000 lines; 1,999,961 agree; 39 differ. 27 buckets.
+spot: decode: 1,100,000 lines; 1,100,000 agree; 0 differ. 0 buckets.
+
+Note: the only differences (case 1904 and the 39 fuzz lines) are lines whose information field is over 512 bytes, which is C's documented size limit (case 1904 is a 10,017-byte line nested 2000 deep). The examples in fuzz.txt are truncated. Apart from that, run 2 is clean.

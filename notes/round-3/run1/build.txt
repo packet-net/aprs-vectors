@@ -1,0 +1,2 @@
+build: 1,000,000 lines; 1,000,000 agree; 0 differ. 0 buckets.
+unsupported (left out): c comment: the builder takes text without NUL 3,183, c text: the builder takes text without NUL 1,084, c text: longer than the C data's text holds (1024 bytes) 3, c comment: longer than the C data's text holds (1024 bytes) 2

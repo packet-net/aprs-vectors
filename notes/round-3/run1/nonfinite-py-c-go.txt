@@ -1,0 +1,39 @@
+encode: 200,000 lines; 198,768 agree; 1,232 differ. 5 buckets.
+unsupported (left out): c timestamp is longer than the C field holds 3,536, c symbol is not two characters U+0000-U+00FF 3,389, go symbol: not a table and a code 3,365, go path: not an address 1,985, py NeutralFormError: telemetry: TelemetryReport.__init__() missing 1 required positional argument: 'sequence' 1,277, c the line is not {"n", "data", "exact"} 1,199, go not a JSON object 1,199, c bits is longer than the C field holds 1,187, c bearing_degrees does not fit the C field (a whole number of limited size) 779, go bearing_degrees: not a whole number in the range this package holds 774, go packet.data: undecoded, and its bytes are not in the neutral form 722, c quality does not fit the C field (a whole number of limited size) 460, go quality: not a whole number in the range this package holds 457, py NeutralFormError: ack: Ack.__init__() got an unexpected keyword argument 'message_id' 148, py NeutralFormError: reject: Reject.__init__() got an unexpected keyword argument 'message_id' 43, c comment is longer than the C field holds 1
+
+1,228  [third-party] refusal: c | py
+    line 56: {"n":56,"data":{"type":"third-party","packet":{"source":"PY2SP_R-R","destination":"APRS","path":["TC+IP*"],"data":{"type":"position","timestamp":"092345z","latitude":24.4905,"longitude":58.713,"symbol":"/>","comment":"Test","range_miles":80
+      py               "invalid-third-party-header"
+      c                "value-out-of-range"
+    line 396: {"n":396,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"object","name":"HN","timestamp":"210021z","latitude":36.99033145545329,"longitude":175.25219071420696,"symbol":"Lk","compressed":true,"compressio
+      py               "invalid-third-party-header"
+      c                "value-out-of-range"
+    line 519: {"n":519,"data":{"type":"third-party","packet":{"source":"N0ZO-0","destination":"APX220","path":["TC+IP*"],"data":{"type":"position","messaging":true,"latitude":-66.80816666666666,"longitude":-9.001666666666667,"symbol":"/","course_degrees
+      py               "invalid-third-party-header"
+      c                "value-out-of-range"
+
+2  [position] refusal: c | go
+    line 170128: {"n":170128,"data":{"type":"position","latitude":-90.0,"longitude":-106.5069068532996,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":-99999.4,"weather":{"temperature_f":8
+      c                "does-not-read-back"
+      go               "text-reads-as-field"
+    line 196686: {"n":196686,"data":{"type":"position","latitude":-90.0,"longitude":-162.94706058394544,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":-99999.5,"weather":{"temperature_f":
+      c                "does-not-read-back"
+      go               "text-reads-as-field"
+
+2  [position] result: c+go | py
+    line 170128: {"n":170128,"data":{"type":"position","latitude":-90.0,"longitude":-106.5069068532996,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":-99999.4,"weather":{"temperature_f":8
+      py               written
+      c+go             refused
+    line 196686: {"n":196686,"data":{"type":"position","latitude":-90.0,"longitude":-162.94706058394544,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":-99999.5,"weather":{"temperature_f":
+      py               written
+      c+go             refused
+
+1  [position] refusal: py+go | c
+    line 38122: {"n":38122,"data":{"type":"position","latitude":48.3131920635504,"longitude":11.669715377789913,"symbol":"/>","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":1547.9051628840662,"weather
+      py+go            "extension-conflict"
+      c                "field-not-allowed"
+
+1  [position] result: py+c | go
+    line 48426: {"n":48426,"data":{"type":"position","messaging":true,"latitude":-82.92177483290718,"longitude":98.43172689708763,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":0.4,"weat
+      py+c             written
+      go               refused

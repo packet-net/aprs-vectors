@@ -1,0 +1,346 @@
+encode: 2,266 lines; 2,266 agree; 0 differ. 0 buckets.
+unsupported (left out): cs the data cannot be held as Packet.Aprs data: no neutral reader for 'unrecognized' data 165, rs packet.data: undecoded, and its bytes are not in the neutral form 4, go packet.data: undecoded, and its bytes are not in the neutral form 4, rs symbol: missing, and this crate has no value for its absence 1, cs the data cannot be held as Packet.Aprs data: '' is not a valid APRS address 1
+
+Each on its own: 192 problems
+
+7  cs [position] written bytes decode to different data: weather
+    line 62: {"n": 62, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "pressure_mbar":
+    line 63: {"n": 63, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": -0.5}}, "exact": tru
+    line 66: {"n": 66, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 999.4, "temperature_f": 77}}, "exact": t
+
+7  rs [position] written bytes decode to different data: weather
+    line 62: {"n": 62, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "pressure_mbar":
+    line 63: {"n": 63, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": -0.5}}, "exact": tru
+    line 66: {"n": 66, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 999.4, "temperature_f": 77}}, "exact": t
+
+7  py [position] written bytes decode to different data: weather
+    line 62: {"n": 62, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "pressure_mbar":
+    line 63: {"n": 63, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": -0.5}}, "exact": tru
+    line 66: {"n": 66, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 999.4, "temperature_f": 77}}, "exact": t
+
+7  ts [position] written bytes decode to different data: weather
+    line 62: {"n": 62, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "pressure_mbar":
+    line 63: {"n": 63, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": -0.5}}, "exact": tru
+    line 66: {"n": 66, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 999.4, "temperature_f": 77}}, "exact": t
+
+7  c [position] written bytes decode to different data: weather
+    line 62: {"n": 62, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "pressure_mbar":
+    line 63: {"n": 63, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": -0.5}}, "exact": tru
+    line 66: {"n": 66, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 999.4, "temperature_f": 77}}, "exact": t
+
+7  go [position] written bytes decode to different data: weather
+    line 62: {"n": 62, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "pressure_mbar":
+    line 63: {"n": 63, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": -0.5}}, "exact": tru
+    line 66: {"n": 66, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 999.4, "temperature_f": 77}}, "exact": t
+
+6  cs [position] written bytes decode to different data: latitude, longitude
+    line 46: {"n": 46, "data": {"type": "position", "latitude": 51.4543, "longitude": -0.9781, "ambiguity": 2, "symbol": "/-"}, "exact": true}
+    line 64: {"n": 64, "data": {"type": "position", "latitude": 0.9764166666666666, "longitude": -0.9764166666666666, "symbol": "/-"}, "exact": true}
+    line 125: {"n": 125, "data": {"type": "position", "latitude": 32.84108241758242, "longitude": -97.31199450549451, "symbol": "\\l", "speed_knots": 12}, "exact": true}
+
+6  rs [position] written bytes decode to different data: latitude, longitude
+    line 46: {"n": 46, "data": {"type": "position", "latitude": 51.4543, "longitude": -0.9781, "ambiguity": 2, "symbol": "/-"}, "exact": true}
+    line 64: {"n": 64, "data": {"type": "position", "latitude": 0.9764166666666666, "longitude": -0.9764166666666666, "symbol": "/-"}, "exact": true}
+    line 125: {"n": 125, "data": {"type": "position", "latitude": 32.84108241758242, "longitude": -97.31199450549451, "symbol": "\\l", "speed_knots": 12}, "exact": true}
+
+6  py [position] written bytes decode to different data: latitude, longitude
+    line 46: {"n": 46, "data": {"type": "position", "latitude": 51.4543, "longitude": -0.9781, "ambiguity": 2, "symbol": "/-"}, "exact": true}
+    line 64: {"n": 64, "data": {"type": "position", "latitude": 0.9764166666666666, "longitude": -0.9764166666666666, "symbol": "/-"}, "exact": true}
+    line 125: {"n": 125, "data": {"type": "position", "latitude": 32.84108241758242, "longitude": -97.31199450549451, "symbol": "\\l", "speed_knots": 12}, "exact": true}
+
+6  ts [position] written bytes decode to different data: latitude, longitude
+    line 46: {"n": 46, "data": {"type": "position", "latitude": 51.4543, "longitude": -0.9781, "ambiguity": 2, "symbol": "/-"}, "exact": true}
+    line 64: {"n": 64, "data": {"type": "position", "latitude": 0.9764166666666666, "longitude": -0.9764166666666666, "symbol": "/-"}, "exact": true}
+    line 125: {"n": 125, "data": {"type": "position", "latitude": 32.84108241758242, "longitude": -97.31199450549451, "symbol": "\\l", "speed_knots": 12}, "exact": true}
+
+6  c [position] written bytes decode to different data: latitude, longitude
+    line 46: {"n": 46, "data": {"type": "position", "latitude": 51.4543, "longitude": -0.9781, "ambiguity": 2, "symbol": "/-"}, "exact": true}
+    line 64: {"n": 64, "data": {"type": "position", "latitude": 0.9764166666666666, "longitude": -0.9764166666666666, "symbol": "/-"}, "exact": true}
+    line 125: {"n": 125, "data": {"type": "position", "latitude": 32.84108241758242, "longitude": -97.31199450549451, "symbol": "\\l", "speed_knots": 12}, "exact": true}
+
+6  go [position] written bytes decode to different data: latitude, longitude
+    line 46: {"n": 46, "data": {"type": "position", "latitude": 51.4543, "longitude": -0.9781, "ambiguity": 2, "symbol": "/-"}, "exact": true}
+    line 64: {"n": 64, "data": {"type": "position", "latitude": 0.9764166666666666, "longitude": -0.9764166666666666, "symbol": "/-"}, "exact": true}
+    line 125: {"n": 125, "data": {"type": "position", "latitude": 32.84108241758242, "longitude": -97.31199450549451, "symbol": "\\l", "speed_knots": 12}, "exact": true}
+
+3  cs [position] written bytes decode to different data: altitude_feet
+    line 65: {"n": 65, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "altitude_feet": -0.5}, "exact": true}
+    line 179: {"n": 179, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+    line 180: {"n": 180, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+
+3  rs [position] written bytes decode to different data: altitude_feet
+    line 65: {"n": 65, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "altitude_feet": -0.5}, "exact": true}
+    line 179: {"n": 179, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+    line 180: {"n": 180, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+
+3  py [position] written bytes decode to different data: altitude_feet
+    line 65: {"n": 65, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "altitude_feet": -0.5}, "exact": true}
+    line 179: {"n": 179, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+    line 180: {"n": 180, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+
+3  ts [position] written bytes decode to different data: altitude_feet
+    line 65: {"n": 65, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "altitude_feet": -0.5}, "exact": true}
+    line 179: {"n": 179, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+    line 180: {"n": 180, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+
+3  c [position] written bytes decode to different data: altitude_feet
+    line 65: {"n": 65, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "altitude_feet": -0.5}, "exact": true}
+    line 179: {"n": 179, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+    line 180: {"n": 180, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+
+3  go [position] written bytes decode to different data: altitude_feet
+    line 65: {"n": 65, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "altitude_feet": -0.5}, "exact": true}
+    line 179: {"n": 179, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+    line 180: {"n": 180, "data": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_
+
+2  cs [position] written bytes decode to different data: longitude
+    line 35: {"n": 35, "data": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88, "speed_knot
+    line 176: {"n": 176, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 2, "weather": {"wind_gust_mph": 5,
+
+2  rs [position] written bytes decode to different data: longitude
+    line 35: {"n": 35, "data": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88, "speed_knot
+    line 176: {"n": 176, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 2, "weather": {"wind_gust_mph": 5,
+
+2  py [position] written bytes decode to different data: longitude
+    line 35: {"n": 35, "data": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88, "speed_knot
+    line 176: {"n": 176, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 2, "weather": {"wind_gust_mph": 5,
+
+2  ts [position] written bytes decode to different data: longitude
+    line 35: {"n": 35, "data": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88, "speed_knot
+    line 176: {"n": 176, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 2, "weather": {"wind_gust_mph": 5,
+
+2  c [position] written bytes decode to different data: longitude
+    line 35: {"n": 35, "data": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88, "speed_knot
+    line 176: {"n": 176, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 2, "weather": {"wind_gust_mph": 5,
+
+2  go [position] written bytes decode to different data: longitude
+    line 35: {"n": 35, "data": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88, "speed_knot
+    line 176: {"n": 176, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 2, "weather": {"wind_gust_mph": 5,
+
+2  cs [position] written bytes decode to different data: course_degrees
+    line 73: {"n": 73, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 360.4, "speed_knots": 10}, "exact": true}
+    line 108: {"n": 108, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": -0.3, "speed_knots": 36}, "exact": true}
+
+2  rs [position] written bytes decode to different data: course_degrees
+    line 73: {"n": 73, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 360.4, "speed_knots": 10}, "exact": true}
+    line 108: {"n": 108, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": -0.3, "speed_knots": 36}, "exact": true}
+
+2  py [position] written bytes decode to different data: course_degrees
+    line 73: {"n": 73, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 360.4, "speed_knots": 10}, "exact": true}
+    line 108: {"n": 108, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": -0.3, "speed_knots": 36}, "exact": true}
+
+2  ts [position] written bytes decode to different data: course_degrees
+    line 73: {"n": 73, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 360.4, "speed_knots": 10}, "exact": true}
+    line 108: {"n": 108, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": -0.3, "speed_knots": 36}, "exact": true}
+
+2  c [position] written bytes decode to different data: course_degrees
+    line 73: {"n": 73, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 360.4, "speed_knots": 10}, "exact": true}
+    line 108: {"n": 108, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": -0.3, "speed_knots": 36}, "exact": true}
+
+2  go [position] written bytes decode to different data: course_degrees
+    line 73: {"n": 73, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 360.4, "speed_knots": 10}, "exact": true}
+    line 108: {"n": 108, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": -0.3, "speed_knots": 36}, "exact": true}
+
+2  cs [position] written bytes decode to different data: longitude, weather
+    line 131: {"n": 131, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 360.4, "win
+    line 146: {"n": 146, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": -0.4, "wind
+
+2  rs [position] written bytes decode to different data: longitude, weather
+    line 131: {"n": 131, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 360.4, "win
+    line 146: {"n": 146, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": -0.4, "wind
+
+2  py [position] written bytes decode to different data: longitude, weather
+    line 131: {"n": 131, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 360.4, "win
+    line 146: {"n": 146, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": -0.4, "wind
+
+2  ts [position] written bytes decode to different data: longitude, weather
+    line 131: {"n": 131, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 360.4, "win
+    line 146: {"n": 146, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": -0.4, "wind
+
+2  c [position] written bytes decode to different data: longitude, weather
+    line 131: {"n": 131, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 360.4, "win
+    line 146: {"n": 146, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": -0.4, "wind
+
+2  go [position] written bytes decode to different data: longitude, weather
+    line 131: {"n": 131, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": 360.4, "win
+    line 146: {"n": 146, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_direction_degrees": -0.4, "wind
+
+1  cs [position] written bytes decode to different data: range_miles
+    line 70: {"n": 70, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "range_miles": 24.5}, "exact": true}
+
+1  rs [position] written bytes decode to different data: range_miles
+    line 70: {"n": 70, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "range_miles": 24.5}, "exact": true}
+
+1  py [position] written bytes decode to different data: range_miles
+    line 70: {"n": 70, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "range_miles": 24.5}, "exact": true}
+
+1  ts [position] written bytes decode to different data: range_miles
+    line 70: {"n": 70, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "range_miles": 24.5}, "exact": true}
+
+1  c [position] written bytes decode to different data: range_miles
+    line 70: {"n": 70, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "range_miles": 24.5}, "exact": true}
+
+1  go [position] written bytes decode to different data: range_miles
+    line 70: {"n": 70, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "range_miles": 24.5}, "exact": true}
+
+1  cs [mic-e] written bytes decode to different data: speed_knots
+    line 71: {"n": 71, "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 0.5}, "exact": true}
+
+1  rs [mic-e] written bytes decode to different data: speed_knots
+    line 71: {"n": 71, "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 0.5}, "exact": true}
+
+1  py [mic-e] written bytes decode to different data: speed_knots
+    line 71: {"n": 71, "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 0.5}, "exact": true}
+
+1  ts [mic-e] written bytes decode to different data: speed_knots
+    line 71: {"n": 71, "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 0.5}, "exact": true}
+
+1  c [mic-e] written bytes decode to different data: speed_knots
+    line 71: {"n": 71, "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 0.5}, "exact": true}
+
+1  go [mic-e] written bytes decode to different data: speed_knots
+    line 71: {"n": 71, "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 0.5}, "exact": true}
+
+1  cs [query] written bytes decode to different data: footprint
+    line 72: {"n": 72, "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 199.5}}, "exact": true}
+
+1  rs [query] written bytes decode to different data: footprint
+    line 72: {"n": 72, "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 199.5}}, "exact": true}
+
+1  py [query] written bytes decode to different data: footprint
+    line 72: {"n": 72, "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 199.5}}, "exact": true}
+
+1  ts [query] written bytes decode to different data: footprint
+    line 72: {"n": 72, "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 199.5}}, "exact": true}
+
+1  c [query] written bytes decode to different data: footprint
+    line 72: {"n": 72, "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 199.5}}, "exact": true}
+
+1  go [query] written bytes decode to different data: footprint
+    line 72: {"n": 72, "data": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 34.02, "longitude": -117.15, "radius_miles": 199.5}}, "exact": true}
+
+1  cs [position] written bytes decode to different data: altitude_feet, longitude
+    line 98: {"n": 98, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "software"}, "altitude_feet": 10000, "weather": {"wind_gust_mph":
+
+1  rs [position] written bytes decode to different data: altitude_feet, longitude
+    line 98: {"n": 98, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "software"}, "altitude_feet": 10000, "weather": {"wind_gust_mph":
+
+1  py [position] written bytes decode to different data: altitude_feet, longitude
+    line 98: {"n": 98, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "software"}, "altitude_feet": 10000, "weather": {"wind_gust_mph":
+
+1  ts [position] written bytes decode to different data: altitude_feet, longitude
+    line 98: {"n": 98, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "software"}, "altitude_feet": 10000, "weather": {"wind_gust_mph":
+
+1  c [position] written bytes decode to different data: altitude_feet, longitude
+    line 98: {"n": 98, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "software"}, "altitude_feet": 10000, "weather": {"wind_gust_mph":
+
+1  go [position] written bytes decode to different data: altitude_feet, longitude
+    line 98: {"n": 98, "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "software"}, "altitude_feet": 10000, "weather": {"wind_gust_mph":
+
+1  cs [position] written bytes decode to different data: latitude, longitude, speed_knots
+    line 111: {"n": 111, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "s
+
+1  rs [position] written bytes decode to different data: latitude, longitude, speed_knots
+    line 111: {"n": 111, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "s
+
+1  py [position] written bytes decode to different data: latitude, longitude, speed_knots
+    line 111: {"n": 111, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "s
+
+1  ts [position] written bytes decode to different data: latitude, longitude, speed_knots
+    line 111: {"n": 111, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "s
+
+1  c [position] written bytes decode to different data: latitude, longitude, speed_knots
+    line 111: {"n": 111, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "s
+
+1  go [position] written bytes decode to different data: latitude, longitude, speed_knots
+    line 111: {"n": 111, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "course_degrees": 88, "s
+
+1  cs [position] written bytes decode to different data: latitude, longitude, range_miles
+    line 113: {"n": 113, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.95}, "e
+
+1  rs [position] written bytes decode to different data: latitude, longitude, range_miles
+    line 113: {"n": 113, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.95}, "e
+
+1  py [position] written bytes decode to different data: latitude, longitude, range_miles
+    line 113: {"n": 113, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.95}, "e
+
+1  ts [position] written bytes decode to different data: latitude, longitude, range_miles
+    line 113: {"n": 113, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.95}, "e
+
+1  c [position] written bytes decode to different data: latitude, longitude, range_miles
+    line 113: {"n": 113, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.95}, "e
+
+1  go [position] written bytes decode to different data: latitude, longitude, range_miles
+    line 113: {"n": 113, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "range_miles": 1.95}, "e
+
+1  cs [position] written bytes decode to different data: compression, latitude, longitude
+    line 115: {"n": 115, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "range_miles": 2}, "exact": true}
+
+1  rs [position] written bytes decode to different data: compression, latitude, longitude
+    line 115: {"n": 115, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "range_miles": 2}, "exact": true}
+
+1  py [position] written bytes decode to different data: compression, latitude, longitude
+    line 115: {"n": 115, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "range_miles": 2}, "exact": true}
+
+1  ts [position] written bytes decode to different data: compression, latitude, longitude
+    line 115: {"n": 115, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "range_miles": 2}, "exact": true}
+
+1  c [position] written bytes decode to different data: compression, latitude, longitude
+    line 115: {"n": 115, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "range_miles": 2}, "exact": true}
+
+1  go [position] written bytes decode to different data: compression, latitude, longitude
+    line 115: {"n": 115, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "range_miles": 2}, "exact": true}
+
+1  cs [position] written bytes decode to different data: course_degrees, latitude, longitude
+    line 117: {"n": 117, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "cours
+
+1  rs [position] written bytes decode to different data: course_degrees, latitude, longitude
+    line 117: {"n": 117, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "cours
+
+1  py [position] written bytes decode to different data: course_degrees, latitude, longitude
+    line 117: {"n": 117, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "cours
+
+1  ts [position] written bytes decode to different data: course_degrees, latitude, longitude
+    line 117: {"n": 117, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "cours
+
+1  c [position] written bytes decode to different data: course_degrees, latitude, longitude
+    line 117: {"n": 117, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "cours
+
+1  go [position] written bytes decode to different data: course_degrees, latitude, longitude
+    line 117: {"n": 117, "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "speed_knots": 0, "cours
+
+1  cs [nmea] written bytes decode to different data: course_degrees, fix, latitude, longitude, speed_knots, time
+    line 139: {"n": 139, "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true}, "exact": true}
+
+1  rs [nmea] written bytes decode to different data: course_degrees, fix, latitude, longitude, speed_knots, time
+    line 139: {"n": 139, "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true}, "exact": true}
+
+1  py [nmea] written bytes decode to different data: course_degrees, fix, latitude, longitude, speed_knots, time
+    line 139: {"n": 139, "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true}, "exact": true}
+
+1  ts [nmea] written bytes decode to different data: course_degrees, fix, latitude, longitude, speed_knots, time
+    line 139: {"n": 139, "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true}, "exact": true}
+
+1  c [nmea] written bytes decode to different data: course_degrees, fix, latitude, longitude, speed_knots, time
+    line 139: {"n": 139, "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true}, "exact": true}
+
+1  go [nmea] written bytes decode to different data: course_degrees, fix, latitude, longitude, speed_knots, time
+    line 139: {"n": 139, "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true}, "exact": true}
+
+1  cs [mic-e] written bytes decode to different data: latitude, longitude, speed_knots
+    line 145: {"n": 145, "data": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 89.9999167, "longitude": 179.9999167, "ambiguity": 2, "symbol": "/>"}, "exact": true}
+
+1  rs [mic-e] written bytes decode to different data: latitude, longitude, speed_knots
+    line 145: {"n": 145, "data": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 89.9999167, "longitude": 179.9999167, "ambiguity": 2, "symbol": "/>"}, "exact": true}
+
+1  py [mic-e] written bytes decode to different data: latitude, longitude, speed_knots
+    line 145: {"n": 145, "data": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 89.9999167, "longitude": 179.9999167, "ambiguity": 2, "symbol": "/>"}, "exact": true}
+
+1  ts [mic-e] written bytes decode to different data: latitude, longitude, speed_knots
+    line 145: {"n": 145, "data": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 89.9999167, "longitude": 179.9999167, "ambiguity": 2, "symbol": "/>"}, "exact": true}
+
+1  c [mic-e] written bytes decode to different data: latitude, longitude, speed_knots
+    line 145: {"n": 145, "data": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 89.9999167, "longitude": 179.9999167, "ambiguity": 2, "symbol": "/>"}, "exact": true}
+
+1  go [mic-e] written bytes decode to different data: latitude, longitude, speed_knots
+    line 145: {"n": 145, "data": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 89.9999167, "longitude": 179.9999167, "ambiguity": 2, "symbol": "/>"}, "exact": true}

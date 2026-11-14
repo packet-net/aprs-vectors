@@ -1,0 +1,387 @@
+Code-only differences in a fresh --faults encode run (libraries at main). Expected = the earliest code in the Refusal reasons order that any library gave, plus a lower-case or wrong-length status locator counted as malformed and no invalid-symbol for a status with no symbol (a heuristic: it assumes a library names a code only for a fault that is there).
+
+== cs: 2337 lines, 104 patterns
+    250 [nmea] gives invalid-nmea, order says invalid-character
+          e.g. {"n":164,"data":{"type":"nmea","sentence":"gprmc,1","fix":"valid","time":"15:40:27.281","course_degrees":361.0,"comment":"a\rb"},"exact":false,"faults":["nmea-course","nmea-comment","sentence"]}
+    230 [query] gives invalid-code, order says value-out-of-range
+          e.g. {"n":1,"data":{"type":"query","query_type":"X Y","footprint":{"latitude":0,"longitude":0,"radius_miles":10000}},"exact":false,"faults":["query-type","footprint"]}
+    128 [status] gives malformed, order says invalid-code
+          e.g. {"n":98,"data":{"type":"status","text":"@","beam":{"heading_code":"B","power_code":"0"},"locator":"ZZ99"},"exact":false,"faults":["beam-code","locator"]}
+    114 [maidenhead-beacon] gives malformed, order says invalid-character
+          e.g. {"n":20,"data":{"type":"maidenhead-beacon","locator":"ZZ99","comment":"a\rb"},"exact":false,"faults":["maidenhead-comment","maidenhead-locator"]}
+    112 [position] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":126,"data":{"type":"position","messaging":true,"latitude":-87.11892861080631,"longitude":-48.264891343725566,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"alti
+    101 [position] gives field-not-allowed, order says invalid-code
+          e.g. {"n":116,"data":{"type":"position","latitude":18.445833333333333,"longitude":-70.23166666666667,"symbol":"/[","comment":"x !W12!","messaging":true,"dao":{"datum":"1","precision":"base91"}},"exact":false,"faults":["commen
+     79 [mic-e] gives value-has-no-form, order says value-out-of-range
+          e.g. {"n":60,"data":{"type":"mic-e","mic_e_message":"returning","type_code":"`","latitude":47.26616666666666,"longitude":-1.4866666666666666,"symbol":"/>","course_degrees":0.4,"speed_knots":1,"altitude_feet":269.0288713910761
+     77 [telemetry] gives malformed, order says too-long
+          e.g. {"n":219,"data":{"type":"telemetry","sequence":"12,3","analog":[1,2,3,4,5,6],"bits":"0000000x","comment":"LoRa iGate"},"exact":false,"faults":["bits","sequence","analog-count"]}
+     65 [mic-e] gives invalid-symbol, order says value-out-of-range
+          e.g. {"n":591,"data":{"type":"mic-e","mic_e_message":"en-route","type_code":" ","latitude":42.06016666666667,"longitude":12.410666666666666,"symbol":"x-","course_degrees":252,"speed_knots":999.4,"altitude_feet":-18244.7506561
+     63 [mic-e] gives field-not-allowed, order says invalid-code
+          e.g. {"n":682,"data":{"type":"mic-e","mic_e_message":"in-service","type_code":"`","device_suffix":"_%","latitude":41.75,"longitude":137.75,"symbol":"/k","course_degrees":263,"speed_knots":4,"altitude_feet":544.6194225721785,"
+     56 [third-party] gives invalid-timestamp, order says invalid-third-party-header
+          e.g. {"n":101,"data":{"type":"third-party","packet":{"source":"VK2XYZ-5","destination":"APRS","path":["TC+IP*"],"data":{"type":"status","text":"a{b","timestamp":"092460z"}}},"exact":false,"faults":["inner-path","inner:text-le
+     51 [telemetry-coefficients] gives malformed, order says too-long
+          e.g. {"n":524,"data":{"type":"telemetry-coefficients","addressee":"ABCDEFGHI","coefficients":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]},"exact":false,"faults":["addressee-length","coefficient-count"]}
+     48 [item] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":124,"data":{"type":"item","name":"X Y Z","latitude":-72.131,"longitude":81.571,"symbol":"/&","altitude_feet":273,"phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"IGate VHF 144.800 MhzÛ","speed_knots
+     47 [object] gives field-not-allowed, order says invalid-code
+          e.g. {"n":68,"data":{"type":"object","name":"ANADR1","timestamp":"252042z","latitude":79.36516666666667,"longitude":18.129,"symbol":"/_","weather":{"wind_direction_degrees":360,"wind_gust_mph":0,"rain_1h_in":6.79,"rain_raw":6
+     46 [object] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":251,"data":{"type":"object","name":"APRS-RPTR","latitude":39.4775,"longitude":-89.77133333333333,"symbol":"\\l","comment":"146820p000 in Virden, IL","area":{"shape":"line-down-right","color":"blue","lat_offset":20,"
+     45 [position] gives invalid-symbol, order says value-out-of-range
+          e.g. {"n":561,"data":{"type":"position","latitude":41.26733333333333,"longitude":-96.07733333333333,"symbol":"/","phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"/ SATERN K0TSA","messaging":true},"exact":fal
+     43 [third-party] gives value-out-of-range, order says invalid-third-party-header
+          e.g. {"n":8,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"weather","timestamp":"09251830","weather":{"wind_gust_mph":999,"temperature_f":74,"humidity_percent":0.4,"pressure_mbar":8711.5
+     43 [directed-query] gives invalid-code, order says invalid-addressee
+          e.g. {"n":512,"data":{"type":"directed-query","addressee":"KH2Z","query_type":"aprs","target":"A B"},"exact":false,"faults":["query-type","target"]}
+     35 [mic-e] gives invalid-code, order says value-out-of-range
+          e.g. {"n":493,"data":{"type":"mic-e","mic_e_message":"off-duty","type_code":"'","device_suffix":"^","latitude":-37.66433333333333,"longitude":150.50116666666668,"symbol":"/>","course_degrees":88,"speed_knots":36,"altitude_fee
+     33 [status] gives invalid-character, order says invalid-code
+          e.g. {"n":1280,"data":{"type":"status","locator":"io91sx","symbol":"/-","text":"a\rb","timestamp":"150003z","beam":{"heading_code":"B","power_code":"0"}},"exact":false,"faults":["beam-code","text-length","locator"]}
+     32 [third-party] gives invalid-addressee, order says invalid-third-party-header
+          e.g. {"n":265,"data":{"type":"third-party","packet":{"source":"N0CALL-10","destination":"APxxxx","path":["TC+IP*"],"data":{"type":"message","addressee":"ABCDEFGHIJ","text":"Hi Ian","message_id":"123456"}}},"exact":false,"faul
+     30 [mic-e] gives invalid-character, order says invalid-code
+          e.g. {"n":970,"data":{"type":"mic-e","mic_e_message":"in-service","type_code":"]","latitude":-70.33383333333333,"longitude":15.880833333333333,"symbol":"\\K","course_degrees":360,"speed_knots":10,"altitude_feet":554.461942257
+     26 [position] gives invalid-character, order says value-out-of-range
+          e.g. {"n":503,"data":{"type":"position","latitude":-5.242333333333334,"longitude":130.60533333333333,"symbol":"/#","phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"\n","speed_knots":-0.4},"exact":false,"fault
+     25 [third-party] gives invalid-character, order says invalid-third-party-header
+          e.g. {"n":419,"data":{"type":"third-party","packet":{"source":"W1AW-10","destination":"B","data":{"type":"position","latitude":-58.82333333333333,"longitude":-47.925,"symbol":"/\\","course_degrees":360,"speed_knots":1,"altitu
+     24 [position] gives invalid-symbol, order says invalid-code
+          e.g. {"n":533,"data":{"type":"position","latitude":73.62564382583494,"longitude":140.3363645432446,"symbol":"/","compressed":true,"compression":{"fix":"current","source":"other","origin":"other-tracker"},"weather":{"wind_dir
+     24 [item] gives field-not-allowed, order says invalid-code
+          e.g. {"n":3948,"data":{"type":"item","name":"I91 3N","latitude":-50.14678333333333,"longitude":-121.5313,"symbol":"/#","signpost":"55","dao":{"datum":"1","precision":"base91"},"area":{"shape":"line-down-left","color":"cyan","
+     23 [position] gives invalid-character, order says invalid-code
+          e.g. {"n":3760,"data":{"type":"position","latitude":-16.687183337446115,"longitude":-31.87744601313642,"symbol":"/E","comment":"\n","compressed":true,"range_miles":1747.1109212590425,"compression":{"fix":"current","source":"o
+     21 [third-party] gives extension-conflict, order says invalid-third-party-header
+          e.g. {"n":1498,"data":{"type":"third-party","packet":{"source":"N0CALL","destination":"APZ","path":["TCPIP","G4ABC*"],"data":{"type":"item","name":"DL1AFC-01","latitude":-16.812181368559777,"longitude":126.33203299328477,"sym
+     20 [position] gives field-not-allowed, order says value-out-of-range
+          e.g. {"n":427,"data":{"type":"position","latitude":53.20154308185842,"longitude":-0.545602032940792,"symbol":"/-","compressed":true,"altitude_feet":20,"comment":"Testing Graywolf/0.14.13","area":{"shape":"open-box","color":"r
+     20 [object] gives invalid-symbol, order says value-out-of-range
+          e.g. {"n":1978,"data":{"type":"object","name":"SK3W","timestamp":"111111z","latitude":60.296,"longitude":16.758,"symbol":"/","phg":{"power":10,"height":1,"gain":1,"directivity":1},"frequency":{"mhz":434.85,"tone":"tone","ton
+
+== rs: 857 lines, 56 patterns
+    131 [position] gives malformed, order says too-long
+          e.g. {"n":35,"data":{"type":"position","latitude":41.26733333333333,"longitude":-96.07733333333333,"symbol":"/>","phg":{"power":8,"height":2,"gain":5,"directivity":5},"comment":"{}/A=12QTH","telemetry":{"sequence":1,"analog":
+     99 [position] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":126,"data":{"type":"position","messaging":true,"latitude":-87.11892861080631,"longitude":-48.264891343725566,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"alti
+     88 [telemetry] gives malformed, order says too-long
+          e.g. {"n":219,"data":{"type":"telemetry","sequence":"12,3","analog":[1,2,3,4,5,6],"bits":"0000000x","comment":"LoRa iGate"},"exact":false,"faults":["bits","sequence","analog-count"]}
+     67 [mic-e] gives malformed, order says too-long
+          e.g. {"n":250,"data":{"type":"mic-e","mic_e_message":"special","latitude":47.26616666666666,"longitude":-1.4866666666666666,"symbol":"/>","course_degrees":232,"speed_knots":1.4,"altitude_feet":-0.5,"frequency":{"mhz":145.5},"
+     62 [object] gives malformed, order says too-long
+          e.g. {"n":42,"data":{"type":"object","name":"ABCDEFGHI","timestamp":"111111z","latitude":31.341,"longitude":-9.832,"symbol":"\\@","frequency":{"mhz":432.5,"tone":"tone","tone_value":103},"comment":"R20k (Reteaua RoLink) http:
+     46 [third-party] gives invalid-third-party-header, order says not-encodable
+          e.g. {"n":357,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","
+     41 [item] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":124,"data":{"type":"item","name":"X Y Z","latitude":-72.131,"longitude":81.571,"symbol":"/&","altitude_feet":273,"phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"IGate VHF 144.800 MhzÛ","speed_knots
+     38 [status] gives missing-field, order says malformed
+          e.g. {"n":277,"data":{"type":"status","text":" ","locator":"io91sx"},"exact":false,"faults":["text-length","locator"]}
+     38 [item] gives malformed, order says too-long
+          e.g. {"n":352,"data":{"type":"item","name":"147.345","latitude":79.00072455017511,"longitude":-180.0,"symbol":"/r","compressed":true,"phg":{"power":8,"height":7,"gain":5,"directivity":6},"comment":":)224.280!4113.02N/07654.71
+     37 [object] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":262,"data":{"type":"object","name":"!x!","timestamp":"111111z","latitude":38.035,"longitude":-84.4505,"symbol":"/r","phg":{"power":5,"height":1,"gain":3,"directivity":2},"comment":"de N0CALL","range_miles":9999.5,"c
+     19 [position] gives invalid-code, order says value-out-of-range
+          e.g. {"n":1519,"data":{"type":"position","latitude":14.809666666666667,"longitude":100.63183333333333,"symbol":"/k","course_degrees":360,"speed_knots":1,"comment":"PHG5132","timestamp":"100025z","dao":{"datum":"1","precision"
+     17 [position] gives extension-conflict, order says value-has-no-form
+          e.g. {"n":2811,"data":{"type":"position","latitude":29.0587174411828,"longitude":-132.614628563028,"symbol":"\\m","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":0.4,"com
+     14 [position] gives field-not-allowed, order says value-has-no-form
+          e.g. {"n":3524,"data":{"type":"position","latitude":-90.0,"longitude":137.14916666666667,"ambiguity":4,"symbol":"A0","altitude_feet":767,"frequency":{"mhz":441.075,"tone":"off","offset_khz":0},"comment":"73 de Jim - K4LIX - P
+     12 [position] gives invalid-character, order says value-out-of-range
+          e.g. {"n":503,"data":{"type":"position","latitude":-5.242333333333334,"longitude":130.60533333333333,"symbol":"/#","phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"\n","speed_knots":-0.4},"exact":false,"fault
+     11 [position] gives field-not-allowed, order says value-out-of-range
+          e.g. {"n":578,"data":{"type":"position","latitude":-61.5651,"longitude":82.10733333333333,"symbol":"/_","weather":{},"messaging":true,"altitude_feet":999999.5,"comment":"\n"},"exact":false,"faults":["edge:altitude_feet","comm
+     11 [status] gives field-not-allowed, order says malformed
+          e.g. {"n":1621,"data":{"type":"status","timestamp":"110810z","text":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","beam":{"heading_code":"3","power_code":"="},"locator":"ZZ99"},"exact":false,"faults":
+     10 [telemetry] gives malformed, order says value-has-no-form
+          e.g. {"n":895,"data":{"type":"telemetry","sequence":"MIC","analog":[],"bits":"10000000"},"exact":false,"faults":["analog-count","sequence"]}
+     10 [mic-e] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":1167,"data":{"type":"mic-e","mic_e_message":"committed","type_code":"]","latitude":32.0935,"longitude":2.3663333333333334,"symbol":"/>","course_degrees":88,"speed_knots":36,"altitude_feet":301.83727034120733,"commen
+     10 [telemetry] gives invalid-character, order says value-has-no-form
+          e.g. {"n":1362,"data":{"type":"telemetry","sequence":"MIC","analog":[],"bits":"10000000","comment":"a\rb"},"exact":false,"faults":["analog-count","sequence","telemetry-comment"]}
+     10 [position] gives malformed, order says value-out-of-range
+          e.g. {"n":3375,"data":{"type":"position","latitude":-49.67,"longitude":157.80558333333332,"symbol":"/#","comment":"10.8V 98F  N1PA-Mt Uncanoonuc Digi","speed_knots":799.5,"telemetry":{"sequence":1,"analog":[]},"phg":{"power":
+      6 [item] gives extension-conflict, order says value-has-no-form
+          e.g. {"n":2122,"data":{"type":"item","name":"DJ0VA-DP","latitude":-90.0,"longitude":8.751666666666667,"symbol":"/r","range_miles":1485,"comment":" T100","ambiguity":1,"dao":{"datum":"W","precision":"none"},"area":{"shape":"op
+      5 [item] gives field-not-allowed, order says value-has-no-form
+          e.g. {"n":875,"data":{"type":"item","name":"I91 3N","latitude":90.0,"longitude":-72.02916666666667,"symbol":"/[","comment":"Radio ClubIO91SX/GLoRa iGate","ambiguity":2,"dao":{"datum":"W","precision":"base91"},"area":{"shape":
+      5 [item] gives invalid-code, order says value-out-of-range
+          e.g. {"n":1991,"data":{"type":"item","name":"NW0017","latitude":6.785666666666667,"longitude":101.15233333333333,"symbol":"\\L","phg":{"power":10,"height":1,"gain":1,"directivity":1},"telemetry":{"sequence":7636,"analog":[210
+      5 [position] gives invalid-code, order says value-has-no-form
+          e.g. {"n":2252,"data":{"type":"position","latitude":40.44843617920541,"longitude":-108.77575172080667,"symbol":"T=","compressed":true,"compression":{"fix":"old","source":"gga","origin":"kpc3"},"telemetry":{"sequence":265,"ana
+      5 [position] gives invalid-character, order says value-has-no-form
+          e.g. {"n":4330,"data":{"type":"position","messaging":true,"latitude":36.63916666666667,"longitude":180.0,"ambiguity":1,"symbol":"/r","frequency":{"mhz":146.52},"comment":"a\rb","range_miles":394},"exact":false,"faults":["edge
+      4 [object] gives field-not-allowed, order says value-has-no-form
+          e.g. {"n":3101,"data":{"type":"object","name":"REPEATER1","timestamp":"180713z","latitude":90.0,"longitude":-9.308333333333334,"ambiguity":2,"symbol":"/_","comment":"223.580Hinlink Gtewa","frequency":{"mhz":146.76,"tone":"ton
+      4 [third-party] gives malformed, order says too-long
+          e.g. {"n":4220,"data":{"type":"third-party","packet":{"source":"M0LTE","destination":"B","data":{"type":"object","name":"A","timestamp":"250850z","latitude":4.978478759654109,"longitude":49.55936323590407,"symbol":"Wa","comme
+      4 [object] gives invalid-character, order says value-out-of-range
+          e.g. {"n":4660,"data":{"type":"object","name":"TESTOBJ","latitude":-70.38116666666667,"longitude":84.40283333333333,"symbol":"\\@","storm":{"type":"hurricane","sustained_wind_knots":104,"gust_knots":123,"central_pressure_mbar
+      4 [item] gives invalid-character, order says value-out-of-range
+          e.g. {"n":6039,"data":{"type":"item","name":" OR4F","latitude":59.4125,"longitude":-86.3525,"symbol":"/\\","course_degrees":360,"speed_knots":0,"telemetry":{"sequence":1553,"analog":[7951,2557,4063,1710]},"df_bearing":{"beari
+      3 [mic-e] gives invalid-code, order says value-out-of-range
+          e.g. {"n":1160,"data":{"type":"mic-e","mic_e_message":"in-service","type_code":"`","device_suffix":"_5","latitude":30.6585,"longitude":-158.86483333333334,"symbol":"/-","speed_knots":36,"phg":{"power":5,"height":1,"gain":3,"d
+
+== py: 1051 lines, 38 patterns
+    245 [ack] gives field-not-allowed, order says invalid-addressee
+          e.g. {"n":148,"data":{"type":"ack","acked_id":"5","message_id":"A-1"},"exact":false,"faults":["addressee-length","message-id"]}
+    136 [reject] gives field-not-allowed, order says invalid-addressee
+          e.g. {"n":50,"data":{"type":"reject","addressee":"ABCDEFGHIJ","rejected_id":"12345","message_id":"123456"},"exact":false,"faults":["message-id","addressee-length"]}
+    131 [position] gives malformed, order says too-long
+          e.g. {"n":35,"data":{"type":"position","latitude":41.26733333333333,"longitude":-96.07733333333333,"symbol":"/>","phg":{"power":8,"height":2,"gain":5,"directivity":5},"comment":"{}/A=12QTH","telemetry":{"sequence":1,"analog":
+     85 [third-party] gives invalid-third-party-header, order says not-encodable
+          e.g. {"n":88,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"unrecognized","reason":"malformed"},"path":["TC+IP*"]}},"exact":false,"faults":["inner-path"]}
+     77 [telemetry] gives malformed, order says too-long
+          e.g. {"n":219,"data":{"type":"telemetry","sequence":"12,3","analog":[1,2,3,4,5,6],"bits":"0000000x","comment":"LoRa iGate"},"exact":false,"faults":["bits","sequence","analog-count"]}
+     67 [mic-e] gives malformed, order says too-long
+          e.g. {"n":250,"data":{"type":"mic-e","mic_e_message":"special","latitude":47.26616666666666,"longitude":-1.4866666666666666,"symbol":"/>","course_degrees":232,"speed_knots":1.4,"altitude_feet":-0.5,"frequency":{"mhz":145.5},"
+     63 [directed-query] gives invalid-code, order says invalid-addressee
+          e.g. {"n":653,"data":{"type":"directed-query","addressee":"A B","query_type":"X Y","target":"G4ABC"},"exact":false,"faults":["query-type","addressee-length"]}
+     62 [object] gives malformed, order says too-long
+          e.g. {"n":42,"data":{"type":"object","name":"ABCDEFGHI","timestamp":"111111z","latitude":31.341,"longitude":-9.832,"symbol":"\\@","frequency":{"mhz":432.5,"tone":"tone","tone_value":103},"comment":"R20k (Reteaua RoLink) http:
+     51 [telemetry-coefficients] gives malformed, order says too-long
+          e.g. {"n":524,"data":{"type":"telemetry-coefficients","addressee":"ABCDEFGHI","coefficients":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]},"exact":false,"faults":["addressee-length","coefficient-count"]}
+     38 [item] gives malformed, order says too-long
+          e.g. {"n":352,"data":{"type":"item","name":"147.345","latitude":79.00072455017511,"longitude":-180.0,"symbol":"/r","compressed":true,"phg":{"power":8,"height":7,"gain":5,"directivity":6},"comment":":)224.280!4113.02N/07654.71
+     11 [ack] gives field-not-allowed, order says invalid-message-id
+          e.g. {"n":2184,"data":{"type":"ack","addressee":"ABCDEFGHI","acked_id":"{","message_id":"12345"},"exact":false,"faults":["addressee-length","message-id"]}
+     10 [telemetry] gives malformed, order says value-has-no-form
+          e.g. {"n":895,"data":{"type":"telemetry","sequence":"MIC","analog":[],"bits":"10000000"},"exact":false,"faults":["analog-count","sequence"]}
+     10 [telemetry] gives invalid-character, order says value-has-no-form
+          e.g. {"n":1362,"data":{"type":"telemetry","sequence":"MIC","analog":[],"bits":"10000000","comment":"a\rb"},"exact":false,"faults":["analog-count","sequence","telemetry-comment"]}
+      9 [status] gives missing-field, order says malformed
+          e.g. {"n":277,"data":{"type":"status","text":" ","locator":"io91sx"},"exact":false,"faults":["text-length","locator"]}
+      8 [reject] gives field-not-allowed, order says invalid-message-id
+          e.g. {"n":4411,"data":{"type":"reject","addressee":"ABCDEFGHI","rejected_id":"123456","reply_ack":"","message_id":"12345"},"exact":false,"faults":["addressee-length","message-id"]}
+      7 [position] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":1866,"data":{"type":"position","latitude":32.25077574122008,"longitude":-73.3234643999097,"symbol":"/u","compressed":true,"comment":"microwave","compression":{"fix":"current","source":"gga","origin":"software"},"alt
+      5 [mic-e] gives field-not-allowed, order says value-has-no-form
+          e.g. {"n":2747,"data":{"type":"mic-e","mic_e_message":"en-route","type_code":"]","latitude":-48.0415,"longitude":179.99991666666668,"symbol":"/r","course_degrees":64,"speed_knots":99,"altitude_feet":78.74015748031495,"comment
+      4 [position] gives extension-conflict, order says value-has-no-form
+          e.g. {"n":2811,"data":{"type":"position","latitude":29.0587174411828,"longitude":-132.614628563028,"symbol":"\\m","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":0.4,"com
+      4 [status] gives field-not-allowed, order says malformed
+          e.g. {"n":3374,"data":{"type":"status","timestamp":"252043z","text":" ","locator":"io91sx"},"exact":false,"faults":["locator","text-length"]}
+      3 [third-party] gives malformed, order says too-long
+          e.g. {"n":4220,"data":{"type":"third-party","packet":{"source":"M0LTE","destination":"B","data":{"type":"object","name":"A","timestamp":"250850z","latitude":4.978478759654109,"longitude":49.55936323590407,"symbol":"Wa","comme
+      3 [object] gives padding-space, order says too-long
+          e.g. {"n":10249,"data":{"type":"object","name":"OR4F ","timestamp":"252041z","latitude":27.832666666666668,"longitude":55.176833333333335,"symbol":"/_","weather":{"wind_direction_degrees":172,"wind_speed_mph":3,"wind_gust_mph
+      3 [object] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":12004,"data":{"type":"object","name":"WB9EOC-V","timestamp":"163442h","latitude":-35.33174422328746,"longitude":-137.0264618324819,"symbol":"/r","frequency":{"mhz":147.33},"comment":"\u001dWX","compressed":true,"com
+      2 [third-party] gives missing-field, order says invalid-symbol
+          e.g. {"n":2279,"data":{"type":"third-party","packet":{"source":"N1CALL","destination":"APZ001","path":["A*","B*"],"data":{"type":"status","text":"a{b","locator":"io91sx"}}},"exact":false,"faults":["inner:text-length","inner-p
+      2 [mic-e] gives invalid-code, order says value-has-no-form
+          e.g. {"n":2937,"data":{"type":"mic-e","mic_e_message":"off-duty","type_code":"]","latitude":21.901333333333334,"longitude":179.99991666666668,"symbol":"/k","speed_knots":0,"altitude_feet":708.6614173228346,"device_suffix":"^"
+      2 [position] gives invalid-character, order says value-has-no-form
+          e.g. {"n":15754,"data":{"type":"position","latitude":-82.55983839380877,"longitude":89.4751631550485,"symbol":"/>","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":1128.87
+      1 [position] gives malformed, order says value-has-no-form
+          e.g. {"n":808,"data":{"type":"position","latitude":49.76078293421819,"longitude":13.33147645474449,"symbol":"/>","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":647.76542
+      1 [mic-e] gives invalid-character, order says value-has-no-form
+          e.g. {"n":1547,"data":{"type":"mic-e","mic_e_message":"priority","type_code":"`","latitude":89.99991666666666,"longitude":20.5,"symbol":"/>","course_degrees":360,"speed_knots":0,"altitude_feet":252.62467191601047,"frequency":
+      1 [position] gives invalid-code, order says value-has-no-form
+          e.g. {"n":2252,"data":{"type":"position","latitude":40.44843617920541,"longitude":-108.77575172080667,"symbol":"T=","compressed":true,"compression":{"fix":"old","source":"gga","origin":"kpc3"},"telemetry":{"sequence":265,"ana
+      1 [mic-e] gives missing-field, order says value-has-no-form
+          e.g. {"n":3022,"data":{"type":"mic-e","mic_e_message":"off-duty","latitude":89.99991666666666,"longitude":-108.43583333333333,"ambiguity":1,"symbol":"HM","course_degrees":360,"speed_knots":252,"comment":"73","device_suffix":"
+      1 [item] gives extension-conflict, order says value-has-no-form
+          e.g. {"n":4363,"data":{"type":"item","name":"N0CALL-15","killed":true,"latitude":-81.47072397263511,"longitude":115.84695715178276,"symbol":"/A","comment":"/A=001234","compressed":true,"compression":{"fix":"current","source":
+
+== ts: 727 lines, 65 patterns
+     90 [position] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":74,"data":{"type":"position","latitude":3.4805159007261324,"longitude":90.2606017966744,"symbol":"1#","compressed":true,"comment":"}","compression":{"fix":"current","source":"gga","origin":"software"},"altitude_feet
+     60 [mic-e] gives field-not-allowed, order says invalid-code
+          e.g. {"n":682,"data":{"type":"mic-e","mic_e_message":"in-service","type_code":"`","device_suffix":"_%","latitude":41.75,"longitude":137.75,"symbol":"/k","course_degrees":263,"speed_knots":4,"altitude_feet":544.6194225721785,"
+     55 [position] gives field-not-allowed, order says invalid-code
+          e.g. {"n":116,"data":{"type":"position","latitude":18.445833333333333,"longitude":-70.23166666666667,"symbol":"/[","comment":"x !W12!","messaging":true,"dao":{"datum":"1","precision":"base91"}},"exact":false,"faults":["commen
+     46 [position] gives extension-conflict, order says invalid-code
+          e.g. {"n":244,"data":{"type":"position","latitude":17.762333333333334,"longitude":99.94966666666667,"symbol":"Lz","altitude_feet":-1,"phg":{"power":3,"height":2,"gain":6,"directivity":0},"telemetry":{"sequence":5291,"analog":
+     41 [item] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":124,"data":{"type":"item","name":"X Y Z","latitude":-72.131,"longitude":81.571,"symbol":"/&","altitude_feet":273,"phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"IGate VHF 144.800 MhzÛ","speed_knots
+     38 [object] gives field-not-allowed, order says invalid-code
+          e.g. {"n":68,"data":{"type":"object","name":"ANADR1","timestamp":"252042z","latitude":79.36516666666667,"longitude":18.129,"symbol":"/_","weather":{"wind_direction_degrees":360,"wind_gust_mph":0,"rain_1h_in":6.79,"rain_raw":6
+     33 [object] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":262,"data":{"type":"object","name":"!x!","timestamp":"111111z","latitude":38.035,"longitude":-84.4505,"symbol":"/r","phg":{"power":5,"height":1,"gain":3,"directivity":2},"comment":"de N0CALL","range_miles":9999.5,"c
+     31 [third-party] gives invalid-timestamp, order says invalid-third-party-header
+          e.g. {"n":404,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"weather","timestamp":"26090906","weather":{"wind_direction_degrees":360,"wind_gust_mph":866,"temperature_f":999.5,"rain_1h_in
+     23 [third-party] gives value-out-of-range, order says invalid-third-party-header
+          e.g. {"n":113,"data":{"type":"third-party","packet":{"source":"PY2SP_R-R","destination":"APRS","path":["TCPIP","G4ABC*"],"data":{"type":"item","name":"DJ0VA-DP","latitude":-72.99866666666667,"longitude":-180.0001,"symbol":"/#
+     21 [mic-e] gives invalid-character, order says invalid-code
+          e.g. {"n":970,"data":{"type":"mic-e","mic_e_message":"in-service","type_code":"]","latitude":-70.33383333333333,"longitude":15.880833333333333,"symbol":"\\K","course_degrees":360,"speed_knots":10,"altitude_feet":554.461942257
+     17 [position] gives invalid-symbol, order says invalid-code
+          e.g. {"n":2527,"data":{"type":"position","latitude":-36.33983333333333,"longitude":180.0,"course_degrees":1,"speed_knots":999,"altitude_feet":2169,"frequency":{"mhz":144.8},"comment":"/ QTH: IN80dj","dao":{"datum":"1","precis
+     15 [third-party] gives invalid-addressee, order says invalid-third-party-header
+          e.g. {"n":2700,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"bulletin","addressee":"A:B","text":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","message_id":"1234
+     13 [third-party] gives invalid-code, order says invalid-third-party-header
+          e.g. {"n":253,"data":{"type":"third-party","packet":{"source":"N1CALL","destination":"APZ001","path":["TCPIP","G4ABC*"],"data":{"type":"status","text":"a{b","beam":{"heading_code":"B","power_code":"0"}}}},"exact":false,"fault
+     13 [position] gives invalid-character, order says value-out-of-range
+          e.g. {"n":503,"data":{"type":"position","latitude":-5.242333333333334,"longitude":130.60533333333333,"symbol":"/#","phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"\n","speed_knots":-0.4},"exact":false,"fault
+     13 [position] gives invalid-character, order says invalid-code
+          e.g. {"n":3760,"data":{"type":"position","latitude":-16.687183337446115,"longitude":-31.87744601313642,"symbol":"/E","comment":"\n","compressed":true,"range_miles":1747.1109212590425,"compression":{"fix":"current","source":"o
+     12 [third-party] gives extension-conflict, order says invalid-third-party-header
+          e.g. {"n":1498,"data":{"type":"third-party","packet":{"source":"N0CALL","destination":"APZ","path":["TCPIP","G4ABC*"],"data":{"type":"item","name":"DL1AFC-01","latitude":-16.812181368559777,"longitude":126.33203299328477,"sym
+     12 [position] gives too-long, order says value-out-of-range
+          e.g. {"n":2101,"data":{"type":"position","messaging":true,"latitude":32.68816666666667,"longitude":62.759,"symbol":"\\@","course_degrees":45,"speed_knots":1,"altitude_feet":0,"frequency":{"mhz":146.52},"comment":"Dayton Bound
+     12 [item] gives extension-conflict, order says invalid-code
+          e.g. {"n":3948,"data":{"type":"item","name":"I91 3N","latitude":-50.14678333333333,"longitude":-121.5313,"symbol":"/#","signpost":"55","dao":{"datum":"1","precision":"base91"},"area":{"shape":"line-down-left","color":"cyan","
+     12 [item] gives field-not-allowed, order says invalid-code
+          e.g. {"n":5045,"data":{"type":"item","name":"R307","latitude":8.761666666666667,"longitude":99.91483333333333,"symbol":"\\P","course_degrees":360.4,"speed_knots":150,"altitude_feet":49,"comment":"R307 SAT:04","dao":{"datum":"
+     11 [mic-e] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":1160,"data":{"type":"mic-e","mic_e_message":"in-service","type_code":"`","device_suffix":"_5","latitude":30.6585,"longitude":-158.86483333333334,"symbol":"/-","speed_knots":36,"phg":{"power":5,"height":1,"gain":3,"d
+      9 [mic-e] gives invalid-symbol, order says invalid-code
+          e.g. {"n":59,"data":{"type":"mic-e","mic_e_message":"in-service","type_code":">","device_suffix":"^","latitude":17.573666666666668,"longitude":136.786,"course_degrees":33,"speed_knots":0,"altitude_feet":57053.80577427821,"fre
+      9 [third-party] gives invalid-character, order says invalid-third-party-header
+          e.g. {"n":419,"data":{"type":"third-party","packet":{"source":"W1AW-10","destination":"B","data":{"type":"position","latitude":-58.82333333333333,"longitude":-47.925,"symbol":"/\\","course_degrees":360,"speed_knots":1,"altitu
+      9 [object] gives extension-conflict, order says invalid-code
+          e.g. {"n":1190,"data":{"type":"object","name":"BRENDA","timestamp":"092345z","latitude":-73.898875,"longitude":-30.392833333333332,"symbol":"/_","weather":{"wind_direction_degrees":220,"wind_speed_mph":4,"wind_gust_mph":5,"pr
+      9 [mic-e] gives too-long, order says invalid-code
+          e.g. {"n":2297,"data":{"type":"mic-e","mic_e_message":"off-duty","type_code":"`","device_suffix":"_4","latitude":89.99991666666666,"longitude":-89.303,"symbol":"/>","course_degrees":317,"speed_knots":190,"dao":{"datum":"1","p
+      8 [item] gives invalid-symbol, order says invalid-code
+          e.g. {"n":2542,"data":{"type":"item","name":"AE5PL  B ","latitude":33.26733333333333,"longitude":-96.53266666666667,"symbol":"/","range_miles":2179,"comment":"\u001f","telemetry":{"sequence":5697,"analog":[1728,4250]},"speed
+      7 [third-party] gives field-not-allowed, order says invalid-third-party-header
+          e.g. {"n":1574,"data":{"type":"third-party","packet":{"source":"VK2XYZ","destination":"B","data":{"type":"position","latitude":31.522166666666667,"longitude":180.0,"symbol":"/_","weather":{"wind_gust_mph":999.4,"rain_1h_in":7
+      7 [position] gives invalid-code, order says value-out-of-range
+          e.g. {"n":3461,"data":{"type":"position","messaging":true,"latitude":51.910833333333336,"longitude":35.530833333333334,"ambiguity":1,"symbol":"/[","comment":"APRS Lora Independienteð","phg":{"power":10,"height":1,"gain":1,"di
+      6 [third-party] gives malformed, order says invalid-third-party-header
+          e.g. {"n":1436,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"status","text":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","locator":"ZZ99"},"path":["TCPIP","G4AB
+      6 [third-party] gives invalid-symbol, order says invalid-third-party-header
+          e.g. {"n":1737,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"position","timestamp":"060103z","messaging":true,"latitude":52.11083333333333,"longitude":5.119166666666667,"ambiguity":1,"s
+      5 [position] gives field-not-allowed, order says value-out-of-range
+          e.g. {"n":578,"data":{"type":"position","latitude":-61.5651,"longitude":82.10733333333333,"symbol":"/_","weather":{},"messaging":true,"altitude_feet":999999.5,"comment":"\n"},"exact":false,"faults":["edge:altitude_feet","comm
+
+== c: 3014 lines, 104 patterns
+    309 [nmea] gives invalid-nmea, order says invalid-character
+          e.g. {"n":107,"data":{"type":"nmea","sentence":"GPGLL,2554.459,N,08020.187,W,230318.429,A","latitude":25.90765,"longitude":-80.33645,"fix":"valid","time":"23:03:18.429","comment":"a\rb","course_degrees":361.0},"exact":false,"
+    245 [ack] gives field-not-allowed, order says invalid-addressee
+          e.g. {"n":148,"data":{"type":"ack","acked_id":"5","message_id":"A-1"},"exact":false,"faults":["addressee-length","message-id"]}
+    230 [query] gives invalid-code, order says value-out-of-range
+          e.g. {"n":1,"data":{"type":"query","query_type":"X Y","footprint":{"latitude":0,"longitude":0,"radius_miles":10000}},"exact":false,"faults":["query-type","footprint"]}
+    136 [reject] gives field-not-allowed, order says invalid-addressee
+          e.g. {"n":50,"data":{"type":"reject","addressee":"ABCDEFGHIJ","rejected_id":"12345","message_id":"123456"},"exact":false,"faults":["message-id","addressee-length"]}
+    131 [status] gives invalid-symbol, order says invalid-code
+          e.g. {"n":98,"data":{"type":"status","text":"@","beam":{"heading_code":"B","power_code":"0"},"locator":"ZZ99"},"exact":false,"faults":["beam-code","locator"]}
+    127 [status] gives text-reads-as-field, order says invalid-code
+          e.g. {"n":93,"data":{"type":"status","timestamp":"171041z","text":" ","beam":{"heading_code":"a","power_code":"7"}},"exact":false,"faults":["beam-code","text-length"]}
+    119 [position] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":126,"data":{"type":"position","messaging":true,"latitude":-87.11892861080631,"longitude":-48.264891343725566,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"alti
+    101 [mic-e] gives value-has-no-form, order says value-out-of-range
+          e.g. {"n":60,"data":{"type":"mic-e","mic_e_message":"returning","type_code":"`","latitude":47.26616666666666,"longitude":-1.4866666666666666,"symbol":"/>","course_degrees":0.4,"speed_knots":1,"altitude_feet":269.0288713910761
+     88 [position] gives invalid-code, order says value-out-of-range
+          e.g. {"n":53,"data":{"type":"position","latitude":40.983109580338436,"longitude":174.48148984317163,"symbol":"/>","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":1128.871
+     86 [mic-e] gives invalid-code, order says value-out-of-range
+          e.g. {"n":261,"data":{"type":"mic-e","mic_e_message":"off-duty","latitude":-9.384,"longitude":74.63966666666667,"symbol":"/k","course_degrees":360.4,"speed_knots":799,"comment":".../...g...t055h.._10194LoRa_APRS I-Gate","dao"
+     81 [third-party] gives invalid-third-party-header, order says not-encodable
+          e.g. {"n":357,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","
+     77 [telemetry] gives malformed, order says too-long
+          e.g. {"n":219,"data":{"type":"telemetry","sequence":"12,3","analog":[1,2,3,4,5,6],"bits":"0000000x","comment":"LoRa iGate"},"exact":false,"faults":["bits","sequence","analog-count"]}
+     73 [position] gives invalid-symbol, order says value-out-of-range
+          e.g. {"n":70,"data":{"type":"position","latitude":-53.90615762641562,"longitude":-97.43772806266834,"compressed":true,"compression":{"fix":"old","source":"other","origin":"digipeater-conversion"},"altitude_feet":7305960.36802
+     69 [query] gives missing-field, order says value-out-of-range
+          e.g. {"n":123,"data":{"type":"query","footprint":{"latitude":90.00001,"longitude":0,"radius_miles":200}},"exact":false,"faults":["footprint","query-type"]}
+     59 [maidenhead-beacon] gives malformed, order says invalid-character
+          e.g. {"n":163,"data":{"type":"maidenhead-beacon","locator":"IO91S","comment":"a\rb"},"exact":false,"faults":["maidenhead-locator","maidenhead-comment"]}
+     49 [position] gives malformed, order says too-long
+          e.g. {"n":35,"data":{"type":"position","latitude":41.26733333333333,"longitude":-96.07733333333333,"symbol":"/>","phg":{"power":8,"height":2,"gain":5,"directivity":5},"comment":"{}/A=12QTH","telemetry":{"sequence":1,"analog":
+     49 [status] gives invalid-symbol, order says malformed
+          e.g. {"n":277,"data":{"type":"status","text":" ","locator":"io91sx"},"exact":false,"faults":["text-length","locator"]}
+     46 [third-party] gives invalid-timestamp, order says invalid-third-party-header
+          e.g. {"n":101,"data":{"type":"third-party","packet":{"source":"VK2XYZ-5","destination":"APRS","path":["TC+IP*"],"data":{"type":"status","text":"a{b","timestamp":"092460z"}}},"exact":false,"faults":["inner-path","inner:text-le
+     44 [object] gives invalid-code, order says value-out-of-range
+          e.g. {"n":106,"data":{"type":"object","name":"BRENDA","timestamp":"092345z","latitude":7.132,"longitude":119.55933333333333,"symbol":"/_","weather":{"wind_speed_mph":884,"rain_1h_in":0.5,"rain_24h_in":7.12,"rain_midnight_in":
+     42 [item] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":124,"data":{"type":"item","name":"X Y Z","latitude":-72.131,"longitude":81.571,"symbol":"/&","altitude_feet":273,"phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"IGate VHF 144.800 MhzÛ","speed_knots
+     41 [third-party] gives value-out-of-range, order says invalid-third-party-header
+          e.g. {"n":8,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"weather","timestamp":"09251830","weather":{"wind_gust_mph":999,"temperature_f":74,"humidity_percent":0.4,"pressure_mbar":8711.5
+     41 [mic-e] gives malformed, order says too-long
+          e.g. {"n":417,"data":{"type":"mic-e","mic_e_message":"off-duty","old_data":true,"type_code":"'","device_suffix":"|4","latitude":-55.674166666666665,"longitude":147.6375,"symbol":"/#","speed_knots":0,"altitude_feet":0.4,"phg":
+     40 [item] gives invalid-code, order says value-out-of-range
+          e.g. {"n":1472,"data":{"type":"item","name":"OSOWIEC","latitude":-43.60606666666666,"longitude":-130.82566666666668,"symbol":"/z","comment":"!S\u001c  !IO91SXWX","range_miles":10000,"dao":{"datum":"1","precision":"base91"}},"
+     39 [mic-e] gives invalid-symbol, order says value-out-of-range
+          e.g. {"n":601,"data":{"type":"mic-e","mic_e_message":"in-service","old_data":true,"type_code":"]","latitude":35.51733333333333,"longitude":139.543,"speed_knots":0,"altitude_feet":30892.388451443567,"frequency":{"mhz":434.64},
+     38 [query] gives missing-field, order says invalid-code
+          e.g. {"n":186,"data":{"type":"query","footprint":{"latitude":90.0,"longitude":180.0,"radius_miles":9999}},"exact":false,"faults":["footprint","query-type"]}
+     36 [object] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":262,"data":{"type":"object","name":"!x!","timestamp":"111111z","latitude":38.035,"longitude":-84.4505,"symbol":"/r","phg":{"power":5,"height":1,"gain":3,"directivity":2},"comment":"de N0CALL","range_miles":9999.5,"c
+     35 [third-party] gives invalid-addressee, order says invalid-third-party-header
+          e.g. {"n":265,"data":{"type":"third-party","packet":{"source":"N0CALL-10","destination":"APxxxx","path":["TC+IP*"],"data":{"type":"message","addressee":"ABCDEFGHIJ","text":"Hi Ian","message_id":"123456"}}},"exact":false,"faul
+     29 [position] gives field-not-allowed, order says value-out-of-range
+          e.g. {"n":578,"data":{"type":"position","latitude":-61.5651,"longitude":82.10733333333333,"symbol":"/_","weather":{},"messaging":true,"altitude_feet":999999.5,"comment":"\n"},"exact":false,"faults":["edge:altitude_feet","comm
+     29 [object] gives invalid-symbol, order says value-out-of-range
+          e.g. {"n":1651,"data":{"type":"object","name":"   OR4F","timestamp":"252047z","latitude":79.20866666666667,"longitude":-42.562333333333335,"comment":"}","ambiguity":3,"dao":{"datum":"W","precision":"thousandths"},"course_degr
+     27 [object] gives malformed, order says too-long
+          e.g. {"n":42,"data":{"type":"object","name":"ABCDEFGHI","timestamp":"111111z","latitude":31.341,"longitude":-9.832,"symbol":"\\@","frequency":{"mhz":432.5,"tone":"tone","tone_value":103},"comment":"R20k (Reteaua RoLink) http:
+
+== go: 857 lines, 56 patterns
+    131 [position] gives malformed, order says too-long
+          e.g. {"n":35,"data":{"type":"position","latitude":41.26733333333333,"longitude":-96.07733333333333,"symbol":"/>","phg":{"power":8,"height":2,"gain":5,"directivity":5},"comment":"{}/A=12QTH","telemetry":{"sequence":1,"analog":
+     99 [position] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":126,"data":{"type":"position","messaging":true,"latitude":-87.11892861080631,"longitude":-48.264891343725566,"symbol":"/_","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"alti
+     88 [telemetry] gives malformed, order says too-long
+          e.g. {"n":219,"data":{"type":"telemetry","sequence":"12,3","analog":[1,2,3,4,5,6],"bits":"0000000x","comment":"LoRa iGate"},"exact":false,"faults":["bits","sequence","analog-count"]}
+     67 [mic-e] gives malformed, order says too-long
+          e.g. {"n":250,"data":{"type":"mic-e","mic_e_message":"special","latitude":47.26616666666666,"longitude":-1.4866666666666666,"symbol":"/>","course_degrees":232,"speed_knots":1.4,"altitude_feet":-0.5,"frequency":{"mhz":145.5},"
+     62 [object] gives malformed, order says too-long
+          e.g. {"n":42,"data":{"type":"object","name":"ABCDEFGHI","timestamp":"111111z","latitude":31.341,"longitude":-9.832,"symbol":"\\@","frequency":{"mhz":432.5,"tone":"tone","tone_value":103},"comment":"R20k (Reteaua RoLink) http:
+     46 [third-party] gives invalid-third-party-header, order says not-encodable
+          e.g. {"n":357,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","
+     41 [item] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":124,"data":{"type":"item","name":"X Y Z","latitude":-72.131,"longitude":81.571,"symbol":"/&","altitude_feet":273,"phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"IGate VHF 144.800 MhzÛ","speed_knots
+     38 [status] gives missing-field, order says malformed
+          e.g. {"n":277,"data":{"type":"status","text":" ","locator":"io91sx"},"exact":false,"faults":["text-length","locator"]}
+     38 [item] gives malformed, order says too-long
+          e.g. {"n":352,"data":{"type":"item","name":"147.345","latitude":79.00072455017511,"longitude":-180.0,"symbol":"/r","compressed":true,"phg":{"power":8,"height":7,"gain":5,"directivity":6},"comment":":)224.280!4113.02N/07654.71
+     37 [object] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":262,"data":{"type":"object","name":"!x!","timestamp":"111111z","latitude":38.035,"longitude":-84.4505,"symbol":"/r","phg":{"power":5,"height":1,"gain":3,"directivity":2},"comment":"de N0CALL","range_miles":9999.5,"c
+     19 [position] gives invalid-code, order says value-out-of-range
+          e.g. {"n":1519,"data":{"type":"position","latitude":14.809666666666667,"longitude":100.63183333333333,"symbol":"/k","course_degrees":360,"speed_knots":1,"comment":"PHG5132","timestamp":"100025z","dao":{"datum":"1","precision"
+     17 [position] gives extension-conflict, order says value-has-no-form
+          e.g. {"n":2811,"data":{"type":"position","latitude":29.0587174411828,"longitude":-132.614628563028,"symbol":"\\m","compressed":true,"compression":{"fix":"current","source":"gga","origin":"compressed"},"altitude_feet":0.4,"com
+     14 [position] gives field-not-allowed, order says value-has-no-form
+          e.g. {"n":3524,"data":{"type":"position","latitude":-90.0,"longitude":137.14916666666667,"ambiguity":4,"symbol":"A0","altitude_feet":767,"frequency":{"mhz":441.075,"tone":"off","offset_khz":0},"comment":"73 de Jim - K4LIX - P
+     12 [position] gives invalid-character, order says value-out-of-range
+          e.g. {"n":503,"data":{"type":"position","latitude":-5.242333333333334,"longitude":130.60533333333333,"symbol":"/#","phg":{"power":10,"height":1,"gain":1,"directivity":1},"comment":"\n","speed_knots":-0.4},"exact":false,"fault
+     11 [position] gives field-not-allowed, order says value-out-of-range
+          e.g. {"n":578,"data":{"type":"position","latitude":-61.5651,"longitude":82.10733333333333,"symbol":"/_","weather":{},"messaging":true,"altitude_feet":999999.5,"comment":"\n"},"exact":false,"faults":["edge:altitude_feet","comm
+     11 [status] gives field-not-allowed, order says malformed
+          e.g. {"n":1621,"data":{"type":"status","timestamp":"110810z","text":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","beam":{"heading_code":"3","power_code":"="},"locator":"ZZ99"},"exact":false,"faults":
+     10 [telemetry] gives malformed, order says value-has-no-form
+          e.g. {"n":895,"data":{"type":"telemetry","sequence":"MIC","analog":[],"bits":"10000000"},"exact":false,"faults":["analog-count","sequence"]}
+     10 [mic-e] gives extension-conflict, order says value-out-of-range
+          e.g. {"n":1167,"data":{"type":"mic-e","mic_e_message":"committed","type_code":"]","latitude":32.0935,"longitude":2.3663333333333334,"symbol":"/>","course_degrees":88,"speed_knots":36,"altitude_feet":301.83727034120733,"commen
+     10 [telemetry] gives invalid-character, order says value-has-no-form
+          e.g. {"n":1362,"data":{"type":"telemetry","sequence":"MIC","analog":[],"bits":"10000000","comment":"a\rb"},"exact":false,"faults":["analog-count","sequence","telemetry-comment"]}
+     10 [position] gives malformed, order says value-out-of-range
+          e.g. {"n":3375,"data":{"type":"position","latitude":-49.67,"longitude":157.80558333333332,"symbol":"/#","comment":"10.8V 98F  N1PA-Mt Uncanoonuc Digi","speed_knots":799.5,"telemetry":{"sequence":1,"analog":[]},"phg":{"power":
+      6 [item] gives extension-conflict, order says value-has-no-form
+          e.g. {"n":2122,"data":{"type":"item","name":"DJ0VA-DP","latitude":-90.0,"longitude":8.751666666666667,"symbol":"/r","range_miles":1485,"comment":" T100","ambiguity":1,"dao":{"datum":"W","precision":"none"},"area":{"shape":"op
+      5 [item] gives field-not-allowed, order says value-has-no-form
+          e.g. {"n":875,"data":{"type":"item","name":"I91 3N","latitude":90.0,"longitude":-72.02916666666667,"symbol":"/[","comment":"Radio ClubIO91SX/GLoRa iGate","ambiguity":2,"dao":{"datum":"W","precision":"base91"},"area":{"shape":
+      5 [item] gives invalid-code, order says value-out-of-range
+          e.g. {"n":1991,"data":{"type":"item","name":"NW0017","latitude":6.785666666666667,"longitude":101.15233333333333,"symbol":"\\L","phg":{"power":10,"height":1,"gain":1,"directivity":1},"telemetry":{"sequence":7636,"analog":[210
+      5 [position] gives invalid-code, order says value-has-no-form
+          e.g. {"n":2252,"data":{"type":"position","latitude":40.44843617920541,"longitude":-108.77575172080667,"symbol":"T=","compressed":true,"compression":{"fix":"old","source":"gga","origin":"kpc3"},"telemetry":{"sequence":265,"ana
+      5 [position] gives invalid-character, order says value-has-no-form
+          e.g. {"n":4330,"data":{"type":"position","messaging":true,"latitude":36.63916666666667,"longitude":180.0,"ambiguity":1,"symbol":"/r","frequency":{"mhz":146.52},"comment":"a\rb","range_miles":394},"exact":false,"faults":["edge
+      4 [object] gives field-not-allowed, order says value-has-no-form
+          e.g. {"n":3101,"data":{"type":"object","name":"REPEATER1","timestamp":"180713z","latitude":90.0,"longitude":-9.308333333333334,"ambiguity":2,"symbol":"/_","comment":"223.580Hinlink Gtewa","frequency":{"mhz":146.76,"tone":"ton
+      4 [third-party] gives malformed, order says too-long
+          e.g. {"n":4220,"data":{"type":"third-party","packet":{"source":"M0LTE","destination":"B","data":{"type":"object","name":"A","timestamp":"250850z","latitude":4.978478759654109,"longitude":49.55936323590407,"symbol":"Wa","comme
+      4 [object] gives invalid-character, order says value-out-of-range
+          e.g. {"n":4660,"data":{"type":"object","name":"TESTOBJ","latitude":-70.38116666666667,"longitude":84.40283333333333,"symbol":"\\@","storm":{"type":"hurricane","sustained_wind_knots":104,"gust_knots":123,"central_pressure_mbar
+      4 [item] gives invalid-character, order says value-out-of-range
+          e.g. {"n":6039,"data":{"type":"item","name":" OR4F","latitude":59.4125,"longitude":-86.3525,"symbol":"/\\","course_degrees":360,"speed_knots":0,"telemetry":{"sequence":1553,"analog":[7951,2557,4063,1710]},"df_bearing":{"beari
+      3 [mic-e] gives invalid-code, order says value-out-of-range
+          e.g. {"n":1160,"data":{"type":"mic-e","mic_e_message":"in-service","type_code":"`","device_suffix":"_5","latitude":30.6585,"longitude":-158.86483333333334,"symbol":"/-","speed_knots":36,"phg":{"power":5,"height":1,"gain":3,"d
+
+== write versus refuse
+    22 [third-party] written by c+cs, refused by go+py+rs+ts
+          e.g. {"n":1046,"data":{"type":"third-party","packet":{"source":"M0LTE-9","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"status","text":"hi"}}},"path":["TCPIP","G4ABC*"]
+     4 [status] written by cs+go+rs, refused by c+py+ts
+          e.g. {"n":1723,"data":{"type":"status","locator":"io91sx","symbol":"/-","beam":{"heading_code":"B","power_code":"7"},"text":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},"exact":false,"faults":["loca
+     1 [position] written by c+cs+py+ts, refused by go+rs
+          e.g. {"n":241,"data":{"type":"position","timestamp":"092345z","latitude":89.99991666666666,"longitude":1.7241666666666666,"symbol":"/>","comment":"Test","ambiguity":1,"speed_knots":999.4},"exact":false,"faults":["edge:latitud
+     1 [position] written by cs, refused by c+go+py+rs+ts
+          e.g. {"n":6330,"data":{"type":"position","timestamp":"092345z","latitude":-57.46995216918771,"longitude":-61.20281104466484,"symbol":"/_","weather":{"wind_gust_mph":729,"rain_24h_in":1.1,"humidity_percent":19,"pressure_mbar":
+     1 [mic-e] written by c+cs+py+ts, refused by go+rs
+          e.g. {"n":15788,"data":{"type":"mic-e","mic_e_message":"in-service","type_code":">","device_suffix":"=","latitude":-83.5,"longitude":179.99991666666668,"symbol":"/[","course_degrees":88,"speed_knots":36,"frequency":{"mhz":439
+     1 [position] written by go+rs, refused by c+cs+py+ts
+          e.g. {"n":16413,"data":{"type":"position","latitude":-63.92247575644615,"longitude":56.59884597008343,"symbol":"/_","compressed":true,"weather":{"wind_speed_mph":999.5,"temperature_f":-99,"rain_1h_in":2.32,"rain_24h_in":7.01,

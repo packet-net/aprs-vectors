@@ -1,0 +1,2 @@
+encode: 1,000,000 lines; 1,000,000 agree; 0 differ. 0 buckets.
+unsupported (left out): rs packet.data: undecoded, and its bytes are not in the neutral form 5,339, go packet.data: undecoded, and its bytes are not in the neutral form 5,339, c comment is longer than the C field holds 2, c text is longer than the C field holds 1

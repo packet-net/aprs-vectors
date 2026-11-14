@@ -1,0 +1,764 @@
+build: 1,000,000 lines; 873,823 agree; 126,177 differ. 68 buckets.
+unsupported (left out): rs speed_kmh: the builder takes one speed 206,179, ts speed_kmh: given with speed_knots 206,179, go speed_kmh: the builder takes one speed 206,179, rs altitude_m: the builder takes one altitude 134,980, go altitude_m: the builder takes one altitude 134,980, ts timestamp: a status timestamp is dhm, not hms 40,729, rs temperature_c: the builder takes one temperature 40,602, ts temperature_c: given with temperature_f 40,602, go temperature_c: the builder takes one temperature 40,602, rs rain_1h_mm: the builder takes one rainfall for each period 24,607, ts rain_1h_mm: given with rain_1h_in 24,607, go rain_1h_mm: the builder takes one rainfall for each period 24,607, c analog: the builder takes five values 22,734, cs bulletin id: the builder takes one character 17,982, rs id: the builder takes one character 17,982, go id: the builder takes one character 17,982, ts locator: the builder takes a status locator only with a symbol 17,090, rs sequence: the builder takes a number 0-65535 16,862, go sequence: the builder takes a number 0-65535 16,862, c sequence: out of the range the builder's field holds 11,476
+
+24,353  [weather] result: cs+py | c
+    line 4: {"n":4,"station":{"source":"VK2XYZ-15","destination":"APRS"},"report":"weather","args":{"latitude":-70.335989,"longitude":101.870526,"symbol":"/_","rain_1h_in":0.1,"rain_midnight_in":5.115,"pressure_mbar":1054.36,"snow_24h_in":0,"rain_1h_mm
+      cs+py            refused
+      c                built
+    line 43: {"n":43,"station":{"source":"VK2XYZ-15"},"report":"weather","args":{"timestamp":{"utc":"2026-05-05T20:55:20Z","format":"mdhm"},"wind_gust_mph":3.5,"rain_1h_in":0,"humidity_percent":100.4,"pressure_mbar":1013.25,"luminosity_w_m2":1000,"snow_
+      cs+py            refused
+      c                built
+    line 93: {"n":93,"station":{"source":"M0LTE-7","path":["WIDE1-1","WIDE2-1"]},"report":"weather","args":{"timestamp":{"utc":"2026-07-04T01:48:53Z","format":"mdhm"},"wind_direction_degrees":251.2,"wind_speed_mph":0,"wind_gust_mph":3.5,"rain_24h_in":5.
+      cs+py            refused
+      c                built
+
+22,877  [position] result: cs+py | c
+    line 65: {"n":65,"station":{"source":"M0LTE-7"},"report":"position","args":{"latitude":-3.33257,"longitude":28.54752,"symbol":"/k","comment":"Digi","timestamp":{"utc":"2026-04-02T17:19:20Z","format":"dhm"},"altitude_feet":100.0,"altitude_m":30.48,"s
+      cs+py            refused
+      c                built
+    line 186: {"n":186,"station":{"source":"VK2XYZ-15","destination":"APZ001","path":["WIDE1-1","WIDE2-1"]},"report":"position","args":{"latitude":62.63265,"longitude":-81.07022,"symbol":"/[","altitude_m":7055.7,"course_degrees":0,"speed_knots":10.0,"spe
+      cs+py            refused
+      c                built
+    line 211: {"n":211,"station":{"source":"W1AW","path":["WIDE1-1"]},"report":"position","args":{"latitude":-5.283693,"longitude":149.290615,"symbol":"S#","course_degrees":0.4,"comment":"Test","messaging":true,"speed_knots":10.0,"speed_kmh":18.52},"faul
+      cs+py            refused
+      c                built
+
+13,808  [mic-e] result: cs+py | c
+    line 35: {"n":35,"station":{"source":"G4ABC-9","destination":"APZ001","path":["WIDE2-2"]},"report":"mic-e","args":{"latitude":42.077614,"longitude":24.164499,"symbol":"3>","course_degrees":359,"altitude_feet":100.0,"comment":"{AB}","mic_e_message":"
+      cs+py            refused
+      c                built
+    line 101: {"n":101,"station":{"source":"W1AW"},"report":"mic-e","args":{"latitude":-57.56,"longitude":-12.98,"symbol":"/-","speed_knots":10.0,"comment":"Trying out the Mobilink","dao":true,"mic_e_message":"emergency","messaging":true,"speed_kmh":18.5
+      cs+py            refused
+      c                built
+    line 150: {"n":150,"station":{"source":"M0LTE-7","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":-16.62,"longitude":4.12,"symbol":"3>","course_degrees":360,"speed_knots":10.0,"mic_e_message":"priority","speed_kmh":18.52,"altitude_m"
+      cs+py            refused
+      c                built
+
+9,904  [position] result: cs+py | ts+c
+    line 48: {"n":48,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":11.35,"longitude":50.37,"symbol":"S#","speed_knots":799.5,"altitude_feet":100.0,"ambiguity":2,"messaging":true,"course_degrees":0.4,"altitude_m":30.48},"faults"
+      cs+py            refused
+      ts+c             built
+    line 285: {"n":285,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":-34.4675366,"longitude":70.5438655,"symbol":"3>","course_degrees":0.5,"speed_knots":199.6,"comment":"/A=001234","altitude_feet":100.0,"altitude_m":30.48},"faul
+      cs+py            refused
+      ts+c             built
+    line 357: {"n":357,"station":{"source":"G4ABC-9","path":["WIDE1-1"]},"report":"position","args":{"latitude":20.5528,"longitude":17.8895,"symbol":"\\>","comment":"C107","timestamp":{"utc":"2026-05-13T19:05:22Z","format":"dhm"},"speed_kmh":1850.1,"alti
+      cs+py            refused
+      ts+c             built
+
+8,614  [position] refusal: py+c | cs
+    line 67: {"n":67,"station":{"source":"W1AW","path":["WIDE1-1"]},"report":"position","args":{"latitude":8.6781,"longitude":113.8541,"symbol":"3>","phg":{"power":5,"height":7,"gain":1,"directivity":0},"messaging":true,"speed_kmh":1851259.2,"speed_knot
+      cs               "value-out-of-range"
+      py+c             "extension-conflict"
+    line 250: {"n":250,"station":{"source":"VK2XYZ-15","path":["WIDE1-1"]},"report":"position","args":{"latitude":-5.39,"longitude":180.0,"symbol":"3>","course_degrees":1,"altitude_m":30.48,"phg":{"power":8,"height":4,"gain":1,"directivity":1},"messaging
+      cs               "extension-conflict"
+      py+c             "value-out-of-range"
+    line 275: {"n":275,"station":{"source":"VK2XYZ-15","destination":"APZ001"},"report":"position","args":{"latitude":-77.723303,"longitude":-116.937569,"symbol":"/-","comment":"?WX ","phg":{"power":1,"height":0,"gain":1,"directivity":1},"timestamp":{"ut
+      cs               "value-out-of-range"
+      py+c             "extension-conflict"
+
+7,173  [object] result: cs+py | c
+    line 149: {"n":149,"station":{"source":"N0CALL","path":["WIDE1-1","WIDE2-1"]},"report":"object","args":{"name":"LEADER","latitude":1.9543284,"longitude":180.0,"symbol":"/-","speed_knots":10.0,"altitude_feet":0,"timestamp":{"utc":"2026-11-21T22:24:23Z
+      cs+py            refused
+      c                built
+    line 226: {"n":226,"station":{"source":"VK2XYZ-15","destination":"APZ001"},"report":"object","args":{"name":"  SPACED","latitude":-10.4334,"longitude":-94.6023,"symbol":"/[","course_degrees":57,"comment":"tiny_IZ3QLR","timestamp":{"utc":"2026-01-24T0
+      cs+py            refused
+      c                built
+    line 454: {"n":454,"station":{"source":"N0CALL","path":["WIDE2-2"]},"report":"object","args":{"name":"A","latitude":45.0,"longitude":180.0,"symbol":"/#","course_degrees":360.4,"altitude_feet":0,"comment":"A=00005þ","timestamp":{"utc":"2026-03-17T00:1
+      cs+py            refused
+      c                built
+
+5,748  [mic-e] result: cs+py | ts+c
+    line 6: {"n":6,"station":{"source":"N0CALL","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":-6.10307,"longitude":-99.18104,"symbol":"/[","comment":"Lora Tracker PE1IAA P=4.95V","mic_e_message":"special","messaging":true,"altitude_
+      cs+py            refused
+      ts+c             built
+    line 64: {"n":64,"station":{"source":"W1AW","destination":"APZXYZ","path":["WIDE2-2"]},"report":"mic-e","args":{"latitude":-31.7850592,"longitude":68.6994657,"symbol":"/[","speed_kmh":208.3,"comment":"Test 123","frequency":{"mhz":438.8,"offset_khz":
+      cs+py            refused
+      ts+c             built
+    line 178: {"n":178,"station":{"source":"M0LTE-7"},"report":"mic-e","args":{"latitude":90.0,"longitude":129.668005,"symbol":"\\>","speed_kmh":1,"altitude_m":30.48,"mic_e_message":"in-service","altitude_feet":100.0},"faults":["edge:latitude","twice:alt
+      cs+py            refused
+      ts+c             built
+
+5,685  [position] refusal: cs | py
+    line 367: {"n":367,"station":{"source":"W1AW","path":["WIDE1-1","WIDE2-1"]},"report":"position","args":{"latitude":45.5,"longitude":-50.58,"symbol":"/l","comment":"IT-DMR - DIGIPEATER APRS - Bolzano (BZ) ","speed_knots":799.5,"speed_kmh":-1},"faults"
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+    line 508: {"n":508,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":-6.806467,"longitude":-66.69751,"symbol":"/[","speed_knots":199.6,"speed_kmh":1851259.2,"course_degrees":0.4},"faults":["edge:speed_kmh","edge:course_degrees"]
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+    line 1654: {"n":1654,"station":{"source":"M0LTE-7","path":["WIDE1-1"]},"report":"position","args":{"latitude":-82.6587589,"longitude":31.1278424,"symbol":"/-","speed_kmh":1,"altitude_feet":999999.4,"timestamp":{"utc":"2026-10-11T17:16:34Z","format":"h
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+
+4,577  [item] result: cs+py | c
+    line 3: {"n":3,"station":{"source":"G4ABC-9","destination":"APZXYZ","path":["WIDE2-2"]},"report":"item","args":{"name":"147.345","latitude":24.3594,"longitude":38.0241,"symbol":"S#","telemetry":{"sequence":7828,"analog":[6873,2363]},"speed_knots":1
+      cs+py            refused
+      c                built
+    line 161: {"n":161,"station":{"source":"G4ABC-9","path":["WIDE2-2"]},"report":"item","args":{"name":"ABC","latitude":66.5997,"longitude":-31.86506,"symbol":"\\>","course_degrees":360,"speed_kmh":0,"compressed":true,"altitude_feet":100.0,"altitude_m":
+      cs+py            refused
+      c                built
+    line 197: {"n":197,"station":{"source":"N0CALL"},"report":"item","args":{"name":"X Y","latitude":70.4661,"longitude":-122.0558,"symbol":"S#","course_degrees":360,"speed_knots":10.0,"comment":"?APRS?*Hello","ambiguity":4,"speed_kmh":18.52},"faults":["
+      cs+py            refused
+      c                built
+
+4,551  [mic-e] refusal: cs | py
+    line 6: {"n":6,"station":{"source":"N0CALL","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":-6.10307,"longitude":-99.18104,"symbol":"/[","comment":"Lora Tracker PE1IAA P=4.95V","mic_e_message":"special","messaging":true,"altitude_
+      cs               "value-given-twice"
+      py               "value-out-of-range"
+    line 80: {"n":80,"station":{"source":"W1AW"},"report":"mic-e","args":{"latitude":-31.73,"longitude":159.66,"symbol":"/#","speed_kmh":143.8,"comment":"MT#@%J(7!||\u0000!!!!|Hello","frequency":{"mhz":145.5},"mic_e_message":"committed","messaging":true
+      cs               "value-given-twice"
+      py               "value-out-of-range"
+    line 518: {"n":518,"station":{"source":"VK2XYZ-15","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":36.0228,"longitude":177.3972,"symbol":"S#","speed_knots":199.6,"mic_e_message":"en-route","messaging":true,"course_degrees":360,"spee
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+
+3,405  [position] refusal: cs+ts | py
+    line 136: {"n":136,"station":{"source":"M0LTE-7","path":["WIDE1-1","WIDE2-1"]},"report":"position","args":{"latitude":69.1791,"longitude":-7.5744,"symbol":"3>","altitude_feet":-12.5,"comment":"Test 123","altitude_m":304800,"speed_kmh":1850.1},"faults
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+    line 430: {"n":430,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":90.0,"longitude":11.2468,"symbol":"/[","phg":{"power":1,"height":8,"gain":6,"directivity":5},"altitude_feet":999999.4,"altitude_m":304800},"faults":["edge:alti
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+    line 469: {"n":469,"station":{"source":"N0CALL"},"report":"position","args":{"latitude":-69.55862,"longitude":78.90489,"symbol":"/[","course_degrees":125,"speed_knots":12.5,"altitude_m":304799.9,"comment":"?APRS?","timestamp":{"utc":"2026-08-07T05:53
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+
+3,375  [position] result: cs+py+ts | c
+    line 136: {"n":136,"station":{"source":"M0LTE-7","path":["WIDE1-1","WIDE2-1"]},"report":"position","args":{"latitude":69.1791,"longitude":-7.5744,"symbol":"3>","altitude_feet":-12.5,"comment":"Test 123","altitude_m":304800,"speed_kmh":1850.1},"faults
+      cs+py+ts         refused
+      c                built
+    line 430: {"n":430,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":90.0,"longitude":11.2468,"symbol":"/[","phg":{"power":1,"height":8,"gain":6,"directivity":5},"altitude_feet":999999.4,"altitude_m":304800},"faults":["edge:alti
+      cs+py+ts         refused
+      c                built
+    line 469: {"n":469,"station":{"source":"N0CALL"},"report":"position","args":{"latitude":-69.55862,"longitude":78.90489,"symbol":"/[","course_degrees":125,"speed_knots":12.5,"altitude_m":304799.9,"comment":"?APRS?","timestamp":{"utc":"2026-08-07T05:53
+      cs+py+ts         refused
+      c                built
+
+3,274  [mic-e] refusal: py+c | cs
+    line 260: {"n":260,"station":{"source":"W1AW"},"report":"mic-e","args":{"latitude":-16.22591,"longitude":-7.4131,"symbol":"\\>","course_degrees":360,"speed_kmh":100,"comment":"Ñ\u0015É2e¢ª²K*IC","frequency":{"mhz":145.5},"mic_e_message":"en-route",
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+    line 295: {"n":295,"station":{"source":"VK2XYZ-15","path":["WIDE2-2"]},"report":"mic-e","args":{"latitude":35.206094,"longitude":156.64769,"symbol":"/-","course_degrees":1,"speed_kmh":0,"altitude_feet":100.0,"comment":"\u001d","mic_e_message":"specia
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+    line 614: {"n":614,"station":{"source":"W1AW"},"report":"mic-e","args":{"latitude":0.6378,"longitude":180.0,"symbol":"/>","speed_knots":1.8,"ambiguity":3,"mic_e_message":"priority","messaging":true,"speed_kmh":1851259.2},"faults":["edge:speed_kmh","e
+      cs               "value-out-of-range"
+      py+c             "value-has-no-form"
+
+3,263  [object] result: cs+py | ts+c
+    line 290: {"n":290,"station":{"source":"VK2XYZ-15","path":["WIDE2-2"]},"report":"object","args":{"name":"REPEATER1","latitude":90.0,"longitude":-132.956085,"symbol":"/[","course_degrees":359,"timestamp":{"utc":"2026-09-28T08:11:05Z","format":"hms"},"
+      cs+py            refused
+      ts+c             built
+    line 737: {"n":737,"station":{"source":"W1AW","path":["WIDE2-2"]},"report":"object","args":{"name":"REPEATER1","latitude":4.450295,"longitude":180.0,"symbol":"\\m","compressed":true,"timestamp":{"utc":"2026-02-08T14:36:44Z","format":"hms"},"altitude_
+      cs+py            refused
+      ts+c             built
+    line 998: {"n":998,"station":{"source":"W1AW","path":["WIDE2-2"]},"report":"object","args":{"name":"ABC","latitude":23.2137039,"longitude":154.5424485,"symbol":"3>","course_degrees":185.3,"speed_knots":999.4,"dao":true,"timestamp":{"utc":"2026-02-13T
+      cs+py            refused
+      ts+c             built
+
+2,681  [object] refusal: py+c | cs
+    line 724: {"n":724,"station":{"source":"M0LTE-7","path":["WIDE1-1","WIDE2-1"]},"report":"object","args":{"name":"  SPACED","latitude":9.68,"longitude":61.88,"symbol":"/l","course_degrees":359,"altitude_m":7024.2,"ambiguity":2,"timestamp":{"utc":"2026
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+    line 733: {"n":733,"station":{"source":"VK2XYZ-15","path":["WIDE2-2"]},"report":"object","args":{"name":"ABC","latitude":-54.61665,"longitude":-69.31452,"symbol":"/k","altitude_m":9318.2,"comment":"LoRa iGate","phg":{"power":6,"height":0,"gain":7,"di
+      cs               "extension-conflict"
+      py+c             "value-out-of-range"
+    line 759: {"n":759,"station":{"source":"W1AW","path":["WIDE2-2"]},"report":"object","args":{"name":"A","latitude":18.894372,"longitude":-97.414597,"symbol":"/>","speed_kmh":-1,"phg":{"power":9,"height":4,"gain":0,"directivity":0},"timestamp":{"utc":"
+      cs               "value-out-of-range"
+      py+c             "extension-conflict"
+
+2,534  [weather] refusal: cs+c | py
+    line 254: {"n":254,"station":{"source":"N0CALL","path":["WIDE2-2"]},"report":"weather","args":{"timestamp":{"utc":"2026-12-27T14:21:44Z","format":"mdhm"},"wind_speed_mph":0,"wind_gust_mph":999.4,"rain_1h_in":0.1,"rain_midnight_in":7.307,"humidity_per
+      cs+c             "value-out-of-range"
+      py               "value-given-twice"
+    line 735: {"n":735,"station":{"source":"VK2XYZ-15"},"report":"weather","args":{"latitude":-46.758082,"longitude":-161.010139,"symbol":"/_","timestamp":{"utc":"2026-08-15T21:47:36Z","format":"hms"},"wind_direction_degrees":0,"wind_speed_mph":0,"pressu
+      cs+c             "value-out-of-range"
+      py               "value-given-twice"
+    line 1749: {"n":1749,"station":{"source":"N0CALL","path":["WIDE2-2"]},"report":"weather","args":{"latitude":26.6298923,"longitude":23.4883629,"symbol":"\\_","timestamp":{"utc":"2026-06-18T13:34:47Z","format":"hms"},"wind_speed_mph":110.3,"rain_1h_in":
+      cs+c             "value-out-of-range"
+      py               "value-given-twice"
+
+2,095  [position] refusal: cs+ts | py+c
+    line 89: {"n":89,"station":{"source":"G4ABC-9","path":["WIDE2-2"]},"report":"position","args":{"latitude":46.37,"longitude":41.42,"symbol":"/#","altitude_feet":29320.7,"comment":"nshine PeakSprings","range_miles":0,"messaging":true,"timestamp":{"utc
+      cs+ts            "value-out-of-range"
+      py+c             "extension-conflict"
+    line 160: {"n":160,"station":{"source":"G4ABC-9","path":["WIDE2-2"]},"report":"position","args":{"latitude":-29.3122,"longitude":180.0,"symbol":"/k","course_degrees":86,"speed_kmh":1,"comment":"LoRa iGate/A=001234Digi","phg":{"power":0,"height":6,"ga
+      cs+ts            "value-out-of-range"
+      py+c             "value-has-no-form"
+    line 817: {"n":817,"station":{"source":"M0LTE-7","path":["WIDE2-2"]},"report":"position","args":{"latitude":3.4699483,"longitude":99.6375287,"symbol":"3>","altitude_m":304799.9,"phg":{"power":0,"height":3,"gain":5,"directivity":1},"ambiguity":4,"spee
+      cs+ts            "value-out-of-range"
+      py+c             "extension-conflict"
+
+1,972  [item] result: cs+py | ts+c
+    line 0: {"n":0,"station":{"source":"W1AW","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"LEADER","latitude":67.004658,"longitude":82.024717,"symbol":"\\>","altitude_feet":100.0,"altitude_m":30.48,"speed_knots":999.4},"faults":["twice
+      cs+py            refused
+      ts+c             built
+    line 153: {"n":153,"station":{"source":"G4ABC-9","path":["WIDE2-2"]},"report":"item","args":{"name":"LEADER","latitude":-71.86671,"longitude":99.74065,"symbol":"3>","course_degrees":0,"comment":"# Vb 12.3V, Icb 1081mA, Ipa 0mA, # CB Off - RST 0 # Sta
+      cs+py            refused
+      ts+c             built
+    line 372: {"n":372,"station":{"source":"W1AW","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"ABC","latitude":68.9,"longitude":124.81,"symbol":"S#","comment":"de N0CA/LL","altitude_feet":100.0,"altitude_m":30.48,"course_degrees":0.5},"f
+      cs+py            refused
+      ts+c             built
+
+1,774  [object] refusal: cs | py
+    line 226: {"n":226,"station":{"source":"VK2XYZ-15","destination":"APZ001"},"report":"object","args":{"name":"  SPACED","latitude":-10.4334,"longitude":-94.6023,"symbol":"/[","course_degrees":57,"comment":"tiny_IZ3QLR","timestamp":{"utc":"2026-01-24T0
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+    line 454: {"n":454,"station":{"source":"N0CALL","path":["WIDE2-2"]},"report":"object","args":{"name":"A","latitude":45.0,"longitude":180.0,"symbol":"/#","course_degrees":360.4,"altitude_feet":0,"comment":"A=00005þ","timestamp":{"utc":"2026-03-17T00:1
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+    line 596: {"n":596,"station":{"source":"W1AW","path":["WIDE1-1"]},"report":"object","args":{"name":"REPEATER1","latitude":-1.06221,"longitude":84.21867,"symbol":"/>","course_degrees":1,"speed_knots":0.4,"altitude_feet":999999.4,"frequency":{"mhz":146
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+
+1,713  [item] refusal: py+c | cs
+    line 586: {"n":586,"station":{"source":"N0CALL","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"ABC","latitude":-50.08,"longitude":2.44,"symbol":"/[","course_degrees":1,"altitude_m":6682.3,"comment":"?7.210MHz C +060_1","compressed":tru
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+    line 2667: {"n":2667,"station":{"source":"VK2XYZ-15","path":["WIDE1-1"]},"report":"item","args":{"name":"ABC","latitude":-53.5038125,"longitude":180.0,"symbol":"/>","altitude_m":30.48,"comment":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+    line 2740: {"n":2740,"station":{"source":"M0LTE-7","path":["WIDE1-1"]},"report":"item","args":{"name":"LEADER","latitude":-67.582452,"longitude":-148.710964,"symbol":"/l","speed_kmh":1,"altitude_m":30.48,"comment":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+
+1,110  [object] refusal: cs+ts | py
+    line 205: {"n":205,"station":{"source":"W1AW","destination":"APRS"},"report":"object","args":{"name":"ABC","latitude":69.65,"longitude":176.16,"symbol":"/l","course_degrees":360,"comment":"Test 123A=001234WX","timestamp":{"utc":"2026-11-06T16:45:24Z"
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+    line 2196: {"n":2196,"station":{"source":"VK2XYZ-15","destination":"APRS","path":["WIDE1-1","WIDE2-1"]},"report":"object","args":{"name":"147.345","latitude":-13.789681,"longitude":76.744983,"symbol":"/k","altitude_feet":-12.5,"timestamp":{"utc":"2026
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+    line 3119: {"n":3119,"station":{"source":"G4ABC-9","path":["WIDE1-1"]},"report":"object","args":{"name":"LEADER","latitude":-38.0036024,"longitude":103.3457797,"symbol":"/k","comment":"=FLGBCH>APMI06,TCPIP*,qAS,N9FB:@261221z2924.78NS08108.76W# W2, FLn
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+
+1,105  [object] result: cs+py+ts | c
+    line 205: {"n":205,"station":{"source":"W1AW","destination":"APRS"},"report":"object","args":{"name":"ABC","latitude":69.65,"longitude":176.16,"symbol":"/l","course_degrees":360,"comment":"Test 123A=001234WX","timestamp":{"utc":"2026-11-06T16:45:24Z"
+      cs+py+ts         refused
+      c                built
+    line 2196: {"n":2196,"station":{"source":"VK2XYZ-15","destination":"APRS","path":["WIDE1-1","WIDE2-1"]},"report":"object","args":{"name":"147.345","latitude":-13.789681,"longitude":76.744983,"symbol":"/k","altitude_feet":-12.5,"timestamp":{"utc":"2026
+      cs+py+ts         refused
+      c                built
+    line 3119: {"n":3119,"station":{"source":"G4ABC-9","path":["WIDE1-1"]},"report":"object","args":{"name":"LEADER","latitude":-38.0036024,"longitude":103.3457797,"symbol":"/k","comment":"=FLGBCH>APMI06,TCPIP*,qAS,N9FB:@261221z2924.78NS08108.76W# W2, FLn
+      cs+py+ts         refused
+      c                built
+
+1,105  [item] refusal: cs | py
+    line 1617: {"n":1617,"station":{"source":"G4ABC-9"},"report":"item","args":{"name":"ABC","latitude":56.8669,"longitude":51.9429,"symbol":"\\>","course_degrees":359,"altitude_feet":100.5,"comment":"RNG12 ÿDigi","compressed":true,"speed_knots":10.0,"spe
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+    line 1736: {"n":1736,"station":{"source":"N0CALL"},"report":"item","args":{"name":"LEADER","latitude":7.5666,"longitude":-123.7254,"symbol":"\\m","altitude_feet":6585.5,"comment":"_","speed_knots":10.0,"speed_kmh":18.52,"altitude_m":-30480.2},"faults"
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+    line 2284: {"n":2284,"station":{"source":"N0CALL","destination":"APZXYZ","path":["WIDE2-2"]},"report":"item","args":{"name":"X Y","latitude":-62.2113,"longitude":130.5306,"symbol":"/#","speed_knots":226.0,"dao":true,"speed_kmh":-1,"course_degrees":0},
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+
+1,024  [mic-e] refusal: cs+ts+c | py
+    line 370: {"n":370,"station":{"source":"N0CALL","path":["WIDE1-1"]},"report":"mic-e","args":{"latitude":90.0,"longitude":180.0,"symbol":"S#","speed_knots":0,"altitude_feet":-99999.5,"comment":"SvxLink by SM0SVX T10073","mic_e_message":"priority","alt
+      cs+ts+c          "value-has-no-form"
+      py               "value-out-of-range"
+    line 2190: {"n":2190,"station":{"source":"W1AW","destination":"APRS","path":["WIDE1-1"]},"report":"mic-e","args":{"latitude":90.0,"longitude":4.22579,"symbol":"/[","comment":"PHG6150/A=003980/Oak Hills WXTrak090/013QTH","telemetry":{"sequence":3386,"a
+      cs+ts+c          "value-out-of-range"
+      py               "value-given-twice"
+    line 4829: {"n":4829,"station":{"source":"N0CALL"},"report":"mic-e","args":{"latitude":21.934391,"longitude":-155.271714,"symbol":"\\>","comment":"xxxxxxxxxxxxxxxxxxxxxxx日本語xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      cs+ts+c          "value-out-of-range"
+      py               "value-given-twice"
+
+866  [position] result: cs+py+c | ts
+    line 1940: {"n":1940,"station":{"source":"M0LTE-7","destination":"APZXYZ"},"report":"position","args":{"latitude":65.3931,"longitude":-147.9683,"symbol":"/k","course_degrees":0.4,"speed_kmh":1,"altitude_m":30.48,"ambiguity":4,"telemetry":{"sequence":2
+      cs+py+c          refused
+      ts               built
+    line 2454: {"n":2454,"station":{"source":"N0CALL","path":["WIDE1-1","WIDE2-1"]},"report":"position","args":{"latitude":-31.70092,"longitude":58.41912,"symbol":"/l","course_degrees":0.4,"speed_kmh":338.4,"altitude_m":3474.2,"comment":"z _%","messaging"
+      cs+py+c          refused
+      ts               built
+    line 3800: {"n":3800,"station":{"source":"G4ABC-9","destination":"APZ001"},"report":"position","args":{"latitude":-17.820458,"longitude":-51.625575,"symbol":"\\m","altitude_m":8314.1,"comment":"A=00123 T1004","course_degrees":0,"altitude_feet":999999.
+      cs+py+c          refused
+      ts               built
+
+761  [position] refusal: cs+py | c
+    line 24: {"n":24,"station":{"source":"VK2XYZ-15","destination":"APRS"},"report":"position","args":{"latitude":-54.75269,"longitude":-38.70525,"symbol":"3>","comment":"!w8'!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+    line 30: {"n":30,"station":{"source":"W1AW","destination":"APRS","path":["WIDE1-1"]},"report":"position","args":{"latitude":89.99999,"longitude":180.0,"symbol":"/>","comment":"PHG3330 Colorado Springs IGate146.52 MHzmobile","frequency":{"mhz":145.5,
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+    line 229: {"n":229,"station":{"source":"VK2XYZ-15","destination":"APZ001","path":["WIDE2-2"]},"report":"position","args":{"latitude":-68.03,"longitude":-144.77,"symbol":"/>","course_degrees":16.9,"speed_kmh":1850.1,"comment":"LoRa iGate!W12!Net","tim
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+
+662  [item] refusal: cs+ts | py
+    line 589: {"n":589,"station":{"source":"VK2XYZ-15"},"report":"item","args":{"name":"NINECHARS","latitude":3.8526,"longitude":180.0,"symbol":"/-","altitude_feet":-12.5,"speed_knots":999.4,"altitude_m":-30480.2},"faults":["edge:speed_knots","edge:altit
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+    line 1402: {"n":1402,"station":{"source":"W1AW","path":["WIDE1-1"]},"report":"item","args":{"name":"LEADER","latitude":90.0,"longitude":70.99896,"symbol":"\\m","speed_kmh":0,"altitude_feet":9541.8,"frequency":{"mhz":438.8,"tone":"tone","tone_value":10
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+    line 3380: {"n":3380,"station":{"source":"W1AW"},"report":"item","args":{"name":"LEADER","latitude":90.0,"longitude":-95.602003,"symbol":"\\>","course_degrees":158,"speed_knots":38.0,"altitude_feet":999999.4,"comment":"WINLINK\"{5t}","altitude_m":-304
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+
+661  [object] refusal: cs+ts | py+c
+    line 366: {"n":366,"station":{"source":"M0LTE-7","destination":"APRS","path":["WIDE1-1"]},"report":"object","args":{"name":"  SPACED","latitude":-55.4851,"longitude":56.6402,"symbol":"/#","course_degrees":0.5,"speed_knots":201.3,"altitude_feet":-12.5
+      cs+ts            "value-out-of-range"
+      py+c             "field-not-allowed"
+    line 1513: {"n":1513,"station":{"source":"VK2XYZ-15","destination":"APZ001","path":["WIDE1-1","WIDE2-1"]},"report":"object","args":{"name":"LEADER","latitude":90.0,"longitude":180.0,"symbol":"/[","course_degrees":359,"altitude_feet":-12.5,"comment":"a
+      cs+ts            "value-out-of-range"
+      py+c             "missing-field"
+    line 2755: {"n":2755,"station":{"source":"M0LTE-7","path":["WIDE1-1"]},"report":"object","args":{"name":"  SPACED","latitude":-45.89,"longitude":-56.48,"symbol":"/l","course_degrees":360,"altitude_feet":999999.4,"comment":"Digi near Hampshire, IL","ph
+      cs+ts            "value-out-of-range"
+      py+c             "field-not-allowed"
+
+656  [item] result: cs+py+ts | c
+    line 589: {"n":589,"station":{"source":"VK2XYZ-15"},"report":"item","args":{"name":"NINECHARS","latitude":3.8526,"longitude":180.0,"symbol":"/-","altitude_feet":-12.5,"speed_knots":999.4,"altitude_m":-30480.2},"faults":["edge:speed_knots","edge:altit
+      cs+py+ts         refused
+      c                built
+    line 1402: {"n":1402,"station":{"source":"W1AW","path":["WIDE1-1"]},"report":"item","args":{"name":"LEADER","latitude":90.0,"longitude":70.99896,"symbol":"\\m","speed_kmh":0,"altitude_feet":9541.8,"frequency":{"mhz":438.8,"tone":"tone","tone_value":10
+      cs+py+ts         refused
+      c                built
+    line 3380: {"n":3380,"station":{"source":"W1AW"},"report":"item","args":{"name":"LEADER","latitude":90.0,"longitude":-95.602003,"symbol":"\\>","course_degrees":158,"speed_knots":38.0,"altitude_feet":999999.4,"comment":"WINLINK\"{5t}","altitude_m":-304
+      cs+py+ts         refused
+      c                built
+
+637  [mic-e] refusal: cs+py | c
+    line 1472: {"n":1472,"station":{"source":"M0LTE-7","path":["WIDE2-2"]},"report":"mic-e","args":{"latitude":-40.2427918,"longitude":177.8582612,"symbol":"S#","comment":"T82.5 Lancashire [0/20]}ABmobile","dao":true,"mic_e_message":"committed","altitude_
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+    line 2705: {"n":2705,"station":{"source":"G4ABC-9","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":-62.7360428,"longitude":-90.0651987,"symbol":"/l","speed_knots":10.0,"comment":"RNG0001PHG5132 440 Voice 432.45000MHz +5.0000MHz!w8'!R
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+    line 3900: {"n":3900,"station":{"source":"G4ABC-9","destination":"APZXYZ","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":-12.38,"longitude":177.07,"symbol":"S#","speed_kmh":18.52,"altitude_m":30.48,"comment":"WX'LoRa iGate|!!\"#|","
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+
+468  [mic-e] refusal: cs+c | py
+    line 1254: {"n":1254,"station":{"source":"G4ABC-9","path":["WIDE2-2"]},"report":"mic-e","args":{"latitude":57.9253273,"longitude":109.7536548,"symbol":"/k","course_degrees":173,"speed_knots":199.6,"altitude_feet":100.5,"dao":true,"mic_e_message":"spec
+      cs+c             "value-out-of-range"
+      py               "value-given-twice"
+    line 1545: {"n":1545,"station":{"source":"VK2XYZ-15","destination":"APRS"},"report":"mic-e","args":{"latitude":-34.230624,"longitude":180.0,"symbol":"/-","course_degrees":360,"speed_knots":10.0,"altitude_m":30.48,"comment":"\"=K3RWJ}146.520M|Hz 146.97
+      cs+c             "value-has-no-form"
+      py               "value-out-of-range"
+    line 1887: {"n":1887,"station":{"source":"M0LTE-7","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":59.86395,"longitude":-21.58282,"symbol":"/#","speed_knots":10.0,"altitude_feet":-12.5,"mic_e_message":"returning","messaging":true,"sp
+      cs+c             "value-out-of-range"
+      py               "value-given-twice"
+
+424  [position] refusal: cs+py | ts+c
+    line 1842: {"n":1842,"station":{"source":"M0LTE-7","path":["WIDE2-2"]},"report":"position","args":{"latitude":90.0,"longitude":-21.080886,"symbol":"/[","altitude_m":30.48,"comment":"|!!!!|","altitude_feet":100.0,"course_degrees":0},"faults":["twice:al
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+    line 5552: {"n":5552,"station":{"source":"W1AW","path":["WIDE2-2"]},"report":"position","args":{"latitude":16.4933867,"longitude":-128.2057185,"symbol":"/[","course_degrees":359,"altitude_feet":100.0,"comment":"|!!!!|","frequency":{"mhz":438.8,"tone":
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+    line 5960: {"n":5960,"station":{"source":"G4ABC-9","path":["WIDE2-2"]},"report":"position","args":{"latitude":-35.07319,"longitude":132.3406347,"symbol":"/[","course_degrees":0,"comment":"Hell!w8'!o","altitude_feet":100.0,"altitude_m":30.48},"faults":
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+
+388  [item] refusal: cs+ts | py+c
+    line 1693: {"n":1693,"station":{"source":"G4ABC-9","destination":"APZXYZ"},"report":"item","args":{"name":"147.345","latitude":-38.732206,"longitude":143.577639,"symbol":"/k","course_degrees":342,"altitude_feet":0,"range_miles":10,"compressed":true,"a
+      cs+ts            "value-out-of-range"
+      py+c             "extension-conflict"
+    line 1832: {"n":1832,"station":{"source":"VK2XYZ-15","destination":"APRS","path":["WIDE1-1"]},"report":"item","args":{"name":"X Y","latitude":-38.2872535,"longitude":70.8103188,"symbol":"/-","course_degrees":0,"phg":{"power":9,"height":7,"gain":0,"dir
+      cs+ts            "value-out-of-range"
+      py+c             "value-has-no-form"
+    line 5764: {"n":5764,"station":{"source":"VK2XYZ-15"},"report":"item","args":{"name":"NINECHARS","latitude":90.0,"longitude":35.01,"symbol":"/-","course_degrees":65,"speed_kmh":100,"altitude_feet":100.5,"phg":{"power":0,"height":2,"gain":9,"directivit
+      cs+ts            "value-out-of-range"
+      py+c             "field-not-allowed"
+
+386  [position] again.data: c | ts
+    line 14488: {"n":14488,"station":{"source":"W1AW","path":["WIDE2-2"]},"report":"position","args":{"latitude":31.02,"longitude":173.82,"symbol":"/k","course_degrees":0.5,"altitude_m":0,"altitude_feet":999999.4,"speed_knots":799.5},"faults":["edge:course
+      ts               {"altitude_feet": 0, "course_degrees": 1, "latitude": 31.02, "longitude": 173.82, "speed_knots": 800, "symbol": "/k", "type": "position"}
+      c                {"altitude_feet": 999999, "course_degrees": 1, "latitude": 31.02, "longitude": 173.82, "speed_knots": 800, "symbol": "/k", "type": "position"}
+    line 19592: {"n":19592,"station":{"source":"W1AW","path":["WIDE1-1"]},"report":"position","args":{"latitude":-75.66129,"longitude":130.63294,"symbol":"/>","speed_knots":199.6,"altitude_m":7944.5,"messaging":true,"timestamp":{"utc":"2026-07-08T08:53:23Z
+      ts               {"altitude_feet": 26065, "course_degrees": 1, "latitude": -75.6613333, "longitude": 130.633, "messaging": true, "speed_knots": 200, "symbol": "/>", "timestamp": "085323h", "type": "position"}
+      c                {"altitude_feet": 999999, "course_degrees": 1, "latitude": -75.6613333, "longitude": 130.633, "messaging": true, "speed_knots": 200, "symbol": "/>", "timestamp": "085323h", "type": "position"}
+    line 21743: {"n":21743,"station":{"source":"VK2XYZ-15","path":["WIDE2-2"]},"report":"position","args":{"latitude":-78.91,"longitude":161.35,"symbol":"/l","course_degrees":360,"altitude_m":0,"timestamp":{"utc":"2026-12-09T02:38:59Z","format":"dhm"},"alt
+      ts               {"altitude_feet": 0, "course_degrees": 360, "latitude": -78.91, "longitude": 161.35, "symbol": "/l", "timestamp": "090238z", "type": "position"}
+      c                {"altitude_feet": 999999, "course_degrees": 360, "latitude": -78.91, "longitude": 161.35, "symbol": "/l", "timestamp": "090238z", "type": "position"}
+
+386  [position] tnc2: c | ts
+    line 14488: {"n":14488,"station":{"source":"W1AW","path":["WIDE2-2"]},"report":"position","args":{"latitude":31.02,"longitude":173.82,"symbol":"/k","course_degrees":0.5,"altitude_m":0,"altitude_feet":999999.4,"speed_knots":799.5},"faults":["edge:course
+      ts               "573141573e41505a3030312c57494445322d323a21333130312e32304e2f31373334392e3230456b3030312f3830302f413d303030303030"
+      c                "573141573e41505a3030312c57494445322d323a21333130312e32304e2f31373334392e3230456b3030312f3830302f413d393939393939"
+    line 19592: {"n":19592,"station":{"source":"W1AW","path":["WIDE1-1"]},"report":"position","args":{"latitude":-75.66129,"longitude":130.63294,"symbol":"/>","speed_knots":199.6,"altitude_m":7944.5,"messaging":true,"timestamp":{"utc":"2026-07-08T08:53:23Z
+      ts               "573141573e41505a3030312c57494445312d313a4030383533323368373533392e3638532f31333033372e3938453e3030312f3230302f413d303236303635"
+      c                "573141573e41505a3030312c57494445312d313a4030383533323368373533392e3638532f31333033372e3938453e3030312f3230302f413d393939393939"
+    line 21743: {"n":21743,"station":{"source":"VK2XYZ-15","path":["WIDE2-2"]},"report":"position","args":{"latitude":-78.91,"longitude":161.35,"symbol":"/l","course_degrees":360,"altitude_m":0,"timestamp":{"utc":"2026-12-09T02:38:59Z","format":"dhm"},"alt
+      ts               "564b3258595a2d31353e41505a3030312c57494445322d323a2f3039303233387a373835342e3630532f31363132312e3030456c3336302f2e2e2e2f413d303030303030"
+      c                "564b3258595a2d31353e41505a3030312c57494445322d323a2f3039303233387a373835342e3630532f31363132312e3030456c3336302f2e2e2e2f413d393939393939"
+
+273  [object] result: cs+py+c | ts
+    line 3467: {"n":3467,"station":{"source":"VK2XYZ-15"},"report":"object","args":{"name":"ABC","latitude":90.0,"longitude":-81.99,"symbol":"\\>","speed_knots":0.4,"altitude_m":7678.9,"frequency":{"mhz":57.453},"timestamp":{"utc":"2026-09-02T19:47:08Z","
+      cs+py+c          refused
+      ts               built
+    line 3508: {"n":3508,"station":{"source":"W1AW"},"report":"object","args":{"name":"  SPACED","latitude":61.91,"longitude":180.0,"symbol":"/k","course_degrees":1,"altitude_m":30.48,"comment":"146.580 - yip!","dao":true,"timestamp":{"utc":"2026-06-21T02
+      cs+py+c          refused
+      ts               built
+    line 5000: {"n":5000,"station":{"source":"G4ABC-9","destination":"APRS","path":["WIDE2-2"]},"report":"object","args":{"name":"147.345","latitude":18.9856537,"longitude":80.1425989,"symbol":"S#","altitude_m":2714.3,"timestamp":{"utc":"2026-06-15T09:51:
+      cs+py+c          refused
+      ts               built
+
+269  [position] refusal: c | cs | py
+    line 4638: {"n":4638,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":-87.9921,"longitude":154.0766,"symbol":"/>","course_degrees":0,"altitude_feet":999999.4,"comment":"PHG5132","altitude_m":304799.9,"speed_knots":10.0,"speed_km
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 7301: {"n":7301,"station":{"source":"W1AW","destination":"APZXYZ"},"report":"position","args":{"latitude":-63.4306,"longitude":46.1242,"symbol":"3>","course_degrees":360,"speed_kmh":18.52,"comment":">APDG01,TCPIP,S55YSE-10*:;IR3UFS B *252206z4540
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 10707: {"n":10707,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":47.185792,"longitude":180.0,"symbol":"\\>","speed_knots":199.6,"comment":"PHG51324/","messaging":true,"timestamp":{"utc":"2026-11-13T15:33:18Z","format":"dhm
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+
+265  [object] refusal: cs+py | c
+    line 729: {"n":729,"station":{"source":"N0CALL","destination":"APZ001","path":["WIDE1-1"]},"report":"object","args":{"name":"NINECHARS","latitude":-68.11,"longitude":-102.59,"symbol":"/k","comment":"Radio!S  ! Club","timestamp":{"utc":"2026-07-22T10:
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+    line 7123: {"n":7123,"station":{"source":"VK2XYZ-15"},"report":"object","args":{"name":"147.345","latitude":-85.02,"longitude":-64.47,"symbol":"/-","comment":"RNG0001 440 Voice 432.45000MHz +5.0000MHz","telemetry":{"sequence":4350,"analog":[7837,4108,
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+    line 7674: {"n":7674,"station":{"source":"M0LTE-7","destination":"APZ001","path":["WIDE2-2"]},"report":"object","args":{"name":"  SPACED","latitude":26.18165,"longitude":-32.39335,"symbol":"/#","speed_knots":10.0,"comment":"A=0&RNG0034 DMR-Bran00095Gr
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+
+200  [mic-e] refusal: cs+py | ts+c
+    line 10059: {"n":10059,"station":{"source":"VK2XYZ-15"},"report":"mic-e","args":{"latitude":-29.3412092,"longitude":76.9683566,"symbol":"\\m","speed_kmh":75.0,"comment":"146.52 MHz","mic_e_message":"returning","altitude_feet":100.0,"altitude_m":30.48,"
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+    line 24017: {"n":24017,"station":{"source":"G4ABC-9","path":["WIDE2-2"]},"report":"mic-e","args":{"latitude":11.9401131,"longitude":58.9282582,"symbol":"/>","course_degrees":360,"altitude_feet":100.5,"comment":"LoRa APRS Batt=4.21V{\"%pJ}/A=001234Net",
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+    line 27702: {"n":27702,"station":{"source":"VK2XYZ-15","path":["WIDE2-2"]},"report":"mic-e","args":{"latitude":90.0,"longitude":-96.7038,"symbol":"/#","speed_knots":199.6,"comment":"RNG12 RNG0050","frequency":{"mhz":146.52,"tone":"ctcss","tone_value":1
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+
+178  [item] result: cs+py+c | ts
+    line 586: {"n":586,"station":{"source":"N0CALL","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"ABC","latitude":-50.08,"longitude":2.44,"symbol":"/[","course_degrees":1,"altitude_m":6682.3,"comment":"?7.210MHz C +060_1","compressed":tru
+      cs+py+c          refused
+      ts               built
+    line 2667: {"n":2667,"station":{"source":"VK2XYZ-15","path":["WIDE1-1"]},"report":"item","args":{"name":"ABC","latitude":-53.5038125,"longitude":180.0,"symbol":"/>","altitude_m":30.48,"comment":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      cs+py+c          refused
+      ts               built
+    line 9995: {"n":9995,"station":{"source":"G4ABC-9","destination":"APRS","path":["WIDE1-1"]},"report":"item","args":{"name":"NINECHARS","latitude":82.1433593,"longitude":-170.5099148,"symbol":"3>","course_degrees":360,"altitude_m":30.48,"frequency":{"m
+      cs+py+c          refused
+      ts               built
+
+169  [item] refusal: cs+py | c
+    line 4495: {"n":4495,"station":{"source":"VK2XYZ-15"},"report":"item","args":{"name":"NINECHARS","latitude":-72.4201,"longitude":-134.6262,"symbol":"\\m","comment":"Relais DMR F6ZCH / 431.750 +7.6 / https://brandmeister.network/#/device/208069F1ZOG-3>
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+    line 9228: {"n":9228,"station":{"source":"VK2XYZ-15","destination":"APRS"},"report":"item","args":{"name":"147.345","latitude":21.2588693,"longitude":-115.0850776,"symbol":"/-","course_degrees":360,"comment":"|!!\"#|","speed_knots":10.0,"speed_kmh":18
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+    line 14326: {"n":14326,"station":{"source":"G4ABC-9","destination":"APZ001","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"147.345","latitude":-17.6297,"longitude":56.7134,"symbol":"/[","speed_kmh":69.3,"comment":"ToffMaking t|!!\"#|he K
+      cs+py            "value-given-twice"
+      c                "text-reads-as-field"
+
+152  [mic-e] refusal: c | cs | py
+    line 1329: {"n":1329,"station":{"source":"W1AW"},"report":"mic-e","args":{"latitude":34.7164064,"longitude":-12.6931033,"symbol":"\\m","speed_knots":34.0,"altitude_feet":100.0,"comment":"146.520MHz T100 +060PHG5132mobile","ambiguity":1,"mic_e_message"
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 3375: {"n":3375,"station":{"source":"M0LTE-7","path":["WIDE2-2"]},"report":"mic-e","args":{"latitude":22.5449957,"longitude":-68.5889075,"symbol":"/[","comment":"|!!\"#|?WXTest 123","frequency":{"mhz":145.5},"dao":true,"mic_e_message":"in-service
+      cs               "value-given-twice"
+      py               "value-out-of-range"
+      c                "text-reads-as-field"
+    line 18707: {"n":18707,"station":{"source":"W1AW","path":["WIDE1-1"]},"report":"mic-e","args":{"latitude":-50.53092,"longitude":54.15809,"symbol":"/k","speed_kmh":18.52,"altitude_feet":-99999.5,"comment":"RNG0050","mic_e_message":"en-route","speed_knot
+      cs               "value-given-twice"
+      py               "value-out-of-range"
+      c                "text-reads-as-field"
+
+140  [object] refusal: cs+py | ts+c
+    line 11025: {"n":11025,"station":{"source":"G4ABC-9","path":["WIDE1-1"]},"report":"object","args":{"name":"A","latitude":-87.0174,"longitude":171.6777,"symbol":"\\m","course_degrees":360.4,"comment":"DFS2360","ambiguity":4,"timestamp":{"utc":"2026-02-1
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+    line 38694: {"n":38694,"station":{"source":"M0LTE-7","path":["WIDE2-2"]},"report":"object","args":{"name":"147.345","latitude":-38.288023,"longitude":-41.679106,"symbol":"S#","altitude_m":0,"comment":"13.4V 118F PHG2720 W2,COn  N0NHJ","dao":true,"times
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+    line 44210: {"n":44210,"station":{"source":"VK2XYZ-15"},"report":"object","args":{"name":"ABC","latitude":90.0,"longitude":-87.25072,"symbol":"S#","comment":"Wolfgang ausPotsdam Babelsb.|!!!!|WX","timestamp":{"utc":"2026-04-17T05:37:59Z","format":"dhm"
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+
+129  [object] again.data: c | ts
+    line 22101: {"n":22101,"station":{"source":"G4ABC-9","path":["WIDE1-1"]},"report":"object","args":{"name":"  SPACED","latitude":42.65,"longitude":180.0,"symbol":"/-","speed_knots":199.6,"altitude_m":0,"timestamp":{"utc":"2026-11-25T00:08:03Z","format":
+      ts               {"altitude_feet": 0, "latitude": 42.65, "longitude": 180, "name": "  SPACED", "speed_knots": 200, "symbol": "/-", "timestamp": "000803h", "type": "object"}
+      c                {"altitude_feet": 999999, "latitude": 42.65, "longitude": 180, "name": "  SPACED", "speed_knots": 200, "symbol": "/-", "timestamp": "000803h", "type": "object"}
+    line 33177: {"n":33177,"station":{"source":"N0CALL","path":["WIDE2-2"]},"report":"object","args":{"name":"ABC","latitude":-15.3398,"longitude":171.9523,"symbol":"/[","speed_knots":799.5,"altitude_m":30.48,"timestamp":{"utc":"2026-06-18T06:53:52Z","form
+      ts               {"altitude_feet": 100, "latitude": -15.3398333, "longitude": 171.952333, "name": "ABC", "speed_knots": 800, "symbol": "/[", "timestamp": "065352h", "type": "object"}
+      c                {"altitude_feet": 999999, "latitude": -15.3398333, "longitude": 171.952333, "name": "ABC", "speed_knots": 800, "symbol": "/[", "timestamp": "065352h", "type": "object"}
+    line 60420: {"n":60420,"station":{"source":"VK2XYZ-15","destination":"APZXYZ","path":["WIDE1-1","WIDE2-1"]},"report":"object","args":{"name":"REPEATER1","latitude":0.0,"longitude":180.0,"symbol":"\\>","altitude_m":0,"comment":"QAP  146.520  fm","timest
+      ts               {"altitude_feet": 0, "comment": "QAP  146.520  fm", "killed": true, "latitude": 0, "longitude": 180, "name": "REPEATER1", "speed_knots": 999, "symbol": "\\>", "timestamp": "221333z", "type": "object"}
+      c                {"altitude_feet": 999999, "comment": "QAP  146.520  fm", "killed": true, "latitude": 0, "longitude": 180, "name": "REPEATER1", "speed_knots": 999, "symbol": "\\>", "timestamp": "221333z", "type": "object"}
+
+129  [object] tnc2: c | ts
+    line 22101: {"n":22101,"station":{"source":"G4ABC-9","path":["WIDE1-1"]},"report":"object","args":{"name":"  SPACED","latitude":42.65,"longitude":180.0,"symbol":"/-","speed_knots":199.6,"altitude_m":0,"timestamp":{"utc":"2026-11-25T00:08:03Z","format":
+      ts               "47344142432d393e41505a3030312c57494445312d313a3b2020535041434544202a30303038303368343233392e30304e2f31383030302e3030452d2e2e2e2f3230302f413d303030303030"
+      c                "47344142432d393e41505a3030312c57494445312d313a3b2020535041434544202a30303038303368343233392e30304e2f31383030302e3030452d2e2e2e2f3230302f413d393939393939"
+    line 33177: {"n":33177,"station":{"source":"N0CALL","path":["WIDE2-2"]},"report":"object","args":{"name":"ABC","latitude":-15.3398,"longitude":171.9523,"symbol":"/[","speed_knots":799.5,"altitude_m":30.48,"timestamp":{"utc":"2026-06-18T06:53:52Z","form
+      ts               "4e3043414c4c3e41505a3030312c57494445322d323a3b4142432020202020202a30363533353268313532302e3339532f31373135372e3134455b2e2e2e2f3830302f413d303030313030"
+      c                "4e3043414c4c3e41505a3030312c57494445322d323a3b4142432020202020202a30363533353268313532302e3339532f31373135372e3134455b2e2e2e2f3830302f413d393939393939"
+    line 60420: {"n":60420,"station":{"source":"VK2XYZ-15","destination":"APZXYZ","path":["WIDE1-1","WIDE2-1"]},"report":"object","args":{"name":"REPEATER1","latitude":0.0,"longitude":180.0,"symbol":"\\>","altitude_m":0,"comment":"QAP  146.520  fm","timest
+      ts               "564b3258595a2d31353e41505a58595a2c57494445312d312c57494445322d313a3b5245504541544552315f3232313333337a303030302e30304e5c31383030302e3030453e2e2e2e2f3939392f413d30303030303051415020203134362e3532302020666d"
+      c                "564b3258595a2d31353e41505a58595a2c57494445312d312c57494445322d313a3b5245504541544552315f3232313333337a303030302e30304e5c31383030302e3030453e2e2e2e2f3939392f413d39393939393951415020203134362e3532302020666d"
+
+116  [position] refusal: cs+ts | c | py
+    line 648: {"n":648,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":8.157683,"longitude":180.0,"symbol":"/-","altitude_feet":0,"comment":"146.52 MHz","messaging":true,"timestamp":{"utc":"2026-07-18T23:56:16Z","format":"hms"},"a
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 16098: {"n":16098,"station":{"source":"G4ABC-9","path":["WIDE1-1","WIDE2-1"]},"report":"position","args":{"latitude":-47.59493,"longitude":-52.69311,"symbol":"/[","altitude_feet":-12.5,"comment":"146.520MHz T100 +060","messaging":true,"altitude_m"
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 26319: {"n":26319,"station":{"source":"W1AW","destination":"APZ001","path":["WIDE2-2"]},"report":"position","args":{"latitude":-30.25841,"longitude":-123.52337,"symbol":"/>","altitude_feet":100.5,"comment":"IO91SX!S  !abc","messaging":true,"speed_
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+
+92  [mic-e] refusal: ts+c | cs | py
+    line 21109: {"n":21109,"station":{"source":"N0CALL"},"report":"mic-e","args":{"latitude":13.549507,"longitude":-36.1464499,"symbol":"/k","course_degrees":0.5,"speed_knots":0,"altitude_m":0,"comment":"PHG6150/A=003980/Oak Hills WXTrak","mic_e_message":"
+      cs               "value-given-twice"
+      py               "value-out-of-range"
+      ts+c             "text-reads-as-field"
+    line 26355: {"n":26355,"station":{"source":"W1AW","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":-11.5996805,"longitude":-2.2394999,"symbol":"\\m","speed_knots":12.5,"altitude_m":30.48,"comment":"_LoRa_ThDFS2360a MaKa_","mic_e_messag
+      cs               "value-given-twice"
+      py               "value-out-of-range"
+      ts+c             "text-reads-as-field"
+    line 35163: {"n":35163,"station":{"source":"N0CALL","destination":"APZXYZ"},"report":"mic-e","args":{"latitude":-7.16,"longitude":-138.41,"symbol":"/l","comment":"DFS2360","dao":true,"mic_e_message":"emergency","messaging":true,"altitude_feet":999999.5
+      cs               "value-given-twice"
+      py               "value-out-of-range"
+      ts+c             "text-reads-as-field"
+
+82  [item] again.data: c | ts
+    line 1395: {"n":1395,"station":{"source":"G4ABC-9","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"NINECHARS","latitude":50.1153358,"longitude":162.8061116,"symbol":"S#","altitude_m":30.48,"frequency":{"mhz":145.5},"altitude_feet":999999
+      ts               {"altitude_feet": 100, "frequency": {"mhz": 145.5}, "latitude": 50.1153333, "longitude": 162.806167, "name": "NINECHARS", "speed_knots": 999, "symbol": "S#", "type": "item"}
+      c                {"altitude_feet": 999999, "frequency": {"mhz": 145.5}, "latitude": 50.1153333, "longitude": 162.806167, "name": "NINECHARS", "speed_knots": 999, "symbol": "S#", "type": "item"}
+    line 43708: {"n":43708,"station":{"source":"W1AW","path":["WIDE2-2"]},"report":"item","args":{"name":"X Y","latitude":30.458219,"longitude":180.0,"symbol":"3>","altitude_m":30.48,"killed":true,"altitude_feet":999999.4},"faults":["edge:altitude_feet","e
+      ts               {"altitude_feet": 100, "killed": true, "latitude": 30.4581667, "longitude": 180, "name": "X Y", "symbol": "3>", "type": "item"}
+      c                {"altitude_feet": 999999, "killed": true, "latitude": 30.4581667, "longitude": 180, "name": "X Y", "symbol": "3>", "type": "item"}
+    line 46171: {"n":46171,"station":{"source":"W1AW","destination":"APZ001","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"ABC","latitude":-0.8395,"longitude":180.0,"symbol":"/k","altitude_m":30.48,"comment":"  ","phg":{"power":6,"height":5
+      ts               {"altitude_feet": 100, "comment": "  ", "latitude": -0.8395, "longitude": 180, "name": "ABC", "phg": {"directivity": 8, "gain": 8, "height": 5, "power": 6}, "symbol": "/k", "type": "item"}
+      c                {"altitude_feet": 999999, "comment": "  ", "latitude": -0.8395, "longitude": 180, "name": "ABC", "phg": {"directivity": 8, "gain": 8, "height": 5, "power": 6}, "symbol": "/k", "type": "item"}
+
+82  [item] tnc2: c | ts
+    line 1395: {"n":1395,"station":{"source":"G4ABC-9","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"NINECHARS","latitude":50.1153358,"longitude":162.8061116,"symbol":"S#","altitude_m":30.48,"frequency":{"mhz":145.5},"altitude_feet":999999
+      ts               "47344142432d393e41505a3030312c57494445312d312c57494445322d313a294e494e45434841525321353030362e39324e5331363234382e333745232e2e2e2f3939392f3134352e3530304d487a2f413d303030313030"
+      c                "47344142432d393e41505a3030312c57494445312d312c57494445322d313a294e494e45434841525321353030362e39324e5331363234382e333745232e2e2e2f3939392f3134352e3530304d487a2f413d393939393939"
+    line 43708: {"n":43708,"station":{"source":"W1AW","path":["WIDE2-2"]},"report":"item","args":{"name":"X Y","latitude":30.458219,"longitude":180.0,"symbol":"3>","altitude_m":30.48,"killed":true,"altitude_feet":999999.4},"faults":["edge:altitude_feet","e
+      ts               "573141573e41505a3030312c57494445322d323a295820595f333032372e34394e3331383030302e3030453e2f413d303030313030"
+      c                "573141573e41505a3030312c57494445322d323a295820595f333032372e34394e3331383030302e3030453e2f413d393939393939"
+    line 46171: {"n":46171,"station":{"source":"W1AW","destination":"APZ001","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"ABC","latitude":-0.8395,"longitude":180.0,"symbol":"/k","altitude_m":30.48,"comment":"  ","phg":{"power":6,"height":5
+      ts               "573141573e41505a3030312c57494445312d312c57494445322d313a2941424321303035302e3337532f31383030302e3030456b504847363538382f413d3030303130302f2020"
+      c                "573141573e41505a3030312c57494445312d312c57494445322d313a2941424321303035302e3337532f31383030302e3030456b504847363538382f413d3939393939392f2020"
+
+81  [object] refusal: c | cs | py
+    line 17890: {"n":17890,"station":{"source":"G4ABC-9"},"report":"object","args":{"name":"ABC","latitude":-65.92773,"longitude":180.0,"symbol":"S#","speed_knots":199.6,"comment":"SAR mission - 15/A=0012345.160_de N0CALL","timestamp":{"utc":"2026-08-20T23
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 18120: {"n":18120,"station":{"source":"G4ABC-9","path":["WIDE1-1","WIDE2-1"]},"report":"object","args":{"name":"REPEATER1","latitude":90.0,"longitude":159.75476,"symbol":"\\m","speed_knots":146.36,"comment":"!W12!}WX","timestamp":{"utc":"2026-06-1
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 23518: {"n":23518,"station":{"source":"N0CALL","path":["WIDE2-2"]},"report":"object","args":{"name":"REPEATER1","latitude":-41.45,"longitude":-56.34,"symbol":"/[","altitude_feet":999999.4,"comment":"13.4V 118F PHG2720 W2,COn  N0NHJ|!!\"#|mobile","
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+
+66  [item] refusal: cs+py | ts+c
+    line 5790: {"n":5790,"station":{"source":"VK2XYZ-15","destination":"APRS"},"report":"item","args":{"name":"147.345","latitude":37.103845,"longitude":-94.616973,"symbol":"/-","course_degrees":39.2,"speed_kmh":1850.1,"altitude_feet":100.0,"comment":"RNG
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+    line 8070: {"n":8070,"station":{"source":"VK2XYZ-15","path":["WIDE2-2"]},"report":"item","args":{"name":"147.345","latitude":88.9,"longitude":153.08,"symbol":"S#","course_degrees":207,"comment":"PHG5132","ambiguity":3,"speed_knots":999.4,"altitude_fee
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+    line 18910: {"n":18910,"station":{"source":"W1AW","destination":"APRS"},"report":"item","args":{"name":"147.345","latitude":90.0,"longitude":180.0,"symbol":"\\m","course_degrees":1,"comment":"{AB}","altitude_feet":100.0,"altitude_m":30.48},"faults":["t
+      cs+py            "value-given-twice"
+      ts+c             "text-reads-as-field"
+
+59  [item] refusal: c | cs | py
+    line 5716: {"n":5716,"station":{"source":"VK2XYZ-15","destination":"APZXYZ"},"report":"item","args":{"name":"X Y","latitude":87.1022,"longitude":138.4451,"symbol":"S#","altitude_feet":100.5,"comment":"PHG3330 Colorado Springs IGate","speed_knots":799.
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 6844: {"n":6844,"station":{"source":"W1AW","path":["WIDE1-1"]},"report":"item","args":{"name":"147.345","latitude":64.6755309,"longitude":-107.162629,"symbol":"/>","speed_knots":799.5,"comment":"146.52 MHz","speed_kmh":-1},"faults":["edge:speed_k
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 17640: {"n":17640,"station":{"source":"N0CALL","path":["WIDE1-1","WIDE2-1"]},"report":"item","args":{"name":"LEADER","latitude":-28.507957,"longitude":-127.556297,"symbol":"/>","course_degrees":359,"speed_knots":12.5,"comment":"PHG51324/","altitud
+      cs               "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+
+55  [position] result: cs+py | ts
+    line 4442: {"n":4442,"station":{"source":"VK2XYZ-15","path":["WIDE2-2"]},"report":"position","args":{"latitude":23.86345,"longitude":180.0,"symbol":"/l","course_degrees":360,"speed_knots":12.5,"comment":"\u0000173 +500 4.7V S06","altitude_feet":100.0,
+      cs+py            refused
+      ts               built
+    line 17214: {"n":17214,"station":{"source":"VK2XYZ-15","destination":"APZXYZ","path":["WIDE2-2"]},"report":"position","args":{"latitude":81.548148,"longitude":-60.313724,"symbol":"S#","course_degrees":0.4,"altitude_m":14608.0,"comment":"\"3x\u0000\u000
+      cs+py            refused
+      ts               built
+    line 25969: {"n":25969,"station":{"source":"G4ABC-9"},"report":"position","args":{"latitude":15.198441,"longitude":-41.3831469,"symbol":"/-","speed_knots":799.5,"altitude_m":3878.7,"comment":"|%6%O(-||3ÀÀ\u0000‚ ¨fbh`–”`¦˜à®lˆ š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð
+      cs+py            refused
+      ts               built
+
+46  [object] refusal: cs+ts | c | py
+    line 1362: {"n":1362,"station":{"source":"G4ABC-9"},"report":"object","args":{"name":"  SPACED","latitude":90.0,"longitude":180.0,"symbol":"\\m","course_degrees":359,"altitude_feet":-12.5,"comment":"PHG5132","timestamp":{"utc":"2026-11-19T08:35:53Z","
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 39063: {"n":39063,"station":{"source":"VK2XYZ-15"},"report":"object","args":{"name":"A","latitude":-74.160059,"longitude":-154.137598,"symbol":"/k","speed_knots":12.5,"comment":"LoRa APRS!W12!Hello","timestamp":{"utc":"2026-03-08T01:20:28Z","forma
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 73223: {"n":73223,"station":{"source":"G4ABC-9","destination":"APRS","path":["WIDE2-2"]},"report":"object","args":{"name":"LEADER","latitude":78.440781,"longitude":-67.428401,"symbol":"/k","course_degrees":0.4,"comment":"00639MHz Minus anenver Sky
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+
+40  [mic-e] result: cs+py | ts
+    line 40059: {"n":40059,"station":{"source":"G4ABC-9"},"report":"mic-e","args":{"latitude":-4.1758398,"longitude":35.2876598,"symbol":"3>","speed_knots":0.4,"comment":"AnyTone 878UVÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84N111737.43W#146.52 MHzRadio Club","
+      cs+py            refused
+      ts               built
+    line 56412: {"n":56412,"station":{"source":"W1AW","destination":"APRS","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":-13.82,"longitude":172.34,"symbol":"/l","course_degrees":360,"altitude_m":0,"comment":"|+s%<'`||3ÀÀ\u0000‚ œªbràœlŠ
+      cs+py            refused
+      ts               built
+    line 74534: {"n":74534,"station":{"source":"M0LTE-7","destination":"APZ001"},"report":"mic-e","args":{"latitude":25.15,"longitude":-78.53,"symbol":"/k","course_degrees":360,"comment":"Test 123\u000073","mic_e_message":"in-service","altitude_feet":99999
+      cs+py            refused
+      ts               built
+
+36  [position] refusal: py+c | cs | ts
+    line 978: {"n":978,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":90.0,"longitude":-114.222337,"symbol":"\\>","course_degrees":177,"altitude_m":30.48,"comment":"RNG0050!1  !Test 123","timestamp":{"utc":"2026-04-06T19:01:47Z",
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+      ts               "text-reads-as-field"
+    line 9387: {"n":9387,"station":{"source":"W1AW","destination":"APZ001","path":["WIDE1-1","WIDE2-1"]},"report":"position","args":{"latitude":-48.244592,"longitude":40.17285,"symbol":"\\m","course_degrees":360.4,"altitude_m":11669.7,"comment":"PHG3330 C
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+      ts               "text-reads-as-field"
+    line 59220: {"n":59220,"station":{"source":"M0LTE-7"},"report":"position","args":{"latitude":86.919105,"longitude":169.5095704,"symbol":"/[","speed_knots":799.5,"altitude_m":30.48,"comment":"QRV  Michael !S  !Digi","telemetry":{"sequence":3144,"analog"
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+      ts               "text-reads-as-field"
+
+31  [item] refusal: cs+ts | c | py
+    line 42304: {"n":42304,"station":{"source":"G4ABC-9"},"report":"item","args":{"name":"NINECHARS","latitude":1.8411,"longitude":114.7432,"symbol":"\\m","speed_knots":0,"comment":"WINLINK\"5tPHG51324/}","altitude_feet":999999.4,"altitude_m":-30480.2},"fa
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 46761: {"n":46761,"station":{"source":"M0LTE-7","destination":"APZ001"},"report":"item","args":{"name":"LEADER","latitude":90.0,"longitude":-155.56,"symbol":"3>","course_degrees":172.7,"altitude_feet":100.5,"comment":"{|!!!!|LoRa iGate","killed":t
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+    line 58330: {"n":58330,"station":{"source":"N0CALL"},"report":"item","args":{"name":"147.345","latitude":-25.4071,"longitude":180.0,"symbol":"\\m","altitude_feet":-12.5,"comment":"!S  !","altitude_m":304800},"faults":["edge:longitude","edge:altitude_m"
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+      c                "text-reads-as-field"
+
+21  [object] result: cs+py | ts
+    line 18985: {"n":18985,"station":{"source":"VK2XYZ-15"},"report":"object","args":{"name":"A","latitude":-83.7691,"longitude":146.9998,"symbol":"/l","comment":"|(0%<(,||3ÀÀ\u0000†¢@@@@`–l˜†š@z®l¦†Š@ô®’ˆŠd@c\u0003ðk6lcm.com","telemetry":{"sequence":1583,
+      cs+py            refused
+      ts               built
+    line 58511: {"n":58511,"station":{"source":"G4ABC-9","path":["WIDE2-2"]},"report":"object","args":{"name":"  SPACED","latitude":-12.670281,"longitude":2.021697,"symbol":"/#","comment":"73'- SergeBG6XVJ>APALOC,TCPIP*,qAC,T2ROMANIA::BG6TA    :https://www
+      cs+py            refused
+      ts               built
+    line 153435: {"n":153435,"station":{"source":"M0LTE-7","path":["WIDE2-2"]},"report":"object","args":{"name":"  SPACED","latitude":-62.291548,"longitude":111.386302,"symbol":"/>","comment":"\"3x\u0000\u0000\u0000 ªdjàf¢\u0000h è®d@á\u0003ð}L
+      cs+py            refused
+      ts               built
+
+12  [object] refusal: py+c | cs | ts
+    line 3459: {"n":3459,"station":{"source":"N0CALL"},"report":"object","args":{"name":"A","latitude":34.2409,"longitude":81.5916,"symbol":"/k","altitude_m":30.48,"comment":"|!!!!|","timestamp":{"utc":"2026-03-13T16:13:55Z","format":"dhm"},"speed_kmh":18
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+      ts               "text-reads-as-field"
+    line 126549: {"n":126549,"station":{"source":"G4ABC-9","destination":"APZXYZ","path":["WIDE1-1","WIDE2-1"]},"report":"object","args":{"name":"NINECHARS","latitude":-2.43,"longitude":10.79,"symbol":"\\>","course_degrees":360,"speed_kmh":100,"altitude_m":
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+      ts               "text-reads-as-field"
+    line 183454: {"n":183454,"station":{"source":"W1AW","path":["WIDE2-2"]},"report":"object","args":{"name":"LEADER","latitude":-67.22,"longitude":-90.79,"symbol":"/[","altitude_m":3160.6,"comment":"http://brars.ham-radio-op.net/cgi-bin/preCheckIn!W12!mobi
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+      ts               "text-reads-as-field"
+
+9  [item] result: cs+py | ts
+    line 49396: {"n":49396,"station":{"source":"M0LTE-7"},"report":"item","args":{"name":"X Y","latitude":90.0,"longitude":-180.0,"symbol":"/-","altitude_m":30.48,"comment":"...\u0000/...","dao":true,"altitude_feet":100.0,"course_degrees":0.5},"faults":["t
+      cs+py            refused
+      ts               built
+    line 50302: {"n":50302,"station":{"source":"VK2XYZ-15"},"report":"item","args":{"name":"X Y","latitude":-72.0697,"longitude":141.556616,"symbol":"/[","course_degrees":36.0,"altitude_m":3465.5,"comment":"\u0000173 +500 4.7V S06","altitude_feet":999999.4
+      cs+py            refused
+      ts               built
+    line 73415: {"n":73415,"station":{"source":"M0LTE-7"},"report":"item","args":{"name":"147.345","latitude":-16.2658,"longitude":30.2454,"symbol":"/l","speed_kmh":278.36,"comment":"\u0000","frequency":{"mhz":145.5},"altitude_feet":100.0,"altitude_m":30.4
+      cs+py            refused
+      ts               built
+
+9  [position] refusal: cs+py | ts
+    line 65158: {"n":65158,"station":{"source":"VK2XYZ-15"},"report":"position","args":{"latitude":-90.0,"longitude":0.0,"symbol":"/>","comment":"|+s%<'`||3ÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84N111737.43W#PHG5760","timestamp":{"utc":"2026-11-22T13:31:27Z",
+      cs+py            "value-given-twice"
+      ts               "text-reads-as-field"
+    line 158321: {"n":158321,"station":{"source":"M0LTE-7","path":["WIDE1-1","WIDE2-1"]},"report":"position","args":{"latitude":90.0,"longitude":-35.0988272,"symbol":"\\m","speed_knots":999.4,"comment":"\u0000!S  !","messaging":true,"altitude_feet":100.0,"a
+      cs+py            "value-given-twice"
+      ts               "text-reads-as-field"
+    line 212654: {"n":212654,"station":{"source":"M0LTE-7"},"report":"position","args":{"latitude":90.0,"longitude":-65.24587,"symbol":"\\m","course_degrees":152.5,"comment":"\u0000{AB}","messaging":true,"timestamp":{"utc":"2026-10-14T07:45:28Z","format":"h
+      cs+py            "value-given-twice"
+      ts               "text-reads-as-field"
+
+6  [object] refusal: cs+py | ts
+    line 11201: {"n":11201,"station":{"source":"N0CALL","destination":"APZ001"},"report":"object","args":{"name":"  SPACED","latitude":-18.6911,"longitude":180.0,"symbol":"/#","speed_kmh":0,"comment":"|%9%O(,|!wXe!|3ÀÀ\u0000¦h¢ª¤¨`–”`¦˜à®lˆ š@þ®’ˆŠb@à®l¦†
+      cs+py            "value-given-twice"
+      ts               "text-reads-as-field"
+    line 48236: {"n":48236,"station":{"source":"M0LTE-7","path":["WIDE1-1"]},"report":"object","args":{"name":"  SPACED","latitude":78.3785636,"longitude":180.0,"symbol":"S#","comment":"AnyTone 878UVÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84N111737.43W#PHG5760"
+      cs+py            "value-given-twice"
+      ts               "text-reads-as-field"
+    line 155166: {"n":155166,"station":{"source":"G4ABC-9","destination":"APZXYZ"},"report":"object","args":{"name":"ABC","latitude":-59.6031,"longitude":103.1701,"symbol":"/#","course_degrees":0,"comment":"|+s%<'`||3ÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84N11
+      cs+py            "value-given-twice"
+      ts               "text-reads-as-field"
+
+5  [mic-e] refusal: cs+ts | py
+    line 128796: {"n":128796,"station":{"source":"G4ABC-9","path":["WIDE1-1","WIDE2-1"]},"report":"mic-e","args":{"latitude":-65.92245,"longitude":178.781372,"symbol":"\\m","speed_knots":0,"comment":"\u0000","mic_e_message":"off-duty","altitude_m":-30480.2,
+      cs+ts            "value-out-of-range"
+      py               "value-given-twice"
+    line 152571: {"n":152571,"station":{"source":"VK2XYZ-15"},"report":"mic-e","args":{"latitude":64.8,"longitude":180.0,"symbol":"/#","speed_knots":12.5,"altitude_m":0,"comment":"\u0000","mic_e_message":"priority","altitude_feet":999999.5},"faults":["edge:
+      cs+ts            "value-has-no-form"
+      py               "value-out-of-range"
+    line 338353: {"n":338353,"station":{"source":"G4ABC-9","destination":"APRS","path":["WIDE2-2"]},"report":"mic-e","args":{"latitude":-90.0,"longitude":180.0,"symbol":"/l","course_degrees":51.4,"altitude_feet":100.5,"comment":"My Radio is ON!\u0000","mic_
+      cs+ts            "value-out-of-range"
+      py               "value-has-no-form"
+
+5  [item] refusal: py+c | cs | ts
+    line 185068: {"n":185068,"station":{"source":"W1AW","destination":"APZ001"},"report":"item","args":{"name":"147.345","latitude":-47.6979009,"longitude":-42.6742078,"symbol":"/[","course_degrees":360.4,"altitude_m":30.48,"comment":"wO91SX/G Hello!w8'!WX"
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+      ts               "text-reads-as-field"
+    line 422085: {"n":422085,"station":{"source":"G4ABC-9","destination":"APZ001"},"report":"item","args":{"name":"147.345","latitude":70.94,"longitude":41.6,"symbol":"3>","speed_kmh":191.16,"altitude_m":16905.5,"comment":"!W12!","course_degrees":0.4,"altit
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+      ts               "text-reads-as-field"
+    line 488306: {"n":488306,"station":{"source":"M0LTE-7","destination":"APZ001","path":["WIDE2-2"]},"report":"item","args":{"name":"X Y","latitude":32.37,"longitude":1.03,"symbol":"\\>","altitude_m":0,"comment":"de N0CALLPHG5132Hello","altitude_feet":-999
+      cs               "value-given-twice"
+      py+c             "value-out-of-range"
+      ts               "text-reads-as-field"
+
+2  [mic-e] refusal: cs+py | ts
+    line 318898: {"n":318898,"station":{"source":"M0LTE-7","path":["WIDE1-1"]},"report":"mic-e","args":{"latitude":-8.61,"longitude":64.88,"symbol":"/l","course_degrees":0.5,"speed_knots":0.4,"comment":"AnyTone 878UVÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84N111
+      cs+py            "value-given-twice"
+      ts               "text-reads-as-field"
+    line 575252: {"n":575252,"station":{"source":"N0CALL","path":["WIDE1-1"]},"report":"mic-e","args":{"latitude":-30.5428546,"longitude":-26.1711788,"symbol":"/l","comment":"AnyTone 878UVÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84N111737.43W#PHG5760","frequency"
+      cs+py            "value-given-twice"
+      ts               "text-reads-as-field"
+
+1  [item] refusal: cs | py | ts
+    line 302439: {"n":302439,"station":{"source":"M0LTE-7"},"report":"item","args":{"name":"NINECHARS","latitude":46.5432,"longitude":-45.7818,"symbol":"/-","course_degrees":360.4,"altitude_m":30.48,"comment":"|+s%<'`||3ÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84
+      cs               "value-given-twice"
+      py               "value-out-of-range"
+      ts               "text-reads-as-field"
+
+1  [mic-e] refusal: cs | py | ts
+    line 548346: {"n":548346,"station":{"source":"VK2XYZ-15"},"report":"mic-e","args":{"latitude":-50.562103,"longitude":130.813497,"symbol":"/k","speed_knots":0,"altitude_feet":999999.5,"comment":"|%9%O(,|!wXe!|3ÀÀ\u0000¦h¢ª¤¨`–”`¦˜à®lˆ š@þ®’ˆŠb@à®l¦†Š@õ\
+      cs               "value-given-twice"
+      py               "value-out-of-range"
+      ts               "text-reads-as-field"
+
+1  [item] refusal: cs+py | ts
+    line 793609: {"n":793609,"station":{"source":"G4ABC-9","destination":"APZ001","path":["WIDE2-2"]},"report":"item","args":{"name":"LEADER","latitude":65.4456,"longitude":-166.8351,"symbol":"/k","course_degrees":359,"altitude_m":30.48,"comment":"AnyTone 8
+      cs+py            "value-given-twice"
+      ts               "text-reads-as-field"
