@@ -1048,6 +1048,22 @@
       "strict": {"rejected_by": "missing-space-after-locator"},
       "reencode": "equivalent",
       "canonical_info": "'C=?] \u001c#S]IO91/G PHG3330PH}#SlW1="
+    },
+    {
+      "id": "mic-e/phg-after-a-locator-missing-its-space-then-an-altitude",
+      "description": "A PHG straight after a locator with no space, with a Mic-E altitude later in the text: both missing-space-after-locator and mic-e-altitude-not-first, and a strict decoder rejects by the missing space, met first.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>SUSPU4:'C=?] \u001c#S]IO91/GPHG3330 24PH}#SlW1="},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "SUSPU4"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "old_data": true, "type_code": "]", "device_suffix": "=", "locator": "IO91", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "S#", "speed_knots": 650, "altitude_feet": 497555.7742782152, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": "2#SlW1"},
+        "diagnostics": ["warning:missing-space-after-locator", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "'C=?] \u001c#S]4PH}IO91/G PHG33302#SlW1="
     }
   ]
 }

@@ -1407,6 +1407,20 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "third-party/inner-path-entry-of-only-a-used-marker",
+      "description": "An inner path entry that is only * is not an empty path entry but not an address, so the inner header is unusable: invalid-third-party.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["third-party-header-addresses"],
+      "input": {"tnc2": "N0CALL>APZ001:}N000CALL>APZ,WIDE1-1*,*,WIDE2-1*:>x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-third-party"]
+      },
+      "strict": "same"
     }
   ]
 }
