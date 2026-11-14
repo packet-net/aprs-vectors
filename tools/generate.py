@@ -14,8 +14,13 @@ With "exact": false (a share of lines set by --inexact), one value lies between 
 format holds, so an encoder rounds it.
 
 Recipes: one {"n", "station", "report", "args"} object per line, with values as a program would
-have them (a position from a GPS receiver, a speed in km/h) and every input given, the time
-included.
+have them (a position from a GPS receiver, a speed in km/h), the time given whenever a timestamp
+is. A share of recipes leaves optional inputs out (a symbol, a timestamp, messaging, the Mic-E
+message, a telemetry sequence or bits, the path or destination), so each builder's defaults are
+compared; a dump tool passes only the keys a recipe gives.
+
+Telemetry values past 999 (up to 1e308, whose text runs to 309 digits) and text either side of
+what a 256-byte information field leaves reach the README's size limit and number text rule.
 
 With --faults, a line gets two or three faults on purpose where its report type has that many
 to give (fewer where it has fewer, none for a type with none), each on its own field, drawn from a
@@ -58,6 +63,8 @@ AWKWARD = [
     "090/013", ".../...", "_", "g005t077", "IO91SX", "IO91SX/G", "$GPRMC", "?APRS?", "?WX", "{12}AB", "}AB",
     "\x00", "\x01", "\x1c", "\x1d", "\x1f", "\x7f", "\r", "\n", "\t", "\xa0", "\xe9", "\xff", "été", "日本語",
     "ü", "€", "\U0001f4e1", "x" * 43, "x" * 67, "x" * 68, "x" * 200, "x" * 600,
+    # lengths either side of what a 256-byte information field leaves for text (README, Encoding)
+    "x" * 219, "x" * 220, "x" * 227, "x" * 228, "x" * 236, "x" * 237, "x" * 245, "x" * 246, "x" * 255, "x" * 256, "\u00e9" * 128,
 ]
 WORDS = ["Hello", "LoRa iGate", "Digi", "de N0CALL", "73", "QTH", "Net", "WX", "Test 123", "abc", "Radio Club", "mobile"]
 
@@ -125,6 +132,13 @@ def text(rng: random.Random, pool: Pool, key: str, awkward: float = 0.35) -> str
         at = rng.randint(0, len(base))
         base = base[:at] + rng.choice(AWKWARD) + base[at:]
     return base
+
+
+def big_number(rng: random.Random) -> float:
+    """A telemetry value past 999, up to 1e308, whose text (the shortest decimal, no exponent) can
+    run to 309 digits and take an information field past 256 bytes."""
+    return rng.choice([1000, 1000.5, 65535, 2147483647, 4294967295, 1e20, 1e224, 1e225, 1e308,
+                       float(f"{10 ** rng.uniform(3, 308):.6g}"), -float(f"{10 ** rng.uniform(3, 100):.6g}")])
 
 
 def _is_step(value: float, steps) -> bool:
@@ -597,6 +611,8 @@ class DataGen:
         rng = self.rng
         if rng.random() < 0.5 or len(d.get("analog", [])) != 5:
             d["analog"] = [rng.choice([None, 0, 1, 255, 999, 1.5, -1, 0.25, rng.randint(0, 255), rng.randint(0, 99999) / 100]) for _ in range(5)]
+            if rng.random() < 0.2:
+                d["analog"][rng.randrange(5)] = big_number(rng)
         if "bits" not in d and rng.random() < 0.95:
             d["bits"] = "".join(rng.choice("01") for _ in range(8))
         if rng.random() < 0.3:
@@ -901,7 +917,24 @@ class RecipeGen:
         if rng.random() < 0.5:
             station["path"] = rng.choice([["WIDE1-1"], ["WIDE1-1", "WIDE2-1"], ["WIDE2-2"]])
         args = getattr(self, "_" + report.replace("-", "_"))()
+        if rng.random() < self.LEAVE_OUT:
+            # leave optional inputs out, so that each builder's defaults are compared (README, Build records)
+            optional = [k for k in args if k not in self.REQUIRED.get(report, ())]
+            for k in rng.sample(optional, rng.randint(1, len(optional))) if optional else []:
+                del args[k]
+            for k in [k for k in ("destination", "path") if k in station and rng.random() < 0.5]:
+                del station[k]
         return {"station": station, "report": report, "args": args}
+
+    # Share of recipes with optional inputs left out, and the inputs a recipe always gives.
+    LEAVE_OUT = 0.15
+    REQUIRED = {
+        "position": ("latitude", "longitude"), "mic-e": ("latitude", "longitude"),
+        "object": ("name", "latitude", "longitude"), "item": ("name", "latitude", "longitude"),
+        "weather": ("latitude", "longitude"), "message": ("addressee",), "ack": ("addressee", "message_id"),
+        "reject": ("addressee", "message_id"), "bulletin": ("id",), "telemetry-names": ("names",),
+        "telemetry-units": ("units",), "telemetry-coefficients": ("coefficients",), "telemetry-bits": ("bits",),
+    }
 
     def _latlon(self, args: dict) -> None:
         rng = self.rng
@@ -1144,6 +1177,8 @@ class RecipeGen:
         args = {"sequence": rng.choice([0, 1, 999, 1000, rng.randint(0, 999)]),
                 "analog": [rng.choice([None, 0, 1, 255, 12.5, 999, rng.randint(0, 255), round(rng.uniform(0, 1000), 2)]) for _ in range(5)],
                 "bits": "".join(rng.choice("01") for _ in range(8))}
+        if rng.random() < 0.2:
+            args["analog"][rng.randrange(5)] = big_number(rng)
         if rng.random() < 0.3:
             args["comment"] = text(rng, self.pool, "telemetry.comment", 0.25)
         return args

@@ -13,8 +13,10 @@ For every input line, each part of the records (the lenient data, the strict dia
 bytes written, each key of the API view, ...) is compared across the implementations that have
 it, and where they differ the line goes in a bucket named by the data type, the part, and which
 implementations side together. Objects must have the same keys; numbers agree within 1e-9;
-diagnostics compare as multisets. A record whose result is `unsupported` is left out of the
-comparison of that line. For encode and build dumps it also checks each implementation on its
+diagnostics compare as multisets. A record whose result is `unsupported`, or that gives
+`implementation-limit` (a decode record whose lenient result names it, an encode or build record
+whose result is `implementation-limit`), is left out of the comparison of that line, and each
+implementation's count of both is printed beside the result, in the text and in --json. For encode and build dumps it also checks each implementation on its
 own: bytes written for exact data must decode to that data, cleanly; a built line must decode
 cleanly. `--input` is the input all the dumps read; with it, the report shows each bucket's
 example inputs. Exits 1 if any line differs. Standard library only.
@@ -125,6 +127,20 @@ def without_inner_info(data):
     return data
 
 
+LIMIT = "error:implementation-limit"
+
+
+def left_out(mode, r):
+    """Why a record is left out of the comparison: "unsupported", "implementation-limit", or None."""
+    if mode == "decode":
+        lenient = r.get("lenient") or {}
+        if LIMIT in (lenient.get("header_error") or []) or LIMIT in (lenient.get("diagnostics") or []):
+            return "implementation-limit"
+        return None
+    result = r.get("result")
+    return result if result in ("unsupported", "implementation-limit") else None
+
+
 def own_checks(mode, r, inp):
     """What is wrong with one implementation's record on its own, or None."""
     if mode == "encode" and r.get("result") == "written":
@@ -183,6 +199,7 @@ def main():
     own = Counter()
     own_examples = defaultdict(list)
     unsupported = Counter()
+    skipped = {name: Counter() for name in names}
     mode = None
     total = differ = 0
     while True:
@@ -208,10 +225,15 @@ def main():
         total += 1
         n = recs[0].get("n", total - 1)
         kind = data_type(mode, recs, inp)
-        live = [i for i, r in enumerate(recs) if r.get("result") != "unsupported"]
+        why = [left_out(mode, r) for r in recs]
+        live = [i for i, w in enumerate(why) if w is None]
         for i, r in enumerate(recs):
-            if r.get("result") == "unsupported":
+            if why[i]:
+                skipped[names[i]][why[i]] += 1
+            if why[i] == "unsupported":
                 unsupported[(names[i], r.get("reason", "?"))] += 1
+            if why[i]:
+                continue
             problem = own_checks(mode, r, inp)
             if problem:
                 k = (names[i], kind, problem)
@@ -238,6 +260,8 @@ def main():
             differ += 1
 
     print(f"{mode}: {total:,} lines; {total - differ:,} agree; {differ:,} differ. {len(buckets)} buckets.")
+    print("left out: " + "; ".join(f"{name} unsupported {skipped[name]['unsupported']:,}, implementation-limit "
+                                     f"{skipped[name]['implementation-limit']:,}" for name in names))
     if unsupported:
         print("unsupported (left out): " + ", ".join(f"{name} {reason} {c:,}" for (name, reason), c in unsupported.most_common(20)))
     for (kind, facet, sides), count in buckets.most_common():
@@ -263,6 +287,8 @@ def main():
                          "examples": [{"n": n, "input": i} for n, i in own_examples[(nm, k, pr)]]}
                         for (nm, k, pr), c in own.most_common()],
                 "unsupported": [{"implementation": nm, "reason": r, "count": c} for (nm, r), c in unsupported.most_common()],
+                "left_out": {nm: {"unsupported": skipped[nm]["unsupported"], "implementation-limit": skipped[nm]["implementation-limit"]}
+                             for nm in names},
             }, f, indent=1, ensure_ascii=False)
     return 1 if differ or own else 0
 
