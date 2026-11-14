@@ -2347,6 +2347,40 @@
         "refused": true,
         "refusal": "missing-field"
       }
+    },
+    {
+      "id": "encode/agrelo-bearing-rounded-up-at-a-half",
+      "description": "An Agrelo bearing is degrees, like a course: 12.5 is rounded half away from zero to 013.",
+      "source": "APRS12c Appendix 1",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded", "an-agrelo-bearing-is-0-to-360"],
+      "input": {"encode": {"type": "agrelo-df", "bearing_degrees": 12.5, "quality": 5}},
+      "expect": {
+        "info": "%013/5"
+      }
+    },
+    {
+      "id": "encode/agrelo-bearing-rounded-down-below-a-half",
+      "description": "An Agrelo bearing of 12.49 degrees is rounded to 012.",
+      "source": "APRS12c Appendix 1",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded", "an-agrelo-bearing-is-0-to-360"],
+      "input": {"encode": {"type": "agrelo-df", "bearing_degrees": 12.49, "quality": 5}},
+      "expect": {
+        "info": "%012/5"
+      }
+    },
+    {
+      "id": "encode/agrelo-bearing-rounding-to-361",
+      "description": "An Agrelo bearing of 360.5 rounds to 361, past 360: value-out-of-range, the range judged on the rounded value.",
+      "source": "APRS12c Appendix 1",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded", "an-agrelo-bearing-is-0-to-360"],
+      "input": {"encode": {"type": "agrelo-df", "bearing_degrees": 360.5, "quality": 5}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
     }
   ]
 }

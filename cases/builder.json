@@ -46,6 +46,18 @@
       "expect": {
         "tnc2": "N0CALL>APZ001:T#001,,,,,,00000000"
       }
+    },
+    {
+      "id": "build/value-given-twice-before-info-size",
+      "description": "A position given an altitude in feet and in metres, whose comment takes each one-unit build to 257 bytes: value-given-twice, since the size is judged only on a record with no other fault.",
+      "source": "differential run 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "position", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "altitude_m": 30.48, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-given-twice"
+      }
     }
   ]
 }

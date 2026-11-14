@@ -1032,6 +1032,22 @@
       "strict": {"data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 38.95016666666667, "longitude": -77.416, "symbol": "\\o", "course_degrees": 124, "speed_knots": 2, "comment": "4o\\>4W}&"}, "diagnostics": ["info:mic-e-missing-device-type"]},
       "reencode": "refused",
       "reencode_refusal": "value-has-no-form"
+    },
+    {
+      "id": "mic-e/phg-after-a-locator-missing-its-space",
+      "description": "A PHG straight after a locator whose space is missing is lifted before a later Mic-E altitude is looked for, as one after the locator and its space is, so 0PH} inside PHG3330PH} is never an altitude.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>SUSPU4:'C=?] \u001c#S]IO91/GPHG3330PH}#SlW1="},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "SUSPU4"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "old_data": true, "type_code": "]", "device_suffix": "=", "locator": "IO91", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "S#", "speed_knots": 650, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": "PH}#SlW1"},
+        "diagnostics": ["warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "'C=?] \u001c#S]IO91/G PHG3330PH}#SlW1="
     }
   ]
 }
