@@ -748,6 +748,264 @@
       "strict": {"rejected_by": "dao-with-ambiguity"},
       "reencode": "refused",
       "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "telemetry/control-character-in-comment",
+      "description": "A control character in the comment after a telemetry report's bits: control-character-in-text.",
+      "source": "APRS12c ch. 13",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": "T#005,199,000,255,073,123,01101001 hi\u0001"},
+      "expect": {
+        "data": {"type": "telemetry", "sequence": "005", "analog": [199, 0, 255, 73, 123], "bits": "01101001", "comment": " hi\u0001"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "weather/control-character-in-weather-comment",
+      "description": "A control character in weather-comment text gives both warnings; the comment is met first, so a strict decoder rejects by weather-comment, and an encoder refuses the comment as a field the report has no place for.",
+      "source": "APRS12c ch. 12",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text", "a-packet-is-read-in-order"],
+      "input": {"info": "_10090556c220s004g005t077 hi\u0001"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": " hi\u0001"},
+        "diagnostics": ["info:obsolete-format", "warning:control-character-in-text", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-then-text",
+      "description": "t07725V runs on by two digits into text that is not a field, so the 1.1.0 rule stands: t077, the fields end, and 25V is weather-comment text.",
+      "source": "APRS12c ch. 12",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits", "which-weather-field-a-letter-is"],
+      "input": {"info": "_10090556c220s004g005t07725V"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "25V"},
+        "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-then-an-extra-field",
+      "description": "A run-on temperature followed by an extra field, which APRS12c does not define, keeps the 1.1.0 rule: the temperature at its width and the rest as comment text.",
+      "source": "APRS12c ch. 12",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits", "which-weather-field-a-letter-is"],
+      "input": {"info": "_10090556c220s004g005t2147483647X12"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 214}, "comment": "7483647X12"},
+        "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-then-a-field-already-read",
+      "description": "A run-on temperature followed by a gust already read is not followed by a field the run reads, so the 1.1.0 rule stands.",
+      "source": "APRS12c ch. 12",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits", "which-weather-field-a-letter-is"],
+      "input": {"info": "_10090556c220s004g005t2147483647g005"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 214}, "comment": "7483647g005"},
+        "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/nine-extra-fields",
+      "description": "Nine extra weather fields, one past an 8-field capacity, are all read where there is no capacity limit.",
+      "source": "APRS12c ch. 12",
+      "authority": "interpretation",
+      "interpretations": ["a-library-with-a-fixed-capacity-says-so"],
+      "input": {"info": "_10090556c220s004g005t077A11B12D13E14F15G16I17J18K19"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "extra": [{"letter": "A", "value": "11"}, {"letter": "B", "value": "12"}, {"letter": "D", "value": "13"}, {"letter": "E", "value": "14"}, {"letter": "F", "value": "15"}, {"letter": "G", "value": "16"}, {"letter": "I", "value": "17"}, {"letter": "J", "value": "18"}, {"letter": "K", "value": "19"}]}},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "weather/run-on-value-then-fields",
+      "description": "t2147483647 runs on by seven digits into r000, a defined field: the temperature is out of range and dropped, and the rain and the fields after it are read.",
+      "source": "APRS12c ch. 12",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"info": "_10090556c220s004g005t2147483647r000p000"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "rain_1h_in": 0, "rain_24h_in": 0}},
+        "diagnostics": ["info:obsolete-format", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "equivalent",
+      "canonical_info": "_10090556c220s004g005t...r000p000"
+    },
+    {
+      "id": "weather/run-on-value-at-the-end",
+      "description": "t4294967295 runs on by seven digits to the end of the information field: the temperature is out of range and dropped.",
+      "source": "APRS12c ch. 12",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"info": "_10090556c220s004g005t4294967295"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["info:obsolete-format", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "equivalent",
+      "canonical_info": "_10090556c220s004g005t..."
+    },
+    {
+      "id": "weather/run-on-value-in-a-position-report",
+      "description": "A run-on temperature followed by a defined field in a position weather report: out-of-range-value, dropped, and the rain is read.",
+      "source": "APRS12c ch. 12",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t2147483647r000"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "rain_1h_in": 0}},
+        "diagnostics": ["warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W_220/004g005t...r000"
+    },
+    {
+      "id": "weather/run-on-humidity",
+      "description": "h1234 runs on by two digits into b10132: the humidity is out of range and dropped, and the pressure is read.",
+      "source": "APRS12c ch. 12",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"info": "_10090556c220s004g005t077h1234b10132"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "pressure_mbar": 1013.2}},
+        "diagnostics": ["info:obsolete-format", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "equivalent",
+      "canonical_info": "_10090556c220s004g005t077b10132"
+    },
+    {
+      "id": "weather/run-on-value-then-its-own-letter",
+      "description": "t42005 runs on by two digits into a second t, the run's own field, which counts as read: the 1.1.0 rule stands, 420 F and the rest comment text.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"info": "_10090556c220s004g005t42005t4294967295"},
+      "expect": {
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 420}, "comment": "05t4294967295"},
+        "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-before-a-dao",
+      "description": "A run-on temperature followed by a trailing !DAO!, which the Weather rule lifts first, is followed by the end of the weather text: out-of-range-value, dropped, and the !DAO! read.",
+      "source": "review 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t2147483647!W12!"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W_220/004g005t...!W12!"
+    },
+    {
+      "id": "weather/run-on-value-before-base91-telemetry",
+      "description": "A run-on temperature followed by trailing base-91 telemetry, which the Weather rule lifts first, is followed by the end of the weather text: out-of-range-value, dropped; the telemetry, which a weather report has no place for, makes the re-encode refused.",
+      "source": "review 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t2147483647|!!!!|"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "telemetry": {"sequence": 0, "analog": [0]}},
+        "diagnostics": ["warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-before-telemetry-then-text",
+      "description": "A run-on temperature reaches base-91 telemetry that has text after it: the weather text ends where the telemetry starts, so the value is dropped, and the text after the telemetry is comment text on its own, not joined to the run.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_220/100g005t2147483647|!!!!|7k SvxLink"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "telemetry": {"sequence": 0, "analog": [0]}, "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 100, "wind_gust_mph": 5}, "comment": "7k SvxLink"},
+        "diagnostics": ["warning:out-of-range-value", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-before-a-dao-then-text",
+      "description": "A run-on temperature reaches a !DAO! with text after it: dropped, and 12! after the !DAO! is comment text on its own.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_220/004g005t247483647!W12!12!"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/_", "dao": {"datum": "W", "precision": "thousandths"}, "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "comment": "12!"},
+        "diagnostics": ["warning:out-of-range-value", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-before-telemetry-in-a-compressed-report",
+      "description": "In a compressed weather report a run-on temperature reaches base-91 telemetry: dropped, and the fields after the telemetry are comment text, since the weather text ended.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"tnc2": "VK7DSH-1>APU25N,VK7RMD*,WIDE3-2,qAR,VK7DIK:@252047z/c7NIs@rE_!!bg000t04600780|!)%Z'n|!r000p003P000h94b10236"},
+      "expect": {
+        "header": {"source": "VK7DSH-1", "destination": "APU25N", "path": ["VK7RMD*", "WIDE3-2", "qAR", "VK7DIK"], "q_construct": {"construct": "qAR", "station": "VK7DIK"}},
+        "data": {"type": "position", "timestamp": "252047z", "messaging": true, "latitude": -41.05433338758709, "longitude": 145.8214981387461, "symbol": "/_", "compressed": true, "compression": {"fix": "old", "source": "other", "origin": "tnc-beacon-text"}, "telemetry": {"sequence": 8, "analog": [421, 623]}, "weather": {"wind_direction_degrees": 0, "wind_speed_mph": 0, "wind_gust_mph": 0}, "comment": "!r000p003P000h94b10236"},
+        "diagnostics": ["warning:compression-type-reserved-bits", "warning:out-of-range-value", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "compression-type-reserved-bits"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-of-nine-digits-before-a-dao-then-text",
+      "description": "t214748647 runs on by six digits to a !DAO!: dropped, and the text after it is comment text on its own.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_220/004g005t214748647!W12!12!"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/_", "dao": {"datum": "W", "precision": "thousandths"}, "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "comment": "12!"},
+        "diagnostics": ["warning:out-of-range-value", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     }
   ]
 }

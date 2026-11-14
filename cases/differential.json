@@ -335,14 +335,16 @@
       "description": "A garbled Mic-E status text that repeats !wXe!: the !DAO! is the last one in the comment (it belongs at the end), not the first.",
       "source": "APRS-IS 2026-09-25/26",
       "authority": "observed",
-      "input": {"tnc2": "KJ0SHL>S4QURT,W6SCE-10*,WIDE2-1,qAR,KK6CKK-1:`.?{l#9k/'\"7.}|%9%O(,|!wXe!|3ÀÀ\u0000¦h¢ª¤¨`–”`¦\u0090˜à®lˆ\u00A0š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð`.?{l#9k/'\"7.}|%9%O(,|!wXe!|3"},
+      "input": {"tnc2": "KJ0SHL>S4QURT,W6SCE-10*,WIDE2-1,qAR,KK6CKK-1:`.?{l#9k/'\"7.}|%9%O(,|!wXe!|3ÀÀ\u0000¦h¢ª¤¨`–”`¦˜à®lˆ š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð`.?{l#9k/'\"7.}|%9%O(,|!wXe!|3"},
       "expect": {
         "header": {"source": "KJ0SHL", "destination": "S4QURT", "path": ["W6SCE-10*", "WIDE2-1", "qAR", "KK6CKK-1"], "q_construct": {"construct": "qAR", "station": "KK6CKK-1"}},
-        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "device_suffix": "|3", "latitude": 34.25410073260073, "longitude": -118.5992912087912, "symbol": "/k", "course_degrees": 329, "speed_knots": 0, "altitude_feet": 971.1286089238844, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 388, "analog": [410, 648]}, "comment": "|%9%O(,|!wXe!|3ÀÀ\u0000¦h¢ª¤¨`–”`¦\u0090˜à®lˆ\u00A0š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð`.?{l#9k/'\"7.}"},
-        "device": {"vendor": "Byonics", "model": "TinyTrak3"}
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "device_suffix": "|3", "latitude": 34.25410073260073, "longitude": -118.5992912087912, "symbol": "/k", "course_degrees": 329, "speed_knots": 0, "altitude_feet": 971.1286089238844, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 388, "analog": [410, 648]}, "comment": "|%9%O(,|!wXe!|3ÀÀ\u0000¦h¢ª¤¨`–”`¦˜à®lˆ š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð`.?{l#9k/'\"7.}"},
+        "device": {"vendor": "Byonics", "model": "TinyTrak3"},
+        "diagnostics": ["warning:control-character-in-text"]
       },
-      "strict": "same",
-      "reencode": "identical"
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "differential/empty-addressee",

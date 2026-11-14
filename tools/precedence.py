@@ -39,6 +39,7 @@ ORDER = [
     "extension-conflict", "field-not-allowed", "symbol-mismatch", "missing-field", "value-given-twice",
     "text-reads-as-field",
     "does-not-read-back",
+    "information-field-too-long",
 ]
 
 # Codes the generator makes no pairs with, each for one reason (a hand-written case may still carry one).
@@ -215,6 +216,13 @@ fault("invalid-code", "query", "a query type in lower case", {"query_type": "apr
 fault("invalid-nmea", "nmea", "a checksum that does not match", {"sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*53"})
 fault("invalid-nmea", "nmea", "a course that disagrees with the sentence", {"course_degrees": 90})
 fault("invalid-character", "nmea", "a CR in the comment", {"comment": "a\rb"})
+# The information field's size, checked last on the bytes written: a long comment or text.
+LONG = "x" * 300
+fault("information-field-too-long", POSITIONED + ("mic-e", "compressed"), "a 300-character comment", {"comment": LONG})
+fault("information-field-too-long", ("status", "locator-status"), "300 characters of status text", {"text": LONG})
+fault("information-field-too-long", "telemetry", "a 300-character comment", {"comment": LONG})
+fault("information-field-too-long", "telemetry-names", "names of 300 characters", {"names": ["x" * 25] * 12})
+fault("information-field-too-long", "nmea", "a 300-character comment", {"comment": LONG})
 # Third-party: every report above, inside one, keeps its faults, and gains one in the inner header.
 # Not Mic-E: an inner Mic-E report's position is half in its destination, which the third-party
 # header gives as APZ001, so the record would contradict itself.
@@ -222,6 +230,8 @@ for _name in [n for n in BASES if n != "mic-e"]:
     BASES["third-party-" + _name] = tp(_name)
 for _code, _base, _label, _patch in [f for f in FAULTS if f[1] != "mic-e"]:
     fault(_code, "third-party-" + _base, _label + " in the inner packet", {"packet.data." + k: v for k, v in _patch.items()})
+fault("information-field-too-long", [b for b in BASES if b.startswith("third-party-")],
+      "an inner path of 40 used entries, which takes the outermost field past 256 bytes", {"packet.path": [f"DIGI{i}*" for i in range(1, 41)]})
 fault("invalid-third-party-header", [b for b in BASES if b.startswith("third-party-")],
       "an inner path entry, before a used one, not marked used", {"packet.path": ["TCPIP", "G4ABC*"]})
 
@@ -303,6 +313,8 @@ WHERE = {
     "field-not-allowed": {"position", "object", "item", "mic-e", "status", "weather", "ack"},
     "missing-field": {"position", "object", "item", "message", "telemetry", "capabilities", "weather"},
     "text-reads-as-field": {"position", "object", "item", "mic-e", "message", "status", "weather"},
+    "information-field-too-long": {"position", "object", "item", "mic-e", "status", "telemetry", "telemetry-metadata", "nmea",
+                                   "nws-bulletin", "capabilities", "query", "user-defined", "test", "raw-weather"},
 }
 ONE_FIELD = {
     ("invalid-name", "padding-space"): "a padding space is a fault of an object name, which holds the wrong-length fault too: one field",

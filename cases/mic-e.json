@@ -445,33 +445,33 @@
     },
     {
       "id": "mic-e/legacy-binary-telemetry-too-short",
-      "description": "0x1D with fewer than five bytes after it is not telemetry; it stays in the status text.",
+      "description": "0x1D with fewer than five bytes after it is not telemetry; it stays in the status text, where it is a control character.",
       "source": "APRS12c ch. 10",
       "authority": "interpretation",
-      "interpretations": ["mic-e-rev-0-binary-telemetry"],
+      "interpretations": ["mic-e-rev-0-binary-telemetry", "control-characters-in-text"],
       "input": {"tnc2_hex": "4E314A434D2D393E5452515037543A606327776C7C2B3E2F1D414243"},
       "expect": {
         "data": {"type": "mic-e", "mic_e_message": "off-duty", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "comment": "\u001dABC"},
-        "diagnostics": ["info:mic-e-missing-device-type"]
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:control-character-in-text"]
       },
-      "strict": "same",
-      "reencode": "equivalent",
-      "canonical_info": "`c'wl|+>//\u001dABC"
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "mic-e/legacy-binary-telemetry-after-ff-padding",
-      "description": "0xFF padding is removed before telemetry is looked for, so a 0xFF among the five bytes leaves too few, and it all stays in the status text.",
+      "description": "0xFF padding is removed before telemetry is looked for, so a 0xFF among the five bytes leaves too few, and it all stays in the status text, where its control characters are control-character-in-text.",
       "source": "APRS12c ch. 10",
       "authority": "interpretation",
-      "interpretations": ["mic-e-rev-0-binary-telemetry"],
+      "interpretations": ["mic-e-rev-0-binary-telemetry", "control-characters-in-text"],
       "input": {"tnc2_hex": "4E314A434D2D393E5452515037543A606327776C7C2B3E2F1D0001FF7F20"},
       "expect": {
         "data": {"type": "mic-e", "mic_e_message": "off-duty", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "comment": "\u001d\u0000\u0001 "},
-        "diagnostics": ["warning:kenwood-ff-padding", "info:mic-e-missing-device-type"]
+        "diagnostics": ["warning:kenwood-ff-padding", "info:mic-e-missing-device-type", "warning:control-character-in-text"]
       },
       "strict": {"rejected_by": "kenwood-ff-padding"},
-      "reencode": "equivalent",
-      "canonical_info": "`c'wl|+>//\u001d\u0000\u0001\u007f "
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "mic-e/comment-starting-with-a-type-code-character",
@@ -716,17 +716,18 @@
     },
     {
       "id": "mic-e/0x1d-comment-after-legacy-telemetry",
-      "description": "After Rev 0 telemetry, a comment starting with 0x1D is text and is written straight on.",
+      "description": "After Rev 0 telemetry, a comment starting with 0x1D is text, so it is control-character-in-text and an encoder refuses it.",
       "source": "differential fuzzing 2026-09-27",
       "authority": "interpretation",
-      "interpretations": ["mic-e-rev-0-binary-telemetry"],
+      "interpretations": ["mic-e-rev-0-binary-telemetry", "control-characters-in-text"],
       "input": {"tnc2": "N1JCM-9>TRQP7T:`c'wl|+>/\u001dABCD/\u001dABCDEhello"},
       "expect": {
         "data": {"type": "mic-e", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "comment": "\u001dABCDEhello", "mic_e_message": "off-duty", "legacy_telemetry": [65, 66, 67, 68, 47]},
-        "diagnostics": ["info:obsolete-format", "info:mic-e-missing-device-type"]
+        "diagnostics": ["info:obsolete-format", "info:mic-e-missing-device-type", "warning:control-character-in-text"]
       },
-      "strict": "same",
-      "reencode": "identical"
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "mic-e/comment-after-type-code-needs-no-slash",
@@ -743,16 +744,18 @@
     },
     {
       "id": "mic-e/frequency-then-comment-starting-with-nul",
-      "description": "A comment after a voice frequency follows a space, even when it starts with 0x00.",
+      "description": "A comment after a voice frequency follows a space, even when it starts with 0x00, which makes it control-character-in-text.",
       "source": "differential fuzzing 2026-09-27",
       "authority": "interpretation",
-      "interpretations": ["where-a-voice-frequency-goes"],
+      "interpretations": ["where-a-voice-frequency-goes", "control-characters-in-text"],
       "input": {"tnc2": "KB3AWQ-9>T1QW8Q,WIDE1-1,qAR,KB3AWQ-10:`i[Yl*\u001cP\\`\"6,}444.900MHz \u0000173 +500 4.7V S06"},
       "expect": {
-        "data": {"type": "mic-e", "latitude": 41.29683333333333, "longitude": -77.06016666666666, "symbol": "\\P", "speed_knots": 1, "altitude_feet": 666.0104986876639, "frequency": {"mhz": 444.9}, "comment": "\u0000173 +500 4.7V S06", "mic_e_message": "in-service", "type_code": "`"}
+        "data": {"type": "mic-e", "latitude": 41.29683333333333, "longitude": -77.06016666666666, "symbol": "\\P", "speed_knots": 1, "altitude_feet": 666.0104986876639, "frequency": {"mhz": 444.9}, "comment": "\u0000173 +500 4.7V S06", "mic_e_message": "in-service", "type_code": "`"},
+        "diagnostics": ["warning:control-character-in-text"]
       },
-      "strict": "same",
-      "reencode": "identical"
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "mic-e/late-altitude-and-phg-written-first",
@@ -953,6 +956,176 @@
       "strict": {"rejected_by": "missing-space-after-locator"},
       "reencode": "equivalent",
       "canonical_info": "`(_fn\"Oj/`IO91/G }!:&0'p|"
+    },
+    {
+      "id": "mic-e/control-character-in-status-text",
+      "description": "A control character in Mic-E status text: control-character-in-text.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"tnc2": "N1JCM-9>TRQP7T:`c'wl|+>/`Hello\u0003"},
+      "expect": {
+        "header": {"source": "N1JCM-9", "destination": "TRQP7T"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "type_code": "`", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "comment": "Hello\u0003"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "mic-e/slash-a-altitude-in-whole-feet",
+      "description": "A /A= of 1000 feet in Mic-E status text is held exactly only by a /A=, so it re-encodes identical.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
+      "input": {"tnc2": "N1JCM-9>TRQP7T:`c'wl|+>/`/A=001000"},
+      "expect": {
+        "header": {"source": "N1JCM-9", "destination": "TRQP7T"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "type_code": "`", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "altitude_feet": 1000}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/slash-a-altitude-in-both-units",
+      "description": "A decoded /A= of 1250 feet (381 metres, which the Mic-E altitude bytes also hold) came from a /A=, so it is written back as one: identical. Neutral data with the same value goes in the Mic-E bytes (encode/mic-e-altitude-in-both-units).",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
+      "input": {"tnc2": "N1JCM-9>TRQP7T:`c'wl|+>/`/A=001250"},
+      "expect": {
+        "header": {"source": "N1JCM-9", "destination": "TRQP7T"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "type_code": "`", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "altitude_feet": 1250}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/locator-not-joined-across-an-altitude",
+      "description": "IO9 before a Mic-E altitude and 1SX/G after it do not join into a locator once the altitude is lifted: a locator is read only at the start or straight after the altitude, and taking an element out never joins the text either side.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/>IO9\"4-}1SX/G Hellowor!d"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": ">", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 72.1784776902887, "comment": "IO91SX/G Hellowor!d"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "type_code": ">", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "IO9\"4-}1SX/G Hellowor!d"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/>\"4-}/IO91SX/G Hellowor!d"
+    },
+    {
+      "id": "mic-e/altitude-with-no-form-before-a-type-code",
+      "description": "A later Mic-E altitude of 231,932 metres, which no /A= holds exactly, written with no type code would start with >, which reads back as one: it has no form, value-has-no-form.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
+      "input": {"tnc2": "N1OPS-7>S8UW0Q:`i4|l54o\\4o\\>4W}&"},
+      "expect": {
+        "header": {"source": "N1OPS-7", "destination": "S8UW0Q"},
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 38.95016666666667, "longitude": -77.416, "symbol": "\\o", "course_degrees": 124, "speed_knots": 2, "altitude_feet": 760931.7585301837, "comment": "4o\\&"},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 38.95016666666667, "longitude": -77.416, "symbol": "\\o", "course_degrees": 124, "speed_knots": 2, "comment": "4o\\>4W}&"}, "diagnostics": ["info:mic-e-missing-device-type"]},
+      "reencode": "refused",
+      "reencode_refusal": "value-has-no-form"
+    },
+    {
+      "id": "mic-e/phg-after-a-locator-missing-its-space",
+      "description": "A PHG straight after a locator whose space is missing is lifted before a later Mic-E altitude is looked for, as one after the locator and its space is, so 0PH} inside PHG3330PH} is never an altitude.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>SUSPU4:'C=?] \u001c#S]IO91/GPHG3330PH}#SlW1="},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "SUSPU4"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "old_data": true, "type_code": "]", "device_suffix": "=", "locator": "IO91", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "S#", "speed_knots": 650, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": "PH}#SlW1"},
+        "diagnostics": ["warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "'C=?] \u001c#S]IO91/G PHG3330PH}#SlW1="
+    },
+    {
+      "id": "mic-e/phg-after-a-locator-missing-its-space-then-an-altitude",
+      "description": "A PHG straight after a locator with no space, with a Mic-E altitude later in the text: both missing-space-after-locator and mic-e-altitude-not-first, and a strict decoder rejects by the missing space, met first.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>SUSPU4:'C=?] \u001c#S]IO91/GPHG3330 24PH}#SlW1="},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "SUSPU4"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "old_data": true, "type_code": "]", "device_suffix": "=", "locator": "IO91", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "S#", "speed_knots": 650, "altitude_feet": 497555.7742782152, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": "2#SlW1"},
+        "diagnostics": ["warning:missing-space-after-locator", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "'C=?] \u001c#S]4PH}IO91/G PHG33302#SlW1="
+    },
+    {
+      "id": "mic-e/phg-reached-only-by-lifting-a-dao-is-late",
+      "description": "The PHG comes straight after the leading Mic-E altitude only once the !DAO! before it is lifted; in the status text as sent it follows the !DAO!, so it is a late data extension.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"info": "`f[Cl]=v/\"4*}!wZo!PHG5132", "destination": "T0QW8S"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 40.297271062271065, "longitude": -74.05664285714286, "symbol": "/v", "course_degrees": 133, "speed_knots": 6, "altitude_feet": 62.33595800524934, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "dao": {"datum": "W", "precision": "base91"}},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 40.297271062271065, "longitude": -74.05664285714286, "symbol": "/v", "course_degrees": 133, "speed_knots": 6, "altitude_feet": 62.33595800524934, "dao": {"datum": "W", "precision": "base91"}, "comment": "PHG5132"}, "diagnostics": ["info:mic-e-missing-device-type"]},
+      "reencode": "equivalent",
+      "canonical_info": "`f[Cl]=v/\"4*}PHG5132!wZo!"
+    },
+    {
+      "id": "mic-e/lower-case-locator-missing-its-space",
+      "description": "A lower-case locator with no space before the comment reads as IO91 with missing-space-after-locator; an encoder writes it in upper case with the space, and the comment X after a / so that it does not read as a locator's symbol.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`Io91/GX"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "X"},
+        "diagnostics": ["warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`IO91/G /X"
+    },
+    {
+      "id": "mic-e/comment-starting-with-a-space-after-a-phg",
+      "description": "After a Mic-E PHG, one of two leading spaces is dropped and the comment keeps the other; an encoder writes a / before a comment that starts with a space, so it reads back as itself.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "N0CALL>SUSPU4:'C=?] \u001c#S]IO91/GPHG3330  W_c220s004g024PH}#SlW1="},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "SUSPU4"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "old_data": true, "type_code": "]", "device_suffix": "=", "locator": "IO91", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "S#", "speed_knots": 650, "altitude_feet": 497555.7742782152, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": " W_c220s004g02#SlW1"},
+        "diagnostics": ["warning:missing-space-after-locator", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "'C=?] \u001c#S]4PH}IO91/G PHG3330/ W_c220s004g02#SlW1="
+    },
+    {
+      "id": "mic-e/locator-then-telemetry-then-a-spaced-comment",
+      "description": "Base-91 telemetry is lifted before the locator is read, so the comment after it follows the locator's space: no missing-space-after-locator, and a strict decoder accepts it.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G|!:&0'p| DG2MM"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "DG2MM"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`IO91/G DG2MM|!:&0'p|"
     }
   ]
 }

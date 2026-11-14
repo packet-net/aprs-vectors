@@ -384,6 +384,382 @@
         "diagnostics": ["warning:empty-path-entry"]
       },
       "strict": {"rejected_by": "empty-path-entry", "header": true}
+    },
+    {
+      "id": "envelope/seventeen-path-entries",
+      "description": "17 path entries, one past a 16-entry capacity: a TNC2 header sets no limit, so an implementation without one decodes it.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["a-library-with-a-fixed-capacity-says-so"],
+      "input": {"tnc2": "N0CALL>APZ001,DIGI1,DIGI2,DIGI3,DIGI4,DIGI5,DIGI6,DIGI7,DIGI8,DIGI9,DIGI10,DIGI11,DIGI12,DIGI13,DIGI14,DIGI15,DIGI16,DIGI17:>Hello"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001", "path": ["DIGI1", "DIGI2", "DIGI3", "DIGI4", "DIGI5", "DIGI6", "DIGI7", "DIGI8", "DIGI9", "DIGI10", "DIGI11", "DIGI12", "DIGI13", "DIGI14", "DIGI15", "DIGI16", "DIGI17"]},
+        "data": {"type": "status", "text": "Hello"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/position",
+      "description": "The differential/text-after-frequency-and-altitude packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text"],
+      "input": {"ax25_hex": "82A0B4606062E09C608682989860AE92888A62406303F03D343032332E37374E2F30303334302E3032575B3037352F3030302F3134342E3830304D487A2F413D30303231363920202F205154483A20494E3830646A"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001", "path": ["WIDE1-1"]},
+        "data": {"type": "position", "messaging": true, "latitude": 40.396166666666666, "longitude": -3.667, "symbol": "/[", "course_degrees": 75, "speed_knots": 0, "altitude_feet": 2169, "frequency": {"mhz": 144.8}, "comment": "/ QTH: IN80dj"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "=4023.77N/00340.02W[075/000/144.800MHz/A=002169 // QTH: IN80dj"
+    },
+    {
+      "id": "ax25/mic-e",
+      "description": "The differential/mic-e-text-after-frequency packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text"],
+      "input": {"ax25_hex": "A66EA866AC70E0AC9666B482B47F03F0604659296C201C2D2F603433382E3438374D487A20546F6666202D37303020202020202020202020202020202020205765737465726E204469737472696374735F25"},
+      "expect": {
+        "header": {"source": "VK3ZAZ-15", "destination": "S7T3V8"},
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "`", "device_suffix": "_%", "latitude": -37.728, "longitude": 142.01883333333333, "symbol": "/-", "speed_knots": 0, "frequency": {"mhz": 438.487, "tone": "off", "offset_khz": -7000}, "comment": "               Western Districts"},
+        "device": {"vendor": "Yaesu", "model": "FTM-400DR"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`FY)l \u001c-/`438.487MHz Toff -700 /               Western Districts_%"
+    },
+    {
+      "id": "ax25/object",
+      "description": "The differential/frequency-tone-burst packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C608682989860AE92888A62406303F03B45522D4442304F58202A3131313131317A353333352E34334E4530303731312E353145303433382E3730304D487A2031373530205232376B205376784C696E6B204442304F58204F56204E6F7264656E20493039"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001", "path": ["WIDE1-1"]},
+        "data": {"type": "object", "name": "ER-DB0OX", "timestamp": "111111z", "latitude": 53.5905, "longitude": 7.191833333333333, "symbol": "E0", "frequency": {"mhz": 438.7, "tone": "tone-burst", "range": 27, "range_km": true}, "comment": "SvxLink DB0OX OV Norden I09"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/item",
+      "description": "The item/alive packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 11",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F02941494420233221343930332E35304E2F30373230312E37355741"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "item", "name": "AID #2", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/A"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/message",
+      "description": "The envelope/colons-after-the-first-belong-to-the-information-field packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "UAP 1",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03A4E3043414C4C2D31203A6869"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "message", "addressee": "N0CALL-1", "text": "hi"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/ack",
+      "description": "The message/ack packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 14",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03A4B42324943492D31343A61636B303033"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "ack", "addressee": "KB2ICI-14", "acked_id": "003"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/reject",
+      "description": "The message/ack-and-reject packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 14",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03A4B42324943492D31343A72656A303033"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "reject", "addressee": "KB2ICI-14", "rejected_id": "003"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/bulletin",
+      "description": "The message/announcement packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 14",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03A424C4E5120202020203A4D742053742048656C656E20646967692077696C6C206265205152542074686973207765656B656E64"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "bulletin", "addressee": "BLNQ", "text": "Mt St Helen digi will be QRT this weekend"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/nws-bulletin",
+      "description": "The message/nws-bulletin-id-is-for-reference-only packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 14",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03A4E57532D5741524E203A3039323031307A2C5448554E4445525F53544F524D2C41525F4153484C45592C7B53394A6241"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "nws-bulletin", "addressee": "NWS-WARN", "text": "092010z,THUNDER_STORM,AR_ASHLEY,", "message_id": "S9JbA"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/telemetry-names",
+      "description": "The telemetry/parameter-names packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 13",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03A4E305142462D3131203A5041524D2E426174746572792C4274656D702C4154656D702C507265732C416C742C43616D72612C436875742C53756E2C31306D2C415456"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "telemetry-names", "addressee": "N0QBF-11", "names": ["Battery", "Btemp", "ATemp", "Pres", "Alt", "Camra", "Chut", "Sun", "10m", "ATV"]}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/telemetry-units",
+      "description": "The weather-telemetry/units packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 13",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03A4E305142462D3131203A554E49542E762F3130302C6465672E462C6465672E462C4D6261722C4B66742C436C69636B2C4F50454E2C6F6E2C6F6E2C6869"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "telemetry-units", "addressee": "N0QBF-11", "units": ["v/100", "deg.F", "deg.F", "Mbar", "Kft", "Click", "OPEN", "on", "on", "hi"]}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/telemetry-coefficients",
+      "description": "The differential/eqns-trailing-commas packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C608682989860AE92888A62406303F03A4544315A41442D33203A45514E532E302C31302C302C302C31302C302C302C312C302C2C2C2C2C2C"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001", "path": ["WIDE1-1"]},
+        "data": {"type": "telemetry-coefficients", "addressee": "ED1ZAD-3", "coefficients": [0, 10, 0, 0, 10, 0, 0, 1, 0]}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": ":ED1ZAD-3 :EQNS.0,10,0,0,10,0,0,1,0"
+    },
+    {
+      "id": "ax25/telemetry-bits",
+      "description": "The weather-telemetry/bit-sense-and-project-name packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 13",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03A4E305142462D3131203A424954532E31303131303030302C4E305142462773204269672042616C6C6F6F6E"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "telemetry-bits", "addressee": "N0QBF-11", "bits": "10110000", "project": "N0QBF's Big Balloon"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/directed-query",
+      "description": "The message/directed-query packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 15",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03A4B48325A20202020203A3F4150525344"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "directed-query", "addressee": "KH2Z", "query_type": "APRSD"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/status",
+      "description": "The envelope/digipeated-path packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "UAP 1",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A088AE6270E0AE84649EA6B4609C648E904040E0AE64AA844040E0AE92888A64406303F03E68656C6C6F"},
+      "expect": {
+        "header": {"source": "WB2OSZ", "destination": "APDW18", "path": ["N2GH*", "W2UB*", "WIDE2-1"]},
+        "data": {"type": "status", "text": "hello"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/telemetry",
+      "description": "The differential/telemetry-sequence-past-999 packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS-IS 2026-09-25/26",
+      "authority": "interpretation",
+      "interpretations": ["telemetry-sequence-numbers-are-not-3-characters"],
+      "input": {"ax25_hex": "82A0B4606062E09C608682989860AE92888A62406303F0542335313735322C3130382E302C3233302E302C3130302C3338352C2C3130303030303030"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001", "path": ["WIDE1-1"]},
+        "data": {"type": "telemetry", "sequence": "51752", "analog": [108.0, 230.0, 100, 385, null], "bits": "10000000"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/weather",
+      "description": "The weather/positionless packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 12",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F05F31303039303535366332323073303034673030357430373772303030703030305030303068353062303939303077525357"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "weather", "timestamp": "10090556", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0, "humidity_percent": 50, "pressure_mbar": 990, "software": "w", "unit": "RSW"}},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/raw-weather",
+      "description": "The weather-telemetry/raw-weather-station-formats-are-kept-as-text packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 12",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F02335304237353030383230303832"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "raw-weather", "format": "peet-bros-hash", "data": "50B7500820082"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/nmea",
+      "description": "The nmea/rmc packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 8",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F0244750524D432C3036333930392C412C333334392E343330322C4E2C31313730302E333732312C572C34332E3032322C38392E332C3239313039392C31332E362C452A3532"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true, "latitude": 33.823836666666665, "longitude": -117.00620166666667, "fix": "valid", "course_degrees": 89.3, "speed_knots": 43.022, "time": "06:39:09"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/maidenhead-beacon",
+      "description": "The status-other/maidenhead-beacon packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 8",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F05B494F393153585D203335206D696C6573204E4E57206F66204C6F6E646F6E"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "maidenhead-beacon", "locator": "IO91SX", "comment": " 35 miles NNW of London"},
+        "diagnostics": ["info:obsolete-format"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/query",
+      "description": "The message/general-queries packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 15",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03F57583F"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "query", "query_type": "WX"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/capabilities",
+      "description": "The capabilities/igate packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 15",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F03C49474154452C4D53475F434E543D34332C4C4F435F434E543D3134"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "capabilities", "capabilities": [["IGATE"], ["MSG_CNT", "43"], ["LOC_CNT", "14"]]}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/third-party",
+      "description": "The third-party/message packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 17",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C608682989860AE92888A62406303F07D5742344150522D31343E4150787878782C54435049502C47395258472A3A3A47334E5257202020203A48692049616E7B303031"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001", "path": ["WIDE1-1"]},
+        "data": {"type": "third-party", "packet": {"source": "WB4APR-14", "destination": "APxxxx", "path": ["TCPIP*", "G9RXG*"], "data": {"type": "message", "addressee": "G3NRW", "text": "Hi Ian", "message_id": "001"}}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/user-defined",
+      "description": "The status-other/user-defined-data packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 19",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F07B7B7A6173646667"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "user-defined", "user_id": "{", "packet_type": "z", "data": "asdfg"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/test",
+      "description": "The status-other/invalid-or-test-data packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 20",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F02C3139313134362C562C343231342E323436362C4E2C30373330332E353138312C572C3431372E3233382C3131342E352C3039313039392C31342E372C572F47505320464958"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "test", "data": "191146,V,4214.2466,N,07303.5181,W,417.238,114.5,091099,14.7,W/GPS FIX"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/agrelo-df",
+      "description": "The agrelo-df/bearing-and-quality packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 5",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F0253132332F34"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "agrelo-df", "bearing_degrees": 123, "quality": 4}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "ax25/unrecognized",
+      "description": "The position/beacon-bang-at-40 packet as an AX.25 frame: the same data from the frame as from the text.",
+      "source": "APRS12c ch. 8",
+      "authority": "spec",
+      "input": {"ax25_hex": "82A0B4606062E09C60868298986103F05858585858585858585858585858585858585858585858585858585858585858585858585858585821343930332E35304E2F30373230312E3735572D54657374"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "unrecognized", "reason": "not-aprs"},
+        "diagnostics": ["info:not-aprs"]
+      },
+      "strict": "same"
     }
   ]
 }

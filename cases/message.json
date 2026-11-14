@@ -548,17 +548,17 @@
     },
     {
       "id": "telemetry-metadata/carriage-return-by-a-coefficient",
-      "description": "Only spaces may surround a coefficient; a CR is not a space, so EQNS. is a plain message (invalid-telemetry-metadata info), which an encoder refuses for its line break.",
+      "description": "Only spaces may surround a coefficient; a CR is not a space, so EQNS. is a plain message (invalid-telemetry-metadata info) whose text holds a control character, which an encoder refuses.",
       "source": "differential fuzzing 2026-09-27",
       "authority": "interpretation",
-      "interpretations": ["numbers-in-telemetry"],
+      "interpretations": ["numbers-in-telemetry", "control-characters-in-text"],
       "input": {"tnc2": "N0CALL>APZ001::N0QBF-11 :EQNS.0\r,5.2,0"},
       "expect": {
         "header": {"source": "N0CALL", "destination": "APZ001"},
         "data": {"type": "message", "addressee": "N0QBF-11", "text": "EQNS.0\r,5.2,0"},
-        "diagnostics": ["info:invalid-telemetry-metadata"]
+        "diagnostics": ["info:invalid-telemetry-metadata", "warning:control-character-in-text"]
       },
-      "strict": "same",
+      "strict": {"rejected_by": "control-character-in-text"},
       "reencode": "refused",
       "reencode_refusal": "invalid-character"
     },
@@ -703,6 +703,81 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "message/control-character-in-text",
+      "description": "A NUL in message text: control-character-in-text, and the message ID is still read.",
+      "source": "APRS12c ch. 14",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": ":N0QBF-11 :Hello\u0000there{12"},
+      "expect": {
+        "data": {"type": "message", "addressee": "N0QBF-11", "text": "Hello\u0000there", "message_id": "12"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "message/control-character-in-bulletin",
+      "description": "An ESC in bulletin text: control-character-in-text.",
+      "source": "APRS12c ch. 14",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": ":BLN1     :Net \u001bat 8pm"},
+      "expect": {
+        "data": {"type": "bulletin", "addressee": "BLN1", "text": "Net \u001bat 8pm"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "message/control-character-in-nws-bulletin",
+      "description": "A control character in NWS bulletin text: control-character-in-text.",
+      "source": "APRS12c ch. 14",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": ":NWS-WARN :Storm\u0001warning"},
+      "expect": {
+        "data": {"type": "nws-bulletin", "addressee": "NWS-WARN", "text": "Storm\u0001warning"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "telemetry-metadata/control-character-in-names",
+      "description": "A control character in a PARM. list: one control-character-in-text for the list, and it is still telemetry names.",
+      "source": "APRS12c ch. 13",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": ":N0QBF-11 :PARM.Vin,Rx\u0002,Temp"},
+      "expect": {
+        "data": {"type": "telemetry-names", "addressee": "N0QBF-11", "names": ["Vin", "Rx\u0002", "Temp"]},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "telemetry-metadata/control-character-in-project",
+      "description": "A control character in a BITS. project title: control-character-in-text.",
+      "source": "APRS12c ch. 13",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": ":N0QBF-11 :BITS.11111111,Big\u0007Balloon"},
+      "expect": {
+        "data": {"type": "telemetry-bits", "addressee": "N0QBF-11", "bits": "11111111", "project": "Big\u0007Balloon"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     }
   ]
 }
