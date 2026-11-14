@@ -3,7 +3,7 @@
     {
       "id": "build/invalid-name-before-invalid-symbol-and-missing-field",
       "description": "A builder given an object name of 11 characters, no symbol and no timestamp names invalid-name, first of the three in the Refusal reasons order.",
-      "source": "differential run 2026-11-14",
+      "source": "differential fuzzing 2026-11-14",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets", "builder-defaults"],
       "input": {"build": {"station": {"source": "N0CALL"}, "report": "object", "args": {"name": "TOOLONGNAME", "latitude": -49.58, "longitude": -27.17, "altitude_m": 1443.5}}},
@@ -15,7 +15,7 @@
     {
       "id": "build/value-has-no-form-before-missing-field",
       "description": "A builder given a positionless weather report with a humidity of 0 and no timestamp names value-has-no-form, which comes before missing-field.",
-      "source": "differential run 2026-11-14",
+      "source": "differential fuzzing 2026-11-14",
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets", "builder-defaults"],
       "input": {"build": {"station": {"source": "N0CALL"}, "report": "weather", "args": {"humidity_percent": 0, "temperature_c": 0}}},
@@ -27,7 +27,7 @@
     {
       "id": "build/status-symbol-without-a-locator",
       "description": "A status builder given a symbol and no locator refuses it as missing-field rather than build without the symbol.",
-      "source": "differential run 2026-11-14",
+      "source": "differential fuzzing 2026-11-14",
       "authority": "interpretation",
       "interpretations": ["builder-defaults"],
       "input": {"build": {"station": {"source": "N0CALL"}, "report": "status", "args": {"text": "Net Control Center", "symbol": "/>"}}},
@@ -39,7 +39,7 @@
     {
       "id": "build/telemetry-with-no-analog-values-or-bits",
       "description": "A telemetry builder given a sequence only writes five empty channels and the bits 00000000.",
-      "source": "differential run 2026-11-14",
+      "source": "differential fuzzing 2026-11-14",
       "authority": "interpretation",
       "interpretations": ["builder-defaults"],
       "input": {"build": {"station": {"source": "N0CALL"}, "report": "telemetry", "args": {"sequence": 1}}},
@@ -50,13 +50,272 @@
     {
       "id": "build/value-given-twice-before-info-size",
       "description": "A position given an altitude in feet and in metres, whose comment takes each one-unit build to 257 bytes: value-given-twice, since the size is judged only on a record with no other fault.",
-      "source": "differential run 2026-11-14",
+      "source": "differential fuzzing 2026-11-14",
       "authority": "interpretation",
       "interpretations": ["an-information-field-is-at-most-256-bytes", "which-refusal-a-record-with-two-faults-gets"],
       "input": {"build": {"station": {"source": "N0CALL"}, "report": "position", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "altitude_m": 30.48, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}},
       "expect": {
         "refused": true,
         "refusal": "value-given-twice"
+      }
+    },
+    {
+      "id": "build/position-not-messaging-is-a-bang",
+      "description": "A position whose program does not say it messages is written with !, from N0CALL to APZ001 with no path, uncompressed and with no ambiguity.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "position", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>"}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:!4903.50N/07201.75W>"
+      }
+    },
+    {
+      "id": "build/position-with-a-timestamp-not-messaging-is-a-slash",
+      "description": "A timestamped position whose program does not say it messages is written with /.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "position", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "timestamp": {"utc": "2026-09-27T09:23:45Z", "format": "dhm"}}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:/270923z4903.50N/07201.75W>"
+      }
+    },
+    {
+      "id": "build/destination-defaults-to-apz001-with-no-path",
+      "description": "A station that names no destination and no path sends to APZ001 with no path.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "status", "args": {"text": "hi"}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:>hi"
+      }
+    },
+    {
+      "id": "build/position-is-uncompressed-by-default",
+      "description": "A position not asked to be compressed is uncompressed.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "position", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-"}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:!4903.50N/07201.75W-"
+      }
+    },
+    {
+      "id": "build/position-has-no-ambiguity-by-default",
+      "description": "A position given no ambiguity has every digit.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "position", "args": {"latitude": 49.0595, "longitude": -72.0291, "symbol": "/-"}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:!4903.57N/07201.75W-"
+      }
+    },
+    {
+      "id": "build/mic-e-not-messaging-has-the-apostrophe-type-code",
+      "description": "A Mic-E report whose program does not say it messages gets the type code ', off duty, and speed 0.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "mic-e", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>"}}},
+      "expect": {
+        "tnc2": "N0CALL>TYPS5P:`dYgl \u001c>/'"
+      }
+    },
+    {
+      "id": "build/mic-e-message-defaults-to-off-duty",
+      "description": "A Mic-E report given no message is off duty (M0), here from a station that messages.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "mic-e", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "messaging": true}}},
+      "expect": {
+        "tnc2": "N0CALL>TYPS5P:`dYgl \u001c>/`"
+      }
+    },
+    {
+      "id": "build/mic-e-speed-defaults-to-zero",
+      "description": "A Mic-E report given a course and no speed writes a speed of 0, its only form.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "mic-e", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "course_degrees": 90, "mic_e_message": "en-route"}}},
+      "expect": {
+        "tnc2": "N0CALL>TY0S5P:`dYgl v>/'"
+      }
+    },
+    {
+      "id": "build/weather-symbol-and-unknown-wind",
+      "description": "A positioned weather report given no symbol is /_, and its unset wind, gust and temperature are written as dots.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "weather", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "rain_1h_in": 0.1}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_.../...g...t...r010"
+      }
+    },
+    {
+      "id": "build/positionless-weather-unknown-fields",
+      "description": "A positionless weather report writes the c, s, g and t it is not given as dots.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "weather", "args": {"timestamp": {"utc": "2026-09-27T09:23:45Z", "format": "mdhm"}, "temperature_f": 77}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:_09270923c...s...g...t077"
+      }
+    },
+    {
+      "id": "build/object-without-a-timestamp",
+      "description": "An object built with no timestamp is refused: a builder never reads the clock.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "object", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "name": "LEADER", "symbol": "/-"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "missing-field"
+      }
+    },
+    {
+      "id": "build/positionless-weather-without-a-timestamp",
+      "description": "A positionless weather report built with no timestamp is refused: a builder never reads the clock.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "weather", "args": {"temperature_f": 77}}},
+      "expect": {
+        "refused": true,
+        "refusal": "missing-field"
+      }
+    },
+    {
+      "id": "build/position-without-a-symbol",
+      "description": "A position built with no symbol is invalid-symbol, as neutral data without one is.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "position", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "build/object-is-alive-by-default",
+      "description": "An object not said to be killed is alive (*).",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "object", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "name": "LEADER", "symbol": "/-", "timestamp": {"utc": "2026-09-27T09:23:45Z", "format": "dhm"}}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:;LEADER   *270923z4903.50N/07201.75W-"
+      }
+    },
+    {
+      "id": "build/item-is-alive-by-default",
+      "description": "An item not said to be killed is alive (!).",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "item", "args": {"latitude": 49.05833333333333, "longitude": -72.02916666666667, "name": "ITEM1", "symbol": "/-"}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:)ITEM1!4903.50N/07201.75W-"
+      }
+    },
+    {
+      "id": "build/telemetry-metadata-to-the-sending-station",
+      "description": "Telemetry names given no addressee are addressed to the sending station.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "telemetry-names", "args": {"names": ["Vin", "Rx"]}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001::N0CALL   :PARM.Vin,Rx"
+      }
+    },
+    {
+      "id": "build/message-without-a-message-id",
+      "description": "A message given no message ID has none, and no reply-ack.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "message", "args": {"addressee": "N0QBF", "text": "Hello"}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001::N0QBF    :Hello"
+      }
+    },
+    {
+      "id": "build/bulletin-without-a-group",
+      "description": "A bulletin given no group has none.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "bulletin", "args": {"id": "1", "text": "Hello"}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001::BLN1     :Hello"
+      }
+    },
+    {
+      "id": "build/telemetry-bits-default-to-zeros",
+      "description": "A telemetry report given no bits writes 00000000.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "telemetry", "args": {"sequence": 5, "analog": [1, 2, 3, 4, 5]}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:T#005,001,002,003,004,005,00000000"
+      }
+    },
+    {
+      "id": "build/telemetry-without-a-sequence",
+      "description": "A telemetry report given no sequence is missing-field.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "telemetry", "args": {"analog": [1, 2, 3, 4, 5], "bits": "00000000"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "missing-field"
+      }
+    },
+    {
+      "id": "build/status-locator-without-a-symbol",
+      "description": "A status locator given with no symbol is missing-field.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "status", "args": {"text": "hi", "locator": "IO91SX"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "missing-field"
+      }
+    },
+    {
+      "id": "build/status-without-a-timestamp",
+      "description": "A status given no timestamp has none.",
+      "source": "README builder rule Defaults (survey 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "status", "args": {"text": "Net Control"}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:>Net Control"
+      }
+    },
+    {
+      "id": "build/text-reads-as-field-before-info-size",
+      "description": "Status text that starts with what reads as a locator and makes a 257-byte field is text-reads-as-field: the size is checked last, after the read-back.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "status", "args": {"text": "IO91SX/Gxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "text-reads-as-field"
       }
     }
   ]

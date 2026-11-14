@@ -1265,7 +1265,7 @@
       },
       "strict": "same",
       "reencode": "refused",
-      "reencode_refusal": "too-long"
+      "reencode_refusal": "information-field-too-long"
     },
     {
       "id": "status/control-character-in-text",
@@ -1355,7 +1355,7 @@
     },
     {
       "id": "status/information-field-over-256-bytes",
-      "description": "A decoder sets no limit: a 300-byte status decodes as any other, and re-encodes refused, too-long, since the information field is over 256 bytes.",
+      "description": "A decoder sets no limit: a 300-byte status decodes as any other, and re-encodes refused, information-field-too-long, since the information field is over 256 bytes.",
       "source": "APRS12c ch. 3",
       "authority": "interpretation",
       "interpretations": ["an-information-field-is-at-most-256-bytes"],
@@ -1365,7 +1365,7 @@
       },
       "strict": "same",
       "reencode": "refused",
-      "reencode_refusal": "too-long"
+      "reencode_refusal": "information-field-too-long"
     },
     {
       "id": "status/information-field-of-513-bytes",
@@ -1379,11 +1379,11 @@
       },
       "strict": "same",
       "reencode": "refused",
-      "reencode_refusal": "too-long"
+      "reencode_refusal": "information-field-too-long"
     },
     {
       "id": "status/information-field-of-2000-bytes",
-      "description": "2,000 bytes of information field decode as any other where there is no capacity limit; the field re-encodes refused, too-long.",
+      "description": "2,000 bytes of information field decode as any other where there is no capacity limit; the field re-encodes refused, information-field-too-long.",
       "source": "APRS12c ch. 3",
       "authority": "interpretation",
       "interpretations": ["a-library-with-a-fixed-capacity-says-so", "an-information-field-is-at-most-256-bytes"],
@@ -1393,7 +1393,7 @@
       },
       "strict": "same",
       "reencode": "refused",
-      "reencode_refusal": "too-long"
+      "reencode_refusal": "information-field-too-long"
     },
     {
       "id": "capabilities/sixty-five-capabilities",

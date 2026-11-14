@@ -1019,7 +1019,7 @@
     },
     {
       "id": "mic-e/altitude-with-no-form-before-a-type-code",
-      "description": "A later Mic-E altitude of 231,913 metres, which no /A= holds exactly, written with no type code would start with >, which reads back as one: it has no form, value-has-no-form.",
+      "description": "A later Mic-E altitude of 231,932 metres, which no /A= holds exactly, written with no type code would start with >, which reads back as one: it has no form, value-has-no-form.",
       "source": "differential fuzzing 2026-11-14",
       "authority": "interpretation",
       "interpretations": ["a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
@@ -1064,6 +1064,21 @@
       "strict": {"rejected_by": "missing-space-after-locator"},
       "reencode": "equivalent",
       "canonical_info": "'C=?] \u001c#S]4PH}IO91/G PHG33302#SlW1="
+    },
+    {
+      "id": "mic-e/phg-reached-only-by-lifting-a-dao-is-late",
+      "description": "The PHG comes straight after the leading Mic-E altitude only once the !DAO! before it is lifted; in the status text as sent it follows the !DAO!, so it is a late data extension.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"info": "`f[Cl]=v/\"4*}!wZo!PHG5132", "destination": "T0QW8S"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 40.297271062271065, "longitude": -74.05664285714286, "symbol": "/v", "course_degrees": 133, "speed_knots": 6, "altitude_feet": 62.33595800524934, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "dao": {"datum": "W", "precision": "base91"}},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 40.297271062271065, "longitude": -74.05664285714286, "symbol": "/v", "course_degrees": 133, "speed_knots": 6, "altitude_feet": 62.33595800524934, "dao": {"datum": "W", "precision": "base91"}, "comment": "PHG5132"}, "diagnostics": ["info:mic-e-missing-device-type"]},
+      "reencode": "equivalent",
+      "canonical_info": "`f[Cl]=v/\"4*}PHG5132!wZo!"
     }
   ]
 }

@@ -1,5 +1,5 @@
 # Pairs of refusal codes with no case in cases/precedence.json, and why (written by tools/precedence.py).
-# 136 pair cases for 171 pairs of the 19 codes an encode case can carry; 35 pairs no record can hold:
+# 155 pair cases for 190 pairs of the 20 codes an encode case can carry; 35 pairs no record can hold:
 invalid-addressee + invalid-name: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; invalid-name only of item, object
 invalid-addressee + invalid-timestamp: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; invalid-timestamp only of object, position, status, weather
 invalid-addressee + value-out-of-range: no report has both: invalid-addressee is a fault only of ack, bulletin, directed-query, message, nws-bulletin, telemetry-metadata; value-out-of-range only of agrelo-df, item, mic-e, object, position, query, telemetry, weather

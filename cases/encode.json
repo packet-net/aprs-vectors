@@ -2079,26 +2079,26 @@
     },
     {
       "id": "encode/status-of-257-bytes",
-      "description": "A status whose information field would be 257 bytes is refused as too-long.",
+      "description": "A status whose information field would be 257 bytes is refused as information-field-too-long.",
       "source": "APRS12c ch. 3",
       "authority": "interpretation",
       "interpretations": ["an-information-field-is-at-most-256-bytes"],
       "input": {"encode": {"type": "status", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
       "expect": {
         "refused": true,
-        "refusal": "too-long"
+        "refusal": "information-field-too-long"
       }
     },
     {
       "id": "encode/status-of-257-bytes-in-utf8",
-      "description": "The limit counts bytes, not characters: 128 two-byte characters make a 257-byte field, refused as too-long.",
+      "description": "The limit counts bytes, not characters: 128 two-byte characters make a 257-byte field, refused as information-field-too-long.",
       "source": "APRS12c ch. 3",
       "authority": "interpretation",
       "interpretations": ["an-information-field-is-at-most-256-bytes"],
       "input": {"encode": {"type": "status", "text": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"}},
       "expect": {
         "refused": true,
-        "refusal": "too-long"
+        "refusal": "information-field-too-long"
       }
     },
     {
@@ -2125,14 +2125,14 @@
     },
     {
       "id": "encode/position-comment-to-257-bytes",
-      "description": "A position whose comment would bring the information field to 257 bytes is refused as too-long.",
+      "description": "A position whose comment would bring the information field to 257 bytes is refused as information-field-too-long.",
       "source": "APRS12c ch. 3",
       "authority": "interpretation",
       "interpretations": ["an-information-field-is-at-most-256-bytes"],
       "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
       "expect": {
         "refused": true,
-        "refusal": "too-long"
+        "refusal": "information-field-too-long"
       }
     },
     {
@@ -2148,14 +2148,14 @@
     },
     {
       "id": "encode/object-comment-to-257-bytes",
-      "description": "An object whose comment would bring the information field to 257 bytes is refused as too-long.",
+      "description": "An object whose comment would bring the information field to 257 bytes is refused as information-field-too-long.",
       "source": "APRS12c ch. 3",
       "authority": "interpretation",
       "interpretations": ["an-information-field-is-at-most-256-bytes"],
       "input": {"encode": {"type": "object", "name": "LEADER", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
       "expect": {
         "refused": true,
-        "refusal": "too-long"
+        "refusal": "information-field-too-long"
       }
     },
     {
@@ -2171,14 +2171,14 @@
     },
     {
       "id": "encode/telemetry-number-to-257-bytes",
-      "description": "A telemetry value given as 1e225 is 226 digits, which would bring the information field to 257 bytes: too-long.",
+      "description": "A telemetry value given as 1e225 is 226 digits, which would bring the information field to 257 bytes: information-field-too-long.",
       "source": "APRS12c ch. 3",
       "authority": "interpretation",
       "interpretations": ["an-information-field-is-at-most-256-bytes", "numbers-given-without-their-text"],
       "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [1e+225, 0, 0, 0, 0], "bits": "00000000"}},
       "expect": {
         "refused": true,
-        "refusal": "too-long"
+        "refusal": "information-field-too-long"
       }
     },
     {
@@ -2194,14 +2194,14 @@
     },
     {
       "id": "encode/third-party-to-257-bytes",
-      "description": "An inner status of 229 bytes is within the limit on its own, but with the } and the inner header the outermost field would be 257 bytes: too-long.",
+      "description": "An inner status of 229 bytes is within the limit on its own, but with the } and the inner header the outermost field would be 257 bytes: information-field-too-long.",
       "source": "APRS12c ch. 3",
       "authority": "interpretation",
       "interpretations": ["an-information-field-is-at-most-256-bytes"],
       "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP*", "G4ABC*"], "data": {"type": "status", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}}},
       "expect": {
         "refused": true,
-        "refusal": "too-long"
+        "refusal": "information-field-too-long"
       }
     },
     {
@@ -2213,7 +2213,7 @@
       "input": {"encode": {"type": "nws-bulletin", "addressee": "NWS-WARN", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
       "expect": {
         "refused": true,
-        "refusal": "too-long"
+        "refusal": "information-field-too-long"
       }
     },
     {
@@ -2380,6 +2380,30 @@
       "expect": {
         "refused": true,
         "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "encode/status-read-back-before-info-size",
+      "description": "Status text that starts with what reads as a locator, in a 257-byte field, is text-reads-as-field: the size is checked last, after the read-back.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "status", "text": "IO91SX/Gxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "text-reads-as-field"
+      }
+    },
+    {
+      "id": "encode/telemetry-sequence-mic-and-more",
+      "description": "A telemetry sequence that starts MIC but is not MIC would read back as MIC and a value: a sequence is fixed-form text, so it is malformed.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["telemetry-sequence-numbers-are-not-3-characters"],
+      "input": {"encode": {"type": "telemetry", "sequence": "MIC1", "analog": [1, 2, 3, 4, 5], "bits": "00000000"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
       }
     }
   ]

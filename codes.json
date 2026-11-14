@@ -367,7 +367,7 @@
     },
     {
       "id": "too-long",
-      "meaning": "Free text or a list is longer than its field allows (message text over 67 characters, a project title over 23, more than 13 names, more than 5 analog values), or the information field as written is over 256 bytes (APRS12c ch. 3)."
+      "meaning": "Free text or a list is longer than its own field allows: message text over 67 characters, a project title over 23, more than 13 names, more than 5 analog values."
     },
     {
       "id": "malformed",
@@ -436,6 +436,10 @@
     {
       "id": "does-not-read-back",
       "meaning": "Fallback: the library's own read-back check found the bytes decode to different data and no rule above names why."
+    },
+    {
+      "id": "information-field-too-long",
+      "meaning": "The information field as written is over 256 bytes (APRS12c ch. 3), and nothing else is wrong with the data: checked last, on the bytes written."
     }
   ]
 }

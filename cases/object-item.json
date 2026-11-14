@@ -434,6 +434,59 @@
         "diagnostics": ["error:invalid-object-name"]
       },
       "strict": "same"
+    },
+    {
+      "id": "object-item/storm-data-on-an-overlaid-hurricane-symbol",
+      "description": "An overlay on the alternate table's @ is still the hurricane symbol, so the storm data after the course and speed is read.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["an-area-df-bearing-or-storm-is-not-the-data-extension"],
+      "input": {"info": ";BRENDA   *100045z4905.50NA07201.75W@101/047/HC/104^123/0980>065&020%040"},
+      "expect": {
+        "data": {"type": "object", "name": "BRENDA", "timestamp": "100045z", "latitude": 49.09166666666667, "longitude": -72.02916666666667, "symbol": "A@", "course_degrees": 101, "speed_knots": 47, "storm": {"type": "hurricane", "sustained_wind_knots": 104, "gust_knots": 123, "central_pressure_mbar": 980, "hurricane_radius_nm": 65, "tropical_storm_radius_nm": 20, "whole_gale_radius_nm": 40}}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "object-item/storm-data-ends-before-a-whole-gale-radius-that-is-not-digits",
+      "description": "The whole gale radius is optional and its field is digits: %4.4 is not one, so the storm data ends after the tropical storm radius and %4.4 starts the comment.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["an-area-df-bearing-or-storm-is-not-the-data-extension"],
+      "input": {"info": ";BRENDA   *100045z4905.50N/07201.75W@101/047/HC/104^123/0980>065&020%4.410/433.775040"},
+      "expect": {
+        "data": {"type": "object", "name": "BRENDA", "timestamp": "100045z", "latitude": 49.09166666666667, "longitude": -72.02916666666667, "symbol": "/@", "course_degrees": 101, "speed_knots": 47, "storm": {"type": "hurricane", "sustained_wind_knots": 104, "gust_knots": 123, "central_pressure_mbar": 980, "hurricane_radius_nm": 65, "tropical_storm_radius_nm": 20}, "comment": "%4.410/433.775040"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "object-item/storm-data-with-dots-in-a-field-is-text",
+      "description": "Storm data's fields are digits; ... is not one, (unlike a weather value), so none of it is storm data and it stays in the comment.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["an-area-df-bearing-or-storm-is-not-the-data-extension"],
+      "input": {"info": ";BRENDA   *100045z4905.50N/07201.75W@101/047/HC/...^123/0980>065&020%040"},
+      "expect": {
+        "data": {"type": "object", "name": "BRENDA", "timestamp": "100045z", "latitude": 49.09166666666667, "longitude": -72.02916666666667, "symbol": "/@", "course_degrees": 101, "speed_knots": 47, "comment": "HC/...^123/0980>065&020%040"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": ";BRENDA   *100045z4905.50N/07201.75W@101/047HC/...^123/0980>065&020%040"
+    },
+    {
+      "id": "object-item/storm-whole-gale-radius-of-dots-is-text",
+      "description": "A whole gale radius of dots is not a field, so the storm data ends before it and %... is comment text.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["an-area-df-bearing-or-storm-is-not-the-data-extension"],
+      "input": {"info": ";BRENDA   *100045z4905.50N/07201.75W@101/047/HC/104^123/0980>065&020%..."},
+      "expect": {
+        "data": {"type": "object", "name": "BRENDA", "timestamp": "100045z", "latitude": 49.09166666666667, "longitude": -72.02916666666667, "symbol": "/@", "course_degrees": 101, "speed_knots": 47, "storm": {"type": "hurricane", "sustained_wind_knots": 104, "gust_knots": 123, "central_pressure_mbar": 980, "hurricane_radius_nm": 65, "tropical_storm_radius_nm": 20}, "comment": "%..."}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }

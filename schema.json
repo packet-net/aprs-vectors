@@ -4,123 +4,1240 @@
   "title": "APRS conformance vector file",
   "description": "A file of cases in spec/aprs/cases. See spec/aprs/README.md for what each key means and how to compare results.",
   "type": "object",
-  "required": ["cases"],
+  "required": [
+    "cases"
+  ],
   "additionalProperties": false,
   "properties": {
-    "cases": { "type": "array", "items": { "$ref": "#/$defs/case" } }
+    "cases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
   },
   "$defs": {
-    "diagnostic": { "type": "string", "pattern": "^(info|warning|error):[a-z0-9]+(-[a-z0-9]+)*$" },
-    "diagnostics": { "type": "array", "items": { "$ref": "#/$defs/diagnostic" } },
-    "code": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "diagnostic": {
+      "type": "string",
+      "pattern": "^(info|warning|error):[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/diagnostic"
+      }
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
     "data": {
       "type": "object",
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "properties": {
         "type": {
-          "enum": ["position", "mic-e", "object", "item", "message", "ack", "reject", "bulletin", "nws-bulletin",
-                   "telemetry-names", "telemetry-units", "telemetry-coefficients", "telemetry-bits", "directed-query",
-                   "status", "telemetry", "weather", "raw-weather", "nmea", "maidenhead-beacon", "query", "capabilities",
-                   "third-party", "user-defined", "test", "agrelo-df", "unrecognized"]
+          "enum": [
+            "position",
+            "mic-e",
+            "object",
+            "item",
+            "message",
+            "ack",
+            "reject",
+            "bulletin",
+            "nws-bulletin",
+            "telemetry-names",
+            "telemetry-units",
+            "telemetry-coefficients",
+            "telemetry-bits",
+            "directed-query",
+            "status",
+            "telemetry",
+            "weather",
+            "raw-weather",
+            "nmea",
+            "maidenhead-beacon",
+            "query",
+            "capabilities",
+            "third-party",
+            "user-defined",
+            "test",
+            "agrelo-df",
+            "unrecognized"
+          ]
         }
       }
     },
     "header": {
       "type": "object",
-      "required": ["source", "destination"],
+      "required": [
+        "source",
+        "destination"
+      ],
       "additionalProperties": false,
       "properties": {
-        "source": { "type": "string" },
-        "destination": { "type": "string" },
-        "path": { "type": "array", "items": { "type": "string" } },
+        "source": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "path": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "q_construct": {
           "type": "object",
-          "required": ["construct"],
+          "required": [
+            "construct"
+          ],
           "additionalProperties": false,
-          "properties": { "construct": { "type": "string" }, "station": { "type": "string" } }
+          "properties": {
+            "construct": {
+              "type": "string"
+            },
+            "station": {
+              "type": "string"
+            }
+          }
         }
       }
     },
     "case": {
       "type": "object",
-      "required": ["id", "description", "source", "authority", "input", "expect"],
+      "required": [
+        "id",
+        "description",
+        "source",
+        "authority",
+        "input",
+        "expect"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$" },
-        "description": { "type": "string" },
-        "source": { "type": "string" },
-        "authority": { "enum": ["spec", "interpretation", "observed"] },
-        "interpretations": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+        },
+        "description": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "authority": {
+          "enum": [
+            "spec",
+            "interpretation",
+            "observed"
+          ]
+        },
+        "interpretations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
         "input": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "tnc2": { "type": "string" },
-            "tnc2_hex": { "type": "string", "pattern": "^([0-9A-Fa-f]{2})*$" },
-            "ax25_hex": { "type": "string", "pattern": "^([0-9A-Fa-f]{2})*$" },
-            "info": { "type": "string" },
-            "info_hex": { "type": "string", "pattern": "^([0-9A-Fa-f]{2})*$" },
-            "encode": { "$ref": "#/$defs/data" },
-            "build": {
-              "type": "object",
-              "required": ["report", "args"],
-              "additionalProperties": false,
-              "properties": { "station": { "type": "object" }, "report": { "type": "string" }, "args": { "type": "object" } }
+            "tnc2": {
+              "type": "string"
             },
-            "source": { "type": "string" },
-            "destination": { "type": "string" },
-            "path": { "type": "array", "items": { "type": "string" } }
+            "tnc2_hex": {
+              "type": "string",
+              "pattern": "^([0-9A-Fa-f]{2})*$"
+            },
+            "ax25_hex": {
+              "type": "string",
+              "pattern": "^([0-9A-Fa-f]{2})*$"
+            },
+            "info": {
+              "type": "string"
+            },
+            "info_hex": {
+              "type": "string",
+              "pattern": "^([0-9A-Fa-f]{2})*$"
+            },
+            "encode": {
+              "$ref": "#/$defs/data"
+            },
+            "build": {
+              "$ref": "#/$defs/build"
+            },
+            "source": {
+              "type": "string"
+            },
+            "destination": {
+              "type": "string"
+            },
+            "path": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
           "oneOf": [
-            { "required": ["tnc2"] }, { "required": ["tnc2_hex"] }, { "required": ["ax25_hex"] },
-            { "required": ["info"] }, { "required": ["info_hex"] }, { "required": ["encode"] }, { "required": ["build"] }
+            {
+              "required": [
+                "tnc2"
+              ]
+            },
+            {
+              "required": [
+                "tnc2_hex"
+              ]
+            },
+            {
+              "required": [
+                "ax25_hex"
+              ]
+            },
+            {
+              "required": [
+                "info"
+              ]
+            },
+            {
+              "required": [
+                "info_hex"
+              ]
+            },
+            {
+              "required": [
+                "encode"
+              ]
+            },
+            {
+              "required": [
+                "build"
+              ]
+            }
           ]
         },
         "expect": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "data": { "$ref": "#/$defs/data" },
-            "diagnostics": { "$ref": "#/$defs/diagnostics" },
-            "header": { "$ref": "#/$defs/header" },
-            "header_error": { "$ref": "#/$defs/diagnostics" },
+            "data": {
+              "$ref": "#/$defs/data"
+            },
+            "diagnostics": {
+              "$ref": "#/$defs/diagnostics"
+            },
+            "header": {
+              "$ref": "#/$defs/header"
+            },
+            "header_error": {
+              "$ref": "#/$defs/diagnostics"
+            },
             "device": {
               "type": "object",
               "additionalProperties": false,
-              "properties": { "vendor": { "type": "string" }, "model": { "type": "string" } }
+              "properties": {
+                "vendor": {
+                  "type": "string"
+                },
+                "model": {
+                  "type": "string"
+                }
+              }
             },
-            "info": { "type": "string" },
-            "tnc2": { "type": "string" },
-            "destination": { "type": "string" },
-            "refused": { "const": true },
-            "refusal": { "$ref": "#/$defs/code" }
+            "info": {
+              "type": "string"
+            },
+            "tnc2": {
+              "type": "string"
+            },
+            "destination": {
+              "type": "string"
+            },
+            "refused": {
+              "const": true
+            },
+            "refusal": {
+              "$ref": "#/$defs/code"
+            }
           },
-          "if": { "required": ["refusal"] },
-          "then": { "required": ["refused"] }
+          "if": {
+            "required": [
+              "refusal"
+            ]
+          },
+          "then": {
+            "required": [
+              "refused"
+            ]
+          }
         },
         "strict": {
           "oneOf": [
-            { "const": "same" },
             {
-              "type": "object",
-              "required": ["rejected_by"],
-              "additionalProperties": false,
-              "properties": { "rejected_by": { "$ref": "#/$defs/code" }, "header": { "type": "boolean" } }
+              "const": "same"
             },
             {
               "type": "object",
-              "required": ["data"],
+              "required": [
+                "rejected_by"
+              ],
               "additionalProperties": false,
-              "properties": { "data": { "$ref": "#/$defs/data" }, "diagnostics": { "$ref": "#/$defs/diagnostics" } }
+              "properties": {
+                "rejected_by": {
+                  "$ref": "#/$defs/code"
+                },
+                "header": {
+                  "type": "boolean"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "data"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "data": {
+                  "$ref": "#/$defs/data"
+                },
+                "diagnostics": {
+                  "$ref": "#/$defs/diagnostics"
+                }
+              }
             }
           ]
         },
-        "reencode": { "enum": ["identical", "equivalent", "rounded", "refused"] },
-        "canonical_info": { "type": "string" },
-        "reencode_refusal": { "$ref": "#/$defs/code" }
+        "reencode": {
+          "enum": [
+            "identical",
+            "equivalent",
+            "rounded",
+            "refused"
+          ]
+        },
+        "canonical_info": {
+          "type": "string"
+        },
+        "reencode_refusal": {
+          "$ref": "#/$defs/code"
+        }
       },
-      "if": { "required": ["reencode_refusal"] },
-      "then": { "required": ["reencode"], "properties": { "reencode": { "const": "refused" } } }
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "reencode_refusal"
+            ]
+          },
+          "then": {
+            "required": [
+              "reencode"
+            ],
+            "properties": {
+              "reencode": {
+                "const": "refused"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "input": {
+                "required": [
+                  "encode"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "expect": {
+                "propertyNames": {
+                  "enum": [
+                    "info",
+                    "destination",
+                    "refused",
+                    "refusal"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "input": {
+                "required": [
+                  "build"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "expect": {
+                "propertyNames": {
+                  "enum": [
+                    "tnc2",
+                    "refused",
+                    "refusal"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "input": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "encode"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "build"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "expect": {
+                "propertyNames": {
+                  "enum": [
+                    "data",
+                    "diagnostics",
+                    "header",
+                    "header_error",
+                    "device"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "build": {
+      "type": "object",
+      "required": [
+        "report",
+        "args"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "station": {
+          "type": "object",
+          "required": [
+            "source"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "destination": {
+              "type": "string"
+            },
+            "path": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "report": {
+          "enum": [
+            "position",
+            "object",
+            "item",
+            "mic-e",
+            "weather",
+            "message",
+            "ack",
+            "reject",
+            "bulletin",
+            "status",
+            "telemetry",
+            "telemetry-names",
+            "telemetry-units",
+            "telemetry-coefficients",
+            "telemetry-bits"
+          ]
+        },
+        "args": {
+          "type": "object"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "position"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  },
+                  "messaging": {
+                    "type": "boolean"
+                  },
+                  "timestamp": {
+                    "type": "object",
+                    "required": [
+                      "utc"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "utc": {
+                        "type": "string"
+                      },
+                      "format": {
+                        "enum": [
+                          "dhm",
+                          "hms",
+                          "mdhm"
+                        ]
+                      }
+                    }
+                  },
+                  "symbol": {
+                    "type": "string"
+                  },
+                  "course_degrees": {
+                    "type": "number"
+                  },
+                  "speed_knots": {
+                    "type": "number"
+                  },
+                  "speed_kmh": {
+                    "type": "number"
+                  },
+                  "altitude_feet": {
+                    "type": "number"
+                  },
+                  "altitude_m": {
+                    "type": "number"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "phg": {
+                    "type": "object"
+                  },
+                  "range_miles": {
+                    "type": "number"
+                  },
+                  "frequency": {
+                    "type": "object"
+                  },
+                  "compressed": {
+                    "type": "boolean"
+                  },
+                  "ambiguity": {
+                    "type": "number"
+                  },
+                  "dao": {
+                    "type": "boolean"
+                  },
+                  "telemetry": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "object"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  },
+                  "timestamp": {
+                    "type": "object",
+                    "required": [
+                      "utc"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "utc": {
+                        "type": "string"
+                      },
+                      "format": {
+                        "enum": [
+                          "dhm",
+                          "hms",
+                          "mdhm"
+                        ]
+                      }
+                    }
+                  },
+                  "killed": {
+                    "type": "boolean"
+                  },
+                  "symbol": {
+                    "type": "string"
+                  },
+                  "course_degrees": {
+                    "type": "number"
+                  },
+                  "speed_knots": {
+                    "type": "number"
+                  },
+                  "speed_kmh": {
+                    "type": "number"
+                  },
+                  "altitude_feet": {
+                    "type": "number"
+                  },
+                  "altitude_m": {
+                    "type": "number"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "phg": {
+                    "type": "object"
+                  },
+                  "range_miles": {
+                    "type": "number"
+                  },
+                  "frequency": {
+                    "type": "object"
+                  },
+                  "compressed": {
+                    "type": "boolean"
+                  },
+                  "ambiguity": {
+                    "type": "number"
+                  },
+                  "dao": {
+                    "type": "boolean"
+                  },
+                  "telemetry": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "item"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  },
+                  "killed": {
+                    "type": "boolean"
+                  },
+                  "symbol": {
+                    "type": "string"
+                  },
+                  "course_degrees": {
+                    "type": "number"
+                  },
+                  "speed_knots": {
+                    "type": "number"
+                  },
+                  "speed_kmh": {
+                    "type": "number"
+                  },
+                  "altitude_feet": {
+                    "type": "number"
+                  },
+                  "altitude_m": {
+                    "type": "number"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "phg": {
+                    "type": "object"
+                  },
+                  "range_miles": {
+                    "type": "number"
+                  },
+                  "frequency": {
+                    "type": "object"
+                  },
+                  "compressed": {
+                    "type": "boolean"
+                  },
+                  "ambiguity": {
+                    "type": "number"
+                  },
+                  "dao": {
+                    "type": "boolean"
+                  },
+                  "telemetry": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "mic-e"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  },
+                  "mic_e_message": {
+                    "enum": [
+                      "off-duty",
+                      "en-route",
+                      "in-service",
+                      "returning",
+                      "committed",
+                      "special",
+                      "priority",
+                      "custom0",
+                      "custom1",
+                      "custom2",
+                      "custom3",
+                      "custom4",
+                      "custom5",
+                      "custom6",
+                      "emergency"
+                    ]
+                  },
+                  "messaging": {
+                    "type": "boolean"
+                  },
+                  "type_code": {
+                    "type": "string"
+                  },
+                  "device_suffix": {
+                    "type": "string"
+                  },
+                  "symbol": {
+                    "type": "string"
+                  },
+                  "course_degrees": {
+                    "type": "number"
+                  },
+                  "speed_knots": {
+                    "type": "number"
+                  },
+                  "speed_kmh": {
+                    "type": "number"
+                  },
+                  "altitude_feet": {
+                    "type": "number"
+                  },
+                  "altitude_m": {
+                    "type": "number"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "phg": {
+                    "type": "object"
+                  },
+                  "range_miles": {
+                    "type": "number"
+                  },
+                  "frequency": {
+                    "type": "object"
+                  },
+                  "compressed": {
+                    "type": "boolean"
+                  },
+                  "ambiguity": {
+                    "type": "number"
+                  },
+                  "dao": {
+                    "type": "boolean"
+                  },
+                  "telemetry": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "weather"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "timestamp": {
+                    "type": "object",
+                    "required": [
+                      "utc"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "utc": {
+                        "type": "string"
+                      },
+                      "format": {
+                        "enum": [
+                          "dhm",
+                          "hms",
+                          "mdhm"
+                        ]
+                      }
+                    }
+                  },
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  },
+                  "symbol": {
+                    "type": "string"
+                  },
+                  "wind_direction_degrees": {
+                    "type": "number"
+                  },
+                  "wind_speed_mph": {
+                    "type": "number"
+                  },
+                  "wind_gust_mph": {
+                    "type": "number"
+                  },
+                  "temperature_f": {
+                    "type": "number"
+                  },
+                  "temperature_c": {
+                    "type": "number"
+                  },
+                  "rain_1h_in": {
+                    "type": "number"
+                  },
+                  "rain_24h_in": {
+                    "type": "number"
+                  },
+                  "rain_midnight_in": {
+                    "type": "number"
+                  },
+                  "rain_1h_mm": {
+                    "type": "number"
+                  },
+                  "rain_24h_mm": {
+                    "type": "number"
+                  },
+                  "rain_midnight_mm": {
+                    "type": "number"
+                  },
+                  "humidity_percent": {
+                    "type": "number"
+                  },
+                  "pressure_mbar": {
+                    "type": "number"
+                  },
+                  "luminosity_w_m2": {
+                    "type": "number"
+                  },
+                  "snow_24h_in": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "message"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "addressee": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "message_id": {
+                    "type": "string"
+                  },
+                  "reply_ack": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "ack"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "addressee": {
+                    "type": "string"
+                  },
+                  "message_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "reject"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "addressee": {
+                    "type": "string"
+                  },
+                  "message_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "bulletin"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "group": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "status"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "object",
+                    "required": [
+                      "utc"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "utc": {
+                        "type": "string"
+                      },
+                      "format": {
+                        "enum": [
+                          "dhm",
+                          "hms",
+                          "mdhm"
+                        ]
+                      }
+                    }
+                  },
+                  "locator": {
+                    "type": "string"
+                  },
+                  "symbol": {
+                    "type": "string"
+                  },
+                  "beam": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "telemetry"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "sequence": {
+                    "type": "number"
+                  },
+                  "analog": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "bits": {
+                    "type": "string"
+                  },
+                  "comment": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "telemetry-names"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "addressee": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "telemetry-units"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "units": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "addressee": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "telemetry-coefficients"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "coefficients": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "addressee": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "report": {
+                "const": "telemetry-bits"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "bits": {
+                    "type": "string"
+                  },
+                  "project": {
+                    "type": "string"
+                  },
+                  "addressee": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

@@ -217,6 +217,18 @@
       }
     },
     {
+      "id": "precedence/invalid-third-party-header-and-information-field-too-long",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a 300-character comment in the inner packet (information-field-too-long): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
       "id": "precedence/invalid-addressee-and-invalid-code",
       "description": "Two faults, an addressee of 11 characters (invalid-addressee) and a query type in lower case (invalid-code): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -307,6 +319,18 @@
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
       "input": {"encode": {"type": "message", "addressee": "TOOLONGCALL", "text": "?WX"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "precedence/invalid-addressee-and-information-field-too-long",
+      "description": "Two faults, an addressee of 11 characters (invalid-addressee) and names of 300 characters (information-field-too-long): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "telemetry-names", "addressee": "TOOLONGCALL", "names": ["xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxxxxxxxxxxx"]}},
       "expect": {
         "refused": true,
         "refusal": "invalid-addressee"
@@ -469,6 +493,18 @@
       }
     },
     {
+      "id": "precedence/invalid-name-and-information-field-too-long",
+      "description": "Two faults, a name of 10 characters (invalid-name) and a 300-character comment (information-field-too-long): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
       "id": "precedence/invalid-timestamp-and-value-out-of-range",
       "description": "Two faults, a day of 32 (invalid-timestamp) and a latitude past 90 (value-out-of-range): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -625,6 +661,18 @@
       }
     },
     {
+      "id": "precedence/invalid-timestamp-and-information-field-too-long",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a 300-character comment (information-field-too-long): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
       "id": "precedence/value-out-of-range-and-value-has-no-form",
       "description": "Two faults, a speed of 800 knots (value-out-of-range) and a course of 0 (value-has-no-form): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -769,6 +817,18 @@
       }
     },
     {
+      "id": "precedence/value-out-of-range-and-information-field-too-long",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and a 300-character comment (information-field-too-long): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
       "id": "precedence/value-has-no-form-and-invalid-code",
       "description": "Two faults, a course of 0 (value-has-no-form) and a !DAO! datum of ! (invalid-code): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -901,6 +961,18 @@
       }
     },
     {
+      "id": "precedence/value-has-no-form-and-information-field-too-long",
+      "description": "Two faults, a course of 0 (value-has-no-form) and a 300-character comment (information-field-too-long): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
       "id": "precedence/invalid-code-and-invalid-symbol",
       "description": "Two faults, a !DAO! datum of ! (invalid-code) and symbol table x (invalid-symbol): the refusal names invalid-code, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -1021,6 +1093,18 @@
       }
     },
     {
+      "id": "precedence/invalid-code-and-information-field-too-long",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and a 300-character comment (information-field-too-long): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
       "id": "precedence/invalid-symbol-and-invalid-character",
       "description": "Two faults, symbol table x (invalid-symbol) and a CR in the comment (invalid-character): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -1123,6 +1207,18 @@
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
       "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-information-field-too-long",
+      "description": "Two faults, symbol table x (invalid-symbol) and a 300-character comment (information-field-too-long): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
       "expect": {
         "refused": true,
         "refusal": "invalid-symbol"
@@ -1237,6 +1333,18 @@
       }
     },
     {
+      "id": "precedence/invalid-character-and-information-field-too-long",
+      "description": "Two faults, a CR in the comment in the inner packet (invalid-character) and an inner path of 40 used entries, which takes the outermost field past 256 bytes (information-field-too-long): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["DIGI1*", "DIGI2*", "DIGI3*", "DIGI4*", "DIGI5*", "DIGI6*", "DIGI7*", "DIGI8*", "DIGI9*", "DIGI10*", "DIGI11*", "DIGI12*", "DIGI13*", "DIGI14*", "DIGI15*", "DIGI16*", "DIGI17*", "DIGI18*", "DIGI19*", "DIGI20*", "DIGI21*", "DIGI22*", "DIGI23*", "DIGI24*", "DIGI25*", "DIGI26*", "DIGI27*", "DIGI28*", "DIGI29*", "DIGI30*", "DIGI31*", "DIGI32*", "DIGI33*", "DIGI34*", "DIGI35*", "DIGI36*", "DIGI37*", "DIGI38*", "DIGI39*", "DIGI40*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
       "id": "precedence/too-long-and-padding-space",
       "description": "Two faults, six base-91 telemetry values (too-long) and a name ending in a space (padding-space): the refusal names too-long, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -1333,6 +1441,18 @@
       }
     },
     {
+      "id": "precedence/too-long-and-information-field-too-long",
+      "description": "Two faults, six base-91 telemetry values (too-long) and a 300-character comment (information-field-too-long): the refusal names too-long, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
       "id": "precedence/padding-space-and-malformed",
       "description": "Two faults, a name ending in a space (padding-space) and base-91 telemetry with no analog values (malformed): the refusal names padding-space, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -1399,6 +1519,18 @@
       "authority": "interpretation",
       "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
       "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "padding-space"
+      }
+    },
+    {
+      "id": "precedence/padding-space-and-information-field-too-long",
+      "description": "Two faults, a name ending in a space (padding-space) and a 300-character comment (information-field-too-long): the refusal names padding-space, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
       "expect": {
         "refused": true,
         "refusal": "padding-space"
@@ -1477,6 +1609,18 @@
       }
     },
     {
+      "id": "precedence/malformed-and-information-field-too-long",
+      "description": "Two faults, base-91 telemetry with no analog values (malformed) and a 300-character comment (information-field-too-long): the refusal names malformed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
       "id": "precedence/invalid-message-id-and-field-not-allowed",
       "description": "Two faults, an acked ID of 6 characters (invalid-message-id) and a message ID on an ack (field-not-allowed): the refusal names invalid-message-id, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -1510,6 +1654,30 @@
       "expect": {
         "refused": true,
         "refusal": "invalid-message-id"
+      }
+    },
+    {
+      "id": "precedence/invalid-message-id-and-information-field-too-long",
+      "description": "Two faults, a message ID of 6 characters in the inner packet (invalid-message-id) and an inner path of 40 used entries, which takes the outermost field past 256 bytes (information-field-too-long): the refusal names invalid-message-id, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["DIGI1*", "DIGI2*", "DIGI3*", "DIGI4*", "DIGI5*", "DIGI6*", "DIGI7*", "DIGI8*", "DIGI9*", "DIGI10*", "DIGI11*", "DIGI12*", "DIGI13*", "DIGI14*", "DIGI15*", "DIGI16*", "DIGI17*", "DIGI18*", "DIGI19*", "DIGI20*", "DIGI21*", "DIGI22*", "DIGI23*", "DIGI24*", "DIGI25*", "DIGI26*", "DIGI27*", "DIGI28*", "DIGI29*", "DIGI30*", "DIGI31*", "DIGI32*", "DIGI33*", "DIGI34*", "DIGI35*", "DIGI36*", "DIGI37*", "DIGI38*", "DIGI39*", "DIGI40*"], "data": {"type": "message", "addressee": "N0CALL", "text": "Hello", "message_id": "123456"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-message-id"
+      }
+    },
+    {
+      "id": "precedence/invalid-nmea-and-information-field-too-long",
+      "description": "Two faults, a checksum that does not match (invalid-nmea) and a 300-character comment (information-field-too-long): the refusal names invalid-nmea, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*53", "has_checksum": true, "latitude": 33.823836666666665, "longitude": -117.00620166666667, "fix": "valid", "course_degrees": 89.3, "speed_knots": 43.022, "time": "06:39:09", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-nmea"
       }
     },
     {
@@ -1561,6 +1729,18 @@
       }
     },
     {
+      "id": "precedence/extension-conflict-and-information-field-too-long",
+      "description": "Two faults, course/speed and PHG (extension-conflict) and a 300-character comment (information-field-too-long): the refusal names extension-conflict, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "extension-conflict"
+      }
+    },
+    {
       "id": "precedence/field-not-allowed-and-symbol-mismatch",
       "description": "Two faults, a !DAO! on an ambiguous position (field-not-allowed) and an area without the area symbol (symbol-mismatch): the refusal names field-not-allowed, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -1597,6 +1777,18 @@
       }
     },
     {
+      "id": "precedence/field-not-allowed-and-information-field-too-long",
+      "description": "Two faults, a !DAO! on an ambiguous position (field-not-allowed) and a 300-character comment (information-field-too-long): the refusal names field-not-allowed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "field-not-allowed"
+      }
+    },
+    {
       "id": "precedence/symbol-mismatch-and-missing-field",
       "description": "Two faults, an area without the area symbol (symbol-mismatch) and no timestamp (missing-field): the refusal names symbol-mismatch, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -1621,6 +1813,18 @@
       }
     },
     {
+      "id": "precedence/symbol-mismatch-and-information-field-too-long",
+      "description": "Two faults, an area without the area symbol (symbol-mismatch) and a 300-character comment (information-field-too-long): the refusal names symbol-mismatch, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "symbol-mismatch"
+      }
+    },
+    {
       "id": "precedence/missing-field-and-text-reads-as-field",
       "description": "Two faults, a course with no speed (missing-field) and comment text that reads as an altitude (text-reads-as-field): the refusal names missing-field, which the Refusal reasons order puts first.",
       "source": "README Refusal reasons (tools/precedence.py)",
@@ -1630,6 +1834,30 @@
       "expect": {
         "refused": true,
         "refusal": "missing-field"
+      }
+    },
+    {
+      "id": "precedence/missing-field-and-information-field-too-long",
+      "description": "Two faults, a course with no speed (missing-field) and a 300-character comment (information-field-too-long): the refusal names missing-field, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "missing-field"
+      }
+    },
+    {
+      "id": "precedence/text-reads-as-field-and-information-field-too-long",
+      "description": "Two faults, comment text that reads as an altitude in the inner packet (text-reads-as-field) and an inner path of 40 used entries, which takes the outermost field past 256 bytes (information-field-too-long): the refusal names text-reads-as-field, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["DIGI1*", "DIGI2*", "DIGI3*", "DIGI4*", "DIGI5*", "DIGI6*", "DIGI7*", "DIGI8*", "DIGI9*", "DIGI10*", "DIGI11*", "DIGI12*", "DIGI13*", "DIGI14*", "DIGI15*", "DIGI16*", "DIGI17*", "DIGI18*", "DIGI19*", "DIGI20*", "DIGI21*", "DIGI22*", "DIGI23*", "DIGI24*", "DIGI25*", "DIGI26*", "DIGI27*", "DIGI28*", "DIGI29*", "DIGI30*", "DIGI31*", "DIGI32*", "DIGI33*", "DIGI34*", "DIGI35*", "DIGI36*", "DIGI37*", "DIGI38*", "DIGI39*", "DIGI40*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "/A=001234"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "text-reads-as-field"
       }
     },
     {

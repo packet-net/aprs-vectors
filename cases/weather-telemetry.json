@@ -912,6 +912,36 @@
       "strict": {"rejected_by": "weather-comment"},
       "reencode": "refused",
       "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-before-a-dao",
+      "description": "A run-on temperature followed by a trailing !DAO!, which the Weather rule lifts first, is followed by the end of the weather text: out-of-range-value, dropped, and the !DAO! read.",
+      "source": "review 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t2147483647!W12!"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W_220/004g005t...!W12!"
+    },
+    {
+      "id": "weather/run-on-value-before-base91-telemetry",
+      "description": "A run-on temperature followed by trailing base-91 telemetry, which the Weather rule lifts first, is followed by the end of the weather text: out-of-range-value, dropped; the telemetry, which a weather report has no place for, makes the re-encode refused.",
+      "source": "review 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"info": "!4903.50N/07201.75W_220/004g005t2147483647|!!!!|"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "telemetry": {"sequence": 0, "analog": [0]}},
+        "diagnostics": ["warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     }
   ]
 }

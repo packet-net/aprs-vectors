@@ -1477,7 +1477,7 @@
       },
       "strict": "same",
       "reencode": "refused",
-      "reencode_refusal": "too-long"
+      "reencode_refusal": "information-field-too-long"
     },
     {
       "id": "corpus/0108",
@@ -2185,7 +2185,7 @@
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
       "reencode": "refused",
-      "reencode_refusal": "too-long"
+      "reencode_refusal": "information-field-too-long"
     },
     {
       "id": "corpus/0158",
@@ -3891,7 +3891,7 @@
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
       "reencode": "refused",
-      "reencode_refusal": "too-long"
+      "reencode_refusal": "information-field-too-long"
     },
     {
       "id": "corpus/0278",

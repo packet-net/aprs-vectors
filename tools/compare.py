@@ -16,7 +16,13 @@ implementations side together. Objects must have the same keys; numbers agree wi
 diagnostics compare as multisets. A record whose result is `unsupported`, or that gives
 `implementation-limit` (a decode record whose lenient result names it, an encode or build record
 whose result is `implementation-limit`), is left out of the comparison of that line, and each
-implementation's count of both is printed beside the result, in the text and in --json. For encode and build dumps it also checks each implementation on its
+implementation's count of both is printed beside the result, in the text and in --json, with
+each implementation's count of refusals its dump tool made rather than its library ("via": "tool").
+An `implementation-limit` record names its limit in `limit`; with --limits NAME=FILE (the
+implementation's published capacities, e.g. aprs-c's limits.json: {"information-field": 512, ...}),
+a record that claims a limit the input does not exceed, where the input's size for that limit can be
+computed (information-field bytes and path entries of a decoded line, capability items, extra
+weather fields, a recipe's path), is a difference; the others are counted by limit. For encode and build dumps it also checks each implementation on its
 own: bytes written for exact data must decode to that data, cleanly; a built line must decode
 cleanly. `--input` is the input all the dumps read; with it, the report shows each bucket's
 example inputs. Exits 1 if any line differs. Standard library only.
@@ -130,6 +136,37 @@ def without_inner_info(data):
 LIMIT = "error:implementation-limit"
 
 
+def measures(mode, line, inp):
+    """What the input needs, per limit name, where it can be computed."""
+    m = {}
+    if line is None:
+        return m
+    if mode == "decode":
+        try:
+            raw = bytes.fromhex(line.strip())
+        except ValueError:
+            return m
+        header, sep, info = raw.partition(b":")
+        if sep:
+            m["information-field"] = len(info.rstrip(b"\r\n"))
+            m["path"] = max(0, len(header.split(b">", 1)[-1].split(b",")) - 1)
+            if info.startswith(b"<"):
+                m["capabilities"] = len([x for x in info[1:].split(b",") if x.strip(b" ")])
+        return m
+    if inp is None:
+        return m
+    data = inp.get("data") or {}
+    if isinstance(data.get("capabilities"), list):
+        m["capabilities"] = len(data["capabilities"])
+    weather = data.get("weather") if isinstance(data.get("weather"), dict) else {}
+    if isinstance(weather.get("extra"), list):
+        m["weather-extras"] = len(weather["extra"])
+    station = inp.get("station") or {}
+    if mode == "build":
+        m["path"] = len(station.get("path") or [])
+    return m
+
+
 def left_out(mode, r):
     """Why a record is left out of the comparison: "unsupported", "implementation-limit", or None."""
     if mode == "decode":
@@ -186,12 +223,22 @@ def main():
     ap.add_argument("--input", "--lines", dest="input")
     ap.add_argument("--examples", type=int, default=3)
     ap.add_argument("--json")
+    ap.add_argument("--limits", nargs="*", default=[], metavar="NAME=FILE",
+                    help="an implementation's published capacities (by name or 1-based index), to check its implementation-limit records")
     ap.add_argument("--mode", choices=["decode", "encode", "build"], help="when there is no --input to tell encode from build")
     args = ap.parse_args()
     names = args.names or [f"#{i + 1}" for i in range(len(args.dumps))]
     if len(names) != len(args.dumps):
         sys.exit("give one name per dump")
 
+    limits = {}
+    for spec in args.limits:
+        who, _, path = spec.partition("=")
+        who = names[int(who) - 1] if who.isdigit() else who
+        with open(path, encoding="utf-8") as f:
+            limits[who] = json.load(f)
+    by_limit = Counter()
+    via_tool = Counter()
     files = [gzip.open(p, "rt", encoding="utf-8") for p in args.dumps]
     inputs = gzip.open(args.input, "rt", encoding="utf-8", errors="replace") if args.input else None
     buckets = Counter()
@@ -227,7 +274,24 @@ def main():
         kind = data_type(mode, recs, inp)
         why = [left_out(mode, r) for r in recs]
         live = [i for i, w in enumerate(why) if w is None]
+        need = None
+        any_diff = False
         for i, r in enumerate(recs):
+            if r.get("via") == "tool":
+                via_tool[names[i]] += 1
+            if why[i] == "implementation-limit":
+                lim = r.get("limit", "?")
+                cap = limits.get(names[i], {}).get(lim)
+                if need is None:
+                    need = measures(mode, line, inp)
+                if cap is not None and lim in need and need[lim] <= cap:
+                    k = (kind, "implementation-limit within capacity", f"{names[i]} {lim}")
+                    buckets[k] += 1
+                    any_diff = True
+                    if len(examples[k]) < args.examples:
+                        examples[k].append((n, show_input(mode, line), {names[i]: f"{lim}: input needs {need[lim]}, capacity {cap}"}))
+                else:
+                    by_limit[(names[i], lim)] += 1
             if why[i]:
                 skipped[names[i]][why[i]] += 1
             if why[i] == "unsupported":
@@ -242,7 +306,6 @@ def main():
                     own_examples[k].append((n, show_input(mode, line)))
         parts = [parts_of(mode, recs[i]) for i in live]
         facets = sorted({k for p in parts for k in p})
-        any_diff = False
         for facet in facets:
             groups = defaultdict(list)
             for i, p in zip(live, parts):
@@ -261,7 +324,10 @@ def main():
 
     print(f"{mode}: {total:,} lines; {total - differ:,} agree; {differ:,} differ. {len(buckets)} buckets.")
     print("left out: " + "; ".join(f"{name} unsupported {skipped[name]['unsupported']:,}, implementation-limit "
-                                     f"{skipped[name]['implementation-limit']:,}" for name in names))
+                                     f"{skipped[name]['implementation-limit']:,}, via tool {via_tool[name]:,}" for name in names))
+    if by_limit:
+        print("implementation-limit by limit (not checked against a capacity): "
+              + ", ".join(f"{name} {lim} {c:,}" for (name, lim), c in by_limit.most_common()))
     if unsupported:
         print("unsupported (left out): " + ", ".join(f"{name} {reason} {c:,}" for (name, reason), c in unsupported.most_common(20)))
     for (kind, facet, sides), count in buckets.most_common():
@@ -287,8 +353,9 @@ def main():
                          "examples": [{"n": n, "input": i} for n, i in own_examples[(nm, k, pr)]]}
                         for (nm, k, pr), c in own.most_common()],
                 "unsupported": [{"implementation": nm, "reason": r, "count": c} for (nm, r), c in unsupported.most_common()],
-                "left_out": {nm: {"unsupported": skipped[nm]["unsupported"], "implementation-limit": skipped[nm]["implementation-limit"]}
-                             for nm in names},
+                "left_out": {nm: {"unsupported": skipped[nm]["unsupported"], "implementation-limit": skipped[nm]["implementation-limit"],
+                                  "via_tool": via_tool[nm]} for nm in names},
+                "implementation_limit_unchecked": [{"implementation": nm, "limit": lim, "count": c} for (nm, lim), c in by_limit.most_common()],
             }, f, indent=1, ensure_ascii=False)
     return 1 if differ or own else 0
 
