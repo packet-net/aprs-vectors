@@ -1,0 +1,9 @@
+# Round 4: open points for the coordinator
+
+1. **Where `too-long` sits for the 256-byte limit.** The brief says "with the other 'what the frame cannot hold' codes"; the order has one place per code, and `too-long` already sits after `invalid-character` and before `padding-space` for message text and titles. Options:
+   - (a) Keep that one place (done on the branch). No existing precedence case changes. Cost: an encoder must know the size before it has checked `padding-space`, `malformed`, `invalid-message-id`, `invalid-nmea` and the companions, so the size is defined on the fields as given (RULED 2).
+   - (b) Move `too-long` as a whole to just before `extension-conflict`. Closer to the brief's words; changes the existing `precedence/too-long-and-padding-space`, `-and-malformed`, `-and-invalid-message-id` and `-and-invalid-nmea` results (a ruling the brief did not name).
+   - (c) A separate refusal id for the frame size (`info-too-long`) placed last before `does-not-read-back`, where the bytes exist and no hypothetical size is needed. Simplest to implement; contradicts the brief's choice of `too-long`.
+   Recommendation: (a), as done. **Ruled: (a).**
+2. **Telemetry bits and sequence left out of a builder are now `missing-field`** (RULED 20). Five builders defaulted bits to `00000000`, so this is an API change in five libraries. It follows "writes the least the program did not ask for"; **Ruled: a builder given no bits writes `00000000`; neutral data with no bits stays `missing-field`. Applied on the branch.**
+3. **The aprs-cs non-finite finding** (LIBRARY-FINDINGS.md: `-Infinity` altitude beside an out-of-range longitude, cs gives `value-out-of-range`, the README order gives `not-a-number`) cannot be a case: JSON cannot carry an infinity. It is in IMPLEMENT.md as a C# fix checked by `generate.py --faults --nonfinite`. **Ruled: agreed, no case.**
