@@ -22,7 +22,8 @@ An `implementation-limit` record names its limit in `limit`; with --limits NAME=
 implementation's published capacities, e.g. aprs-c's limits.json: {"information-field": 512, ...}),
 a record that claims a limit the input does not exceed, where the input's size for that limit can be
 computed (information-field bytes and path entries of a decoded line, capability items, extra
-weather fields, a recipe's path), is a difference; the others are counted by limit. For encode and build dumps it also checks each implementation on its
+weather fields, a recipe's path; each the largest over every third-party level), is a difference;
+the others are counted by limit as not checked. `python3 -m doctest tools/compare.py` tests the measures. For encode and build dumps it also checks each implementation on its
 own: bytes written for exact data must decode to that data, cleanly; a built line must decode
 cleanly. `--input` is the input all the dumps read; with it, the report shows each bucket's
 example inputs. Exits 1 if any line differs. Standard library only.
@@ -137,33 +138,61 @@ LIMIT = "error:implementation-limit"
 
 
 def measures(mode, line, inp):
-    """What the input needs, per limit name, where it can be computed."""
+    """What the input needs, per limit name, where it can be computed: the largest over the outer
+    packet and every third-party level inside it (a decoder reads at most five).
+
+    >>> m = measures("decode", (b"N0CALL>APZ001,WIDE1-1:}G4ABC>APZ001," + b",".join(b"D%d" % i for i in range(17)) + b":>hi").hex(), None)
+    >>> m["path"], m["information-field"]
+    (17, 75)
+    >>> measures("decode", b"N0CALL>APZ001:<A,B,C".hex(), None)["capabilities"]
+    3
+    >>> measures("encode", None, {"data": {"type": "third-party", "packet": {"data": {"type": "capabilities", "capabilities": [["A"], ["B"]]}}}})
+    {'capabilities': 2}
+    """
     m = {}
-    if line is None:
+
+    def most(key, value):
+        m[key] = max(m.get(key, 0), value)
+
+    if line is None and inp is None:
         return m
     if mode == "decode":
         try:
             raw = bytes.fromhex(line.strip())
-        except ValueError:
+        except (ValueError, AttributeError):
             return m
         header, sep, info = raw.partition(b":")
-        if sep:
-            m["information-field"] = len(info.rstrip(b"\r\n"))
-            m["path"] = max(0, len(header.split(b">", 1)[-1].split(b",")) - 1)
+        if not sep:
+            return m
+        info = info.rstrip(b"\r\n")
+        for _ in range(5):
+            most("information-field", len(info))
+            most("path", max(0, len(header.split(b">", 1)[-1].split(b",")) - 1))
             if info.startswith(b"<"):
-                m["capabilities"] = len([x for x in info[1:].split(b",") if x.strip(b" ")])
+                most("capabilities", len([x for x in info[1:].split(b",") if x.strip(b" ")]))
+            if not info.startswith(b"}"):
+                break
+            header, sep, info = info[1:].partition(b":")
+            if not sep:
+                break
         return m
     if inp is None:
         return m
     data = inp.get("data") or {}
-    if isinstance(data.get("capabilities"), list):
-        m["capabilities"] = len(data["capabilities"])
-    weather = data.get("weather") if isinstance(data.get("weather"), dict) else {}
-    if isinstance(weather.get("extra"), list):
-        m["weather-extras"] = len(weather["extra"])
-    station = inp.get("station") or {}
+    for _ in range(5):
+        if isinstance(data.get("capabilities"), list):
+            most("capabilities", len(data["capabilities"]))
+        weather = data.get("weather") if isinstance(data.get("weather"), dict) else {}
+        if isinstance(weather.get("extra"), list):
+            most("weather-extras", len(weather["extra"]))
+        packet = data.get("packet") if isinstance(data.get("packet"), dict) else None
+        if not packet:
+            break
+        if isinstance(packet.get("path"), list):
+            most("path", len(packet["path"]))
+        data = packet.get("data") or {}
     if mode == "build":
-        m["path"] = len(station.get("path") or [])
+        most("path", len((inp.get("station") or {}).get("path") or []))
     return m
 
 
