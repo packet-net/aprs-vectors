@@ -10,7 +10,7 @@ The cases come from three places, and each says which:
 | `interpretation` | The spec is ambiguous, contradicts itself or is wrong here; the expected values follow a decision recorded in [`interpretations.md`](interpretations.md), linked from the case. | match them or document why not |
 | `observed` | A real packet from the APRS-IS feed; the expected values are what an implementation made of it when the case was recorded (Packet.Aprs, for every case so far), kept as a regression record. | treat a difference as a question, not a failure |
 
-About 250 cases cover every example packet printed in APRS12c and UAP, the encoder, and every defect a lenient decoder may tolerate; another 1,395 are real packets of every distinct shape seen on APRS-IS; 40 more pin the rules on which two implementations disagreed over a whole capture, and 120 more the rules that differential fuzzing of all five implementations settled. `precedence.json`, made by `tools/precedence.py`, pins what a record with two faults gives: the refusal an encoder names, and the defect a strict decoder rejects a packet by.
+About 330 cases cover every example packet printed in APRS12c and UAP, the encoder, and every defect a lenient decoder may tolerate; another 1,395 are real packets of every distinct shape seen on APRS-IS; 40 more pin the rules on which two implementations disagreed over a whole capture, about 280 more the rules that differential fuzzing of the implementations settled, and 231 are the generated two-fault cases. `precedence.json`, made by `tools/precedence.py`, pins what a record with two faults gives: the refusal an encoder names, and the defect a strict decoder rejects a packet by.
 
 **Licence:** AGPL-3.0-or-later ([`LICENSE`](LICENSE)).
 
@@ -35,7 +35,7 @@ git submodule add https://github.com/packet-net/aprs-vectors vectors
 
 The submodule pins a commit, so new cases reach an implementation only when it moves the pin on, and its own CI shows whether it still passes. Dependabot's `gitsubmodule` ecosystem can open that pull request.
 
-**Versions.** The vectors are released as tagged versions (a zip of the files is attached to each [release](https://github.com/packet-net/aprs-vectors/releases)). The six implementations above share the vectors' major and minor version: an implementation at 1.0.x passes the vectors at 1.0. A new round of rulings is a minor version for the vectors and all six together; a fix in one implementation is that implementation's own patch version; a change that breaks a public API is a new major version.
+**Versions.** The vectors are released as tagged versions (a zip of the files is attached to each [release](https://github.com/packet-net/aprs-vectors/releases)). The six implementations above share the vectors' major and minor version: an implementation at 1.1.x passes the vectors at 1.1. The few cases an implementation cannot run (the C library holds an information field of at most 512 bytes; a typed model cannot hold some malformed records) are listed with the reason in its own `tests/known-differences.txt`. A new round of rulings is a minor version for the vectors and all six together; a fix in one implementation is that implementation's own patch version; a change that breaks a public API is a new major version.
 
 ## Files
 
