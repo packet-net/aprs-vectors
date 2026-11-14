@@ -2065,6 +2065,252 @@
         "refused": true,
         "refusal": "extension-conflict"
       }
+    },
+    {
+      "id": "encode/status-of-256-bytes",
+      "description": "A status whose information field is 256 bytes, the most APRS12c ch. 3 allows, is written.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "status", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "info": ">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    },
+    {
+      "id": "encode/status-of-257-bytes",
+      "description": "A status whose information field would be 257 bytes is refused as too-long.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "status", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/status-of-257-bytes-in-utf8",
+      "description": "The limit counts bytes, not characters: 128 two-byte characters make a 257-byte field, refused as too-long.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "status", "text": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/status-of-256-bytes-in-utf8",
+      "description": "127 two-byte characters and one ASCII character make a 256-byte field, which is written.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "status", "text": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééx"}},
+      "expect": {
+        "info": ">éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééx"
+      }
+    },
+    {
+      "id": "encode/position-comment-to-256-bytes",
+      "description": "A position whose comment brings the information field to 256 bytes is written.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "info": "!4903.50N/07201.75W-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    },
+    {
+      "id": "encode/position-comment-to-257-bytes",
+      "description": "A position whose comment would bring the information field to 257 bytes is refused as too-long.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/object-comment-to-256-bytes",
+      "description": "An object whose comment brings the information field to 256 bytes is written.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "object", "name": "LEADER", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "info": ";LEADER   *092345z4903.50N/07201.75W-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    },
+    {
+      "id": "encode/object-comment-to-257-bytes",
+      "description": "An object whose comment would bring the information field to 257 bytes is refused as too-long.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "object", "name": "LEADER", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/telemetry-number-to-256-bytes",
+      "description": "A telemetry value given as 1e224 is written as 1 and 224 zeros, which brings the information field to 256 bytes.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes", "numbers-given-without-their-text"],
+      "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [1e+224, 0, 0, 0, 0], "bits": "00000000"}},
+      "expect": {
+        "info": "T#001,100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,000,000,000,000,00000000"
+      }
+    },
+    {
+      "id": "encode/telemetry-number-to-257-bytes",
+      "description": "A telemetry value given as 1e225 is 226 digits, which would bring the information field to 257 bytes: too-long.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes", "numbers-given-without-their-text"],
+      "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [1e+225, 0, 0, 0, 0], "bits": "00000000"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/third-party-to-256-bytes",
+      "description": "The limit is on the outermost information field: a third-party packet whose }, inner header and inner field come to 256 bytes is written.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP*", "G4ABC*"], "data": {"type": "status", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}}},
+      "expect": {
+        "info": "}N0CALL>APZ001,TCPIP,G4ABC*:>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    },
+    {
+      "id": "encode/third-party-to-257-bytes",
+      "description": "An inner status of 229 bytes is within the limit on its own, but with the } and the inner header the outermost field would be 257 bytes: too-long.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP*", "G4ABC*"], "data": {"type": "status", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/nws-bulletin-of-257-bytes",
+      "description": "NWS bulletin text has no length limit of its own, but its information field is held to 256 bytes like any other.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"encode": {"type": "nws-bulletin", "addressee": "NWS-WARN", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/info-size-before-missing-field",
+      "description": "An object with no timestamp and a 300-character comment: too-long comes before missing-field in the Refusal reasons order, and the missing timestamp makes no bytes.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "LEADER", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/invalid-symbol-before-info-size",
+      "description": "A position with symbol table x and a 300-character comment: invalid-symbol comes before too-long.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "encode/info-size-before-field-not-allowed",
+      "description": "A compressed position with a PHG, which it has no place for, and a 300-character comment: too-long comes before field-not-allowed.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "compressed": true, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "encode/field-without-a-place-makes-no-bytes",
+      "description": "A weather report has no place for a comment, so a 300-character one makes no bytes of the information field: field-not-allowed, not too-long.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "field-not-allowed"
+      }
+    },
+    {
+      "id": "encode/mic-e-altitude-between-feet-and-metres",
+      "description": "A Mic-E altitude of 100.5 feet is a whole number of neither feet nor metres, so it goes in the Mic-E altitude bytes, rounded to 31 metres.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes", "values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "type_code": "`", "altitude_feet": 100.5}},
+      "expect": {
+        "info": "`c'wl \u001c>/`\"46}",
+        "destination": "TR1P7T"
+      }
+    },
+    {
+      "id": "encode/mic-e-altitude-in-whole-feet",
+      "description": "A Mic-E altitude of 1000 feet in neutral data is held exactly only by a /A=, so it is written there.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "type_code": "`", "altitude_feet": 1000}},
+      "expect": {
+        "info": "`c'wl \u001c>/`/A=001000",
+        "destination": "TR1P7T"
+      }
+    },
+    {
+      "id": "encode/mic-e-altitude-below-the-mic-e-range",
+      "description": "A Mic-E altitude of -50000 feet is a whole number of metres (-15240) but below the -10000 the Mic-E bytes hold, so only a /A= holds it.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "type_code": "`", "altitude_feet": -50000}},
+      "expect": {
+        "info": "`c'wl \u001c>/`/A=-50000",
+        "destination": "TR1P7T"
+      }
+    },
+    {
+      "id": "encode/mic-e-altitude-in-both-units",
+      "description": "Neutral data does not say where an altitude came from: 1250 feet is 381 metres, held exactly by both forms, so it goes in the Mic-E altitude bytes.",
+      "source": "APRS12c ch. 10",
+      "authority": "interpretation",
+      "interpretations": ["a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "type_code": "`", "altitude_feet": 1250}},
+      "expect": {
+        "info": "`c'wl \u001c>/`\"8(}",
+        "destination": "TR1P7T"
+      }
     }
   ]
 }

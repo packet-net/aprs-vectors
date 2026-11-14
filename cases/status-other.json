@@ -461,12 +461,12 @@
       "description": "A control character in a value (0x1C here) makes the report free text, as one in a token does (free-text-capabilities, tolerated).",
       "source": "differential fuzzing 2026-09-27",
       "authority": "interpretation",
-      "interpretations": ["station-capabilities-items-tokens-and-values"],
+      "interpretations": ["station-capabilities-items-tokens-and-values", "control-characters-in-text"],
       "input": {"tnc2": "N0CALL>APZ001:<IGATE,MSG_CNT=4\u001c3,LOC_CNT=14"},
       "expect": {
         "header": {"source": "N0CALL", "destination": "APZ001"},
         "data": {"type": "capabilities", "capabilities": [["IGATE"], ["MSG_CNT", "4\u001c3"], ["LOC_CNT", "14"]]},
-        "diagnostics": ["warning:free-text-capabilities"]
+        "diagnostics": ["warning:free-text-capabilities", "warning:control-character-in-text"]
       },
       "strict": {"rejected_by": "free-text-capabilities"},
       "reencode": "refused",
@@ -1262,6 +1262,148 @@
       "expect": {
         "header": {"source": "N0CALL", "destination": "APZ001"},
         "data": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "unrecognized", "reason": "malformed"}, "diagnostics": ["error:invalid-third-party"]}}}}}}}}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "too-long"
+    },
+    {
+      "id": "status/control-character-in-text",
+      "description": "A BEL in status text: one control-character-in-text warning, the text kept as sent; a strict decoder rejects it and an encoder refuses it.",
+      "source": "APRS12c ch. 16",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": ">Net \u0007Control"},
+      "expect": {
+        "data": {"type": "status", "text": "Net \u0007Control"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "nmea/control-character-after-the-checksum",
+      "description": "The text after an NMEA checksum is a comment, so a control character in it is control-character-in-text.",
+      "source": "APRS12c ch. 5",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": "$GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52 hi\u0001"},
+      "expect": {
+        "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*52", "has_checksum": true, "latitude": 33.823836666666665, "longitude": -117.00620166666667, "fix": "valid", "course_degrees": 89.3, "speed_knots": 43.022, "time": "06:39:09", "comment": " hi\u0001"},
+        "diagnostics": ["info:obsolete-format", "warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "maidenhead/control-character-in-comment",
+      "description": "A control character in a Maidenhead beacon's comment: control-character-in-text.",
+      "source": "APRS12c ch. 16",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": "[IO91SX] hi\u0001"},
+      "expect": {
+        "data": {"type": "maidenhead-beacon", "locator": "IO91SX", "comment": " hi\u0001"},
+        "diagnostics": ["info:obsolete-format", "warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "status/control-character-and-latin-1",
+      "description": "Text with a control character that is not UTF-8 gives both warnings; its encoding is judged first, so a strict decoder rejects by non-utf8-text.",
+      "source": "APRS12c ch. 16",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text", "a-packet-is-read-in-order"],
+      "input": {"info_hex": "3e4e65740143e96e747265"},
+      "expect": {
+        "data": {"type": "status", "text": "Net\u0001Céntre"},
+        "diagnostics": ["warning:control-character-in-text", "warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "non-utf8-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "user-defined/control-characters-are-data",
+      "description": "User-defined data is data, not text: control characters in it are not judged, and it re-encodes as it came.",
+      "source": "APRS12c ch. 18",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": "{Q1\u0001\u0002data"},
+      "expect": {
+        "data": {"type": "user-defined", "user_id": "Q", "packet_type": "1", "data": "\u0001\u0002data"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "third-party/control-character-in-inner-text",
+      "description": "A control character in an inner packet's text is judged as any packet's, with the warning on the inner packet; the packet re-encodes with its inner field as received.",
+      "source": "APRS12c ch. 17",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": "}G4ABC>APZ001,TCPIP,N0CALL*:>Net \u0007Control"},
+      "expect": {
+        "data": {"type": "third-party", "packet": {"source": "G4ABC", "destination": "APZ001", "path": ["TCPIP*", "N0CALL*"], "data": {"type": "status", "text": "Net \u0007Control"}, "diagnostics": ["warning:control-character-in-text"]}}
+      },
+      "strict": {"data": {"type": "third-party", "packet": {"source": "G4ABC", "destination": "APZ001", "path": ["TCPIP*", "N0CALL*"], "data": {"type": "unrecognized", "reason": "malformed"}, "diagnostics": ["error:control-character-in-text"]}}},
+      "reencode": "identical"
+    },
+    {
+      "id": "status/information-field-over-256-bytes",
+      "description": "A decoder sets no limit: a 300-byte status decodes as any other, and re-encodes refused, too-long, since the information field is over 256 bytes.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["an-information-field-is-at-most-256-bytes"],
+      "input": {"info": ">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},
+      "expect": {
+        "data": {"type": "status", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "too-long"
+    },
+    {
+      "id": "status/information-field-of-513-bytes",
+      "description": "513 bytes of information field, one past a 512-byte capacity: an implementation without that limit decodes it (one with it gives implementation-limit and skips the case).",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["a-library-with-a-fixed-capacity-says-so", "an-information-field-is-at-most-256-bytes"],
+      "input": {"info": ">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},
+      "expect": {
+        "data": {"type": "status", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "too-long"
+    },
+    {
+      "id": "status/information-field-of-2000-bytes",
+      "description": "2,000 bytes of information field decode as any other where there is no capacity limit; the field re-encodes refused, too-long.",
+      "source": "APRS12c ch. 3",
+      "authority": "interpretation",
+      "interpretations": ["a-library-with-a-fixed-capacity-says-so", "an-information-field-is-at-most-256-bytes"],
+      "input": {"info": ">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},
+      "expect": {
+        "data": {"type": "status", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "too-long"
+    },
+    {
+      "id": "capabilities/sixty-five-capabilities",
+      "description": "65 capabilities, one past a 64-item capacity, decode where there is no capacity limit.",
+      "source": "APRS12c ch. 15",
+      "authority": "interpretation",
+      "interpretations": ["a-library-with-a-fixed-capacity-says-so"],
+      "input": {"info": "<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15,C16,C17,C18,C19,C20,C21,C22,C23,C24,C25,C26,C27,C28,C29,C30,C31,C32,C33,C34,C35,C36,C37,C38,C39,C40,C41,C42,C43,C44,C45,C46,C47,C48,C49,C50,C51,C52,C53,C54,C55,C56,C57,C58,C59,C60,C61,C62,C63,C64,C65"},
+      "expect": {
+        "data": {"type": "capabilities", "capabilities": [["C1"], ["C2"], ["C3"], ["C4"], ["C5"], ["C6"], ["C7"], ["C8"], ["C9"], ["C10"], ["C11"], ["C12"], ["C13"], ["C14"], ["C15"], ["C16"], ["C17"], ["C18"], ["C19"], ["C20"], ["C21"], ["C22"], ["C23"], ["C24"], ["C25"], ["C26"], ["C27"], ["C28"], ["C29"], ["C30"], ["C31"], ["C32"], ["C33"], ["C34"], ["C35"], ["C36"], ["C37"], ["C38"], ["C39"], ["C40"], ["C41"], ["C42"], ["C43"], ["C44"], ["C45"], ["C46"], ["C47"], ["C48"], ["C49"], ["C50"], ["C51"], ["C52"], ["C53"], ["C54"], ["C55"], ["C56"], ["C57"], ["C58"], ["C59"], ["C60"], ["C61"], ["C62"], ["C63"], ["C64"], ["C65"]]}
       },
       "strict": "same",
       "reencode": "identical"

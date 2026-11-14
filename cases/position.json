@@ -810,6 +810,51 @@
       "strict": {"rejected_by": "dao-with-ambiguity"},
       "reencode": "refused",
       "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "position/tab-in-comment",
+      "description": "A TAB is a control character like any other: control-character-in-text.",
+      "source": "APRS12c ch. 5",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": "!4903.50N/07201.75W-hello\tthere"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "hello\tthere"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "position/carriage-return-inside-comment",
+      "description": "A CR inside a comment, not at the end of the information field, is a control character in text, not a line ending.",
+      "source": "APRS12c ch. 5",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": "!4903.50N/07201.75W-hello\rthere"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "hello\rthere"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "position/del-in-comment",
+      "description": "The byte 0x7F in a comment is a control character in text.",
+      "source": "APRS12c ch. 5",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text"],
+      "input": {"info": "!4903.50N/07201.75W-hellothere"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "hellothere"},
+        "diagnostics": ["warning:control-character-in-text"]
+      },
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     }
   ]
 }

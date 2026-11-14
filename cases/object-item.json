@@ -338,17 +338,18 @@
     },
     {
       "id": "item/signpost-after-braces-that-do-not-qualify",
-      "description": "Braces around a control character are comment text and do not stop the search, so the signpost is the later {AB}.",
+      "description": "Braces around a control character are comment text and do not stop the search, so the signpost is the later {AB}; the control character left in the comment is control-character-in-text.",
       "source": "differential fuzzing 2026-09-27",
       "authority": "interpretation",
-      "interpretations": ["signpost-overlays-are-printable-ascii"],
+      "interpretations": ["signpost-overlays-are-printable-ascii", "control-characters-in-text"],
       "input": {"info": ")I9153N!4903.50N\\07201.75Wm{5\u00015} {AB}"},
       "expect": {
-        "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "AB", "comment": "{5\u00015} "}
+        "data": {"type": "item", "name": "I9153N", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "signpost": "AB", "comment": "{5\u00015} "},
+        "diagnostics": ["warning:control-character-in-text"]
       },
-      "strict": "same",
-      "reencode": "equivalent",
-      "canonical_info": ")I9153N!4903.50N\\07201.75Wm{AB}{5\u00015} "
+      "strict": {"rejected_by": "control-character-in-text"},
+      "reencode": "refused",
+      "reencode_refusal": "invalid-character"
     },
     {
       "id": "object/corridor-after-braces-that-do-not-qualify",
@@ -420,6 +421,19 @@
       "strict": "same",
       "reencode": "equivalent",
       "canonical_info": ";BRENDA   *092345z4903.50N\\07202.75W@088/036HC/150^200/0980> 90&030%040"
+    },
+    {
+      "id": "object/control-character-in-name",
+      "description": "An object name is printable ASCII by its own rule, so a control character in one is invalid-object-name, an error, and not control-character-in-text.",
+      "source": "APRS12c ch. 11",
+      "authority": "interpretation",
+      "interpretations": ["control-characters-in-text", "object-names-may-start-with-spaces"],
+      "input": {"info": ";LEA\u0001ER   *092345z4903.50N/07201.75W-hi"},
+      "expect": {
+        "data": {"type": "unrecognized", "reason": "malformed"},
+        "diagnostics": ["error:invalid-object-name"]
+      },
+      "strict": "same"
     }
   ]
 }
