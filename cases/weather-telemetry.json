@@ -942,6 +942,70 @@
       "strict": {"rejected_by": "out-of-range-value"},
       "reencode": "refused",
       "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-before-telemetry-then-text",
+      "description": "A run-on temperature reaches base-91 telemetry that has text after it: the weather text ends where the telemetry starts, so the value is dropped, and the text after the telemetry is comment text on its own, not joined to the run.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_220/100g005t2147483647|!!!!|7k SvxLink"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "telemetry": {"sequence": 0, "analog": [0]}, "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 100, "wind_gust_mph": 5}, "comment": "7k SvxLink"},
+        "diagnostics": ["warning:out-of-range-value", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-before-a-dao-then-text",
+      "description": "A run-on temperature reaches a !DAO! with text after it: dropped, and 12! after the !DAO! is comment text on its own.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_220/004g005t247483647!W12!12!"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/_", "dao": {"datum": "W", "precision": "thousandths"}, "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "comment": "12!"},
+        "diagnostics": ["warning:out-of-range-value", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-before-telemetry-in-a-compressed-report",
+      "description": "In a compressed weather report a run-on temperature reaches base-91 telemetry: dropped, and the fields after the telemetry are comment text, since the weather text ended.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"tnc2": "VK7DSH-1>APU25N,VK7RMD*,WIDE3-2,qAR,VK7DIK:@252047z/c7NIs@rE_!!bg000t04600780|!)%Z'n|!r000p003P000h94b10236"},
+      "expect": {
+        "header": {"source": "VK7DSH-1", "destination": "APU25N", "path": ["VK7RMD*", "WIDE3-2", "qAR", "VK7DIK"], "q_construct": {"construct": "qAR", "station": "VK7DIK"}},
+        "data": {"type": "position", "timestamp": "252047z", "messaging": true, "latitude": -41.05433338758709, "longitude": 145.8214981387461, "symbol": "/_", "compressed": true, "compression": {"fix": "old", "source": "other", "origin": "tnc-beacon-text"}, "telemetry": {"sequence": 8, "analog": [421, 623]}, "weather": {"wind_direction_degrees": 0, "wind_speed_mph": 0, "wind_gust_mph": 0}, "comment": "!r000p003P000h94b10236"},
+        "diagnostics": ["warning:compression-type-reserved-bits", "warning:out-of-range-value", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "compression-type-reserved-bits"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/run-on-value-of-nine-digits-before-a-dao-then-text",
+      "description": "t214748647 runs on by six digits to a !DAO!: dropped, and the text after it is comment text on its own.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-weather-field-that-runs-on-by-many-digits"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_220/004g005t214748647!W12!12!"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/_", "dao": {"datum": "W", "precision": "thousandths"}, "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "comment": "12!"},
+        "diagnostics": ["warning:out-of-range-value", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     }
   ]
 }

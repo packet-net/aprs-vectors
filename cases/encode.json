@@ -2405,6 +2405,30 @@
         "refused": true,
         "refusal": "malformed"
       }
+    },
+    {
+      "id": "encode/mic-e-comment-after-a-locator-before-telemetry",
+      "description": "A one-character comment after a Mic-E locator, with base-91 telemetry after it, reads back as itself after the locator's space: no / is written.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text", "where-a-voice-frequency-goes", "mic-e-type-codes"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 25.962, "longitude": -17.022, "symbol": "/j", "course_degrees": 251, "speed_knots": 200, "comment": "X", "telemetry": {"sequence": 1946, "analog": [332, 2036, 4, 0, 2554]}}},
+      "expect": {
+        "info": "`-Y<0\"Oj/`IO91/G X|6D$\\7C!%!!='|",
+        "destination": "R55W7R"
+      }
+    },
+    {
+      "id": "encode/mic-e-comment-after-a-frequency-that-would-read-as-a-suffix",
+      "description": "Free text after a voice frequency follows a space, but X alone at the end of the status text would read back as the device suffix ' X', so the comment is written after a /: ' /X'.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text", "where-a-voice-frequency-goes", "mic-e-type-codes"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 59.92183333333333, "longitude": -36.76316666666666, "symbol": "/j", "course_degrees": 199, "speed_knots": 1, "comment": "X", "frequency": {"mhz": 145.5, "tone": "off", "offset_khz": 0, "narrow": true}}},
+      "expect": {
+        "info": "`@Ikl+j/`IO91/G 145.500MHz toff +000 /X",
+        "destination": "U95U3Q"
+      }
     }
   ]
 }

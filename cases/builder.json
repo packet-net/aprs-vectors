@@ -317,6 +317,17 @@
         "refused": true,
         "refusal": "text-reads-as-field"
       }
+    },
+    {
+      "id": "build/mic-e-comment-after-a-frequency-that-would-read-as-a-suffix",
+      "description": "A Mic-E builder given a frequency and the comment X writes ' /X': after a space, as free text after a frequency goes, and after a / since ' X' at the end would read back as a device suffix.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text", "where-a-voice-frequency-goes", "mic-e-type-codes"],
+      "input": {"build": {"station": {"source": "M0LTE-7", "destination": "APZXYZ", "path": ["WIDE1-1", "WIDE2-1"]}, "report": "mic-e", "args": {"latitude": 8.43, "longitude": 44.11, "symbol": "/k", "speed_kmh": 0, "comment": "X", "frequency": {"mhz": 144.39}, "ambiguity": 1, "mic_e_message": "returning"}}},
+      "expect": {
+        "tnc2": "M0LTE-7>P82U8L,WIDE1-1,WIDE2-1:`H^]l \u001ck/'144.390MHz /X"
+      }
     }
   ]
 }
