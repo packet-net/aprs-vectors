@@ -1,5 +1,66 @@
 # Round 4 (1.2.0): what each library implements
 
+## From run 5 (read first)
+
+A. Mic-E comment that would read back as a device suffix. Ruling: free text after a frequency (or a locator) follows a space, and a `/` goes before it only where it would not read back as itself without one ("Delimiters at the start of free text"); `X` ending the status text after a space reads as the device suffix ` X`, so it is written ` /X`; with telemetry or a `!DAO!` after it, ` X` reads back as itself and takes no `/`.
+- aprs-cs: no `/` where none is needed (encode/mic-e-comment-after-a-locator-before-telemetry); ` /X`, not ` X`, at the end (encode/mic-e-comment-after-a-frequency-that-would-read-as-a-suffix, build/mic-e-comment-after-a-frequency-that-would-read-as-a-suffix); the read-back should have caught ` X`.
+- aprs-rs, aprs-py, aprs-ts, aprs-go: builder after a frequency writes ` /X`, not `MHzX` (build/mic-e-comment-after-a-frequency-that-would-read-as-a-suffix).
+
+B. Run-on weather value before a lifted element anywhere (not only at the end): the weather text ends where base-91 telemetry or a `!DAO!` starts; the run is dropped (`out-of-range-value`) and text after the element is comment text on its own, never joined to the run.
+- aprs-cs, aprs-py, aprs-c, aprs-go: weather/run-on-value-before-telemetry-then-text, weather/run-on-value-before-a-dao-then-text, weather/run-on-value-before-telemetry-in-a-compressed-report, weather/run-on-value-of-nine-digits-before-a-dao-then-text (aprs-rs and aprs-ts already right).
+
+## From the independent run (read first)
+
+Three decode cases, no rule change (interpretations.md "Where a Mic-E locator is read" gains one clause for the third):
+
+- aprs-cs: mic-e/lower-case-locator-missing-its-space (write the locator back as `IO91/G /X`, with the space and the `/`).
+- aprs-ts: mic-e/comment-starting-with-a-space-after-a-phg (keep the comment's second leading space; write a `/` before it).
+- aprs-cs, aprs-rs, aprs-go: mic-e/locator-then-telemetry-then-a-spaced-comment (telemetry is lifted before the locator is read: no `missing-space-after-locator`, strict accepts).
+
+## Revisions after review and run 4 (read first)
+
+From REVIEW-aprs-vectors.md and RUN4-TRIAGE.md. Every library must change the following; items further down this sheet predate it where they disagree.
+
+1. **New refusal id `information-field-too-long`** (codes.json refusals: 27). It names the whole-field size: a record with no other fault whose information field as written is over 256 bytes, checked last, after `text-reads-as-field` and `does-not-read-back`, and after `value-given-twice` in a one-unit dump tool's combination. `too-long` keeps its one place and meaning (a field over its own limit). A decoded packet over 256 bytes re-encodes `refused`, `information-field-too-long`. A function that writes out a packet the program already holds (TNC2, AX.25, KISS) is not an encoder and writes the field as received. Changed cases (refusal now `information-field-too-long`): corpus/0107, corpus/0157, corpus/0277, encode/status-of-257-bytes, encode/status-of-257-bytes-in-utf8, encode/position-comment-to-257-bytes, encode/object-comment-to-257-bytes, encode/telemetry-number-to-257-bytes, encode/third-party-to-257-bytes, encode/nws-bulletin-of-257-bytes, third-party/nested-2000-deep, status/information-field-over-256-bytes, status/information-field-of-513-bytes, status/information-field-of-2000-bytes. New: 19 precedence cases `precedence/<code>-and-information-field-too-long` (every other code wins), and encode/status-read-back-before-info-size, build/text-reads-as-field-before-info-size (aprs-rs: size after the read-back in status.rs and telemetry.rs).
+2. **aprs-c: `limit` key and limits.json.** An `implementation-limit` dump record names its limit in a top-level `limit` (`information-field`, `path`, `capabilities`, `weather-extras`); publish `limits.json` in the repo (`{"information-field": 512, "path": 16, "capabilities": 64, "weather-extras": 8}`). Your test runner fails, not skips, a case that gives `implementation-limit` for input within those capacities. compare.py `--limits c=limits.json` now fails such records.
+3. **`via` on every tool-made refusal**: any refusal your dump tool's reader makes (not the library) carries `"via": "tool"`; compare.py counts them per library.
+4. **Build cases, tightened form**: schema.json now fixes the `report` names, each report's allowed `args` and their types, and the expect form (`tnc2` or a refusal). New Mic-E args `type_code` and `device_suffix` (a device type); a recipe with no `station` is from N0CALL with the builder's default destination and no path. Your runner must run cases/builder.json (28 cases) through your builder as your dump tool does. New build cases, one per DEFAULTS.md row: build/position-not-messaging-is-a-bang, build/position-with-a-timestamp-not-messaging-is-a-slash, build/destination-defaults-to-apz001-with-no-path, build/position-is-uncompressed-by-default, build/position-has-no-ambiguity-by-default, build/mic-e-not-messaging-has-the-apostrophe-type-code, build/mic-e-message-defaults-to-off-duty, build/mic-e-speed-defaults-to-zero, build/weather-symbol-and-unknown-wind, build/positionless-weather-unknown-fields, build/object-without-a-timestamp, build/positionless-weather-without-a-timestamp, build/position-without-a-symbol, build/object-is-alive-by-default, build/item-is-alive-by-default, build/telemetry-metadata-to-the-sending-station, build/message-without-a-message-id, build/bulletin-without-a-group, build/telemetry-bits-default-to-zeros, build/telemetry-without-a-sequence, build/status-locator-without-a-symbol, build/status-without-a-timestamp (all six libraries build these already).
+5. **Storm fields are digits** (not dots or spaces, unlike a weather value): a required field of dots makes all of it comment text, a whole gale radius that is not digits ends the storm data, and an encoder refuses storm data missing a required field as `missing-field` (no dots written). cs, rs, py, go change; c must stop writing `000` for an absent field. New: object-item/storm-data-with-dots-in-a-field-is-text, object-item/storm-whole-gale-radius-of-dots-is-text, object-item/storm-data-ends-before-a-whole-gale-radius-that-is-not-digits (aprs-py), object-item/storm-data-on-an-overlaid-hurricane-symbol (aprs-ts: an overlay on `@` is the hurricane symbol).
+6. **MIC sequence**: neutral telemetry whose sequence starts `MIC` and is not `MIC` is `malformed`. New: encode/telemetry-sequence-mic-and-more (aprs-cs writes it today; the others give read-back codes).
+7. **Run-on "end"**: the end of the information field in the run-on weather rule is the end of the weather text: the field's end, or in a positioned report the start of trailing base-91 telemetry or a `!DAO!` (lifted first). New: weather/run-on-value-before-a-dao, weather/run-on-value-before-base91-telemetry (all six fail today).
+8. **aprs-ts**: mic-e/phg-reached-only-by-lifting-a-dao-is-late (a PHG at the start only once a `!DAO!` or telemetry is lifted is late).
+9. Changed wording only: mic-e/altitude-with-no-form-before-a-type-code (231,932 m); build case sources now "differential fuzzing 2026-11-14".
+
+## Revisions after run 3 (read first)
+
+No rule change; two single-library decode bugs pinned by cases (README third-party wording now says an inner path entry of only `*` is not an address).
+
+- aprs-cs: third-party/inner-path-entry-of-only-a-used-marker (`invalid-third-party`, not empty-path-entry plus multiple-used-markers).
+- aprs-ts: mic-e/phg-after-a-locator-missing-its-space-then-an-altitude (`missing-space-after-locator` is still given when a Mic-E altitude follows).
+
+## Revisions after run 2 (read first)
+
+From RUN2-TRIAGE.md; the README and interpretations.md carry the wording.
+
+- H. The size `too-long` comes after `value-given-twice` too: a builder given one quantity in two units names `value-given-twice` even when each one-unit build would be over 256 bytes. A one-unit dump tool ranks a result refused only for the size after `value-given-twice` (README "One quantity, one value"). New: build/value-given-twice-before-info-size.
+- I. In Mic-E status text a PHG or RNG straight after a locator whose space is missing is lifted before a later Mic-E altitude is looked for, as one after the locator and its space is (aprs-ts). New: mic-e/phg-after-a-locator-missing-its-space.
+- J. An Agrelo bearing given to an encoder is rounded to the nearest degree like a course, then range-checked. New: encode/agrelo-bearing-rounded-up-at-a-half, encode/agrelo-bearing-rounded-down-below-a-half, encode/agrelo-bearing-rounding-to-361. (At run 2, py gave `not-a-number` and cs, rs, c, go were unsupported.)
+- K. Dump tools write `unsupported` only when the vectors give the record no definite result the library could report. Where an input the library cannot hold has a refusal code its value alone decides (non-finite values, a symbol that is not a table and a code or none, a third-party path entry that is not an address, undecoded inner data, a bulletin id of the wrong length, a sequence, bearing or quality out of range, an ack's message ID), report that refusal by the procedure in README "Encode records", with `"via": "tool"` when the tool's reader rather than the library made it. The large unsupported counts in RUN2-TRIAGE.md section 5 (rs symbol, rs/go symbol text, bulletin id in cs/rs/go/c, rs/go sequence, cs/rs non-finite sequence and ambiguity, rs/go Agrelo, py ack message ID, rs/go inner path entry and undecoded inner data) all become compared refusals.
+
+## Revisions after run 1 (read first)
+
+The first six-way run (triage: RUN1-TRIAGE.md) led to these rule changes on the vectors branch. Items 1 to 8 below are already updated to match.
+
+- A. The 256-byte size is checked last, on bytes actually written, after every other check (read-back included): a record any other rule refuses gets that rule's code; only an otherwise sound record over 256 bytes is `too-long`. The "measured on the fields as given" rule is gone (supersedes triage G1, G2, G8). Removed cases: encode/info-size-before-missing-field, encode/info-size-before-field-not-allowed, encode/field-without-a-place-makes-no-bytes. New: encode/missing-field-before-info-size, encode/field-not-allowed-before-info-size, encode/malformed-before-info-size, encode/inner-fault-before-third-party-size.
+- B. A Mic-E altitude no `/A=` holds exactly (not whole feet, or beyond six digits) that the Mic-E bytes cannot carry in place (first byte reads as a type code, no type code given) is `value-has-no-form`, not `text-reads-as-field`. New: mic-e/altitude-with-no-form-before-a-type-code.
+- C. A status symbol given with no locator is `missing-field`, in a builder and in neutral data alike. New: encode/status-symbol-without-a-locator, build/status-symbol-without-a-locator.
+- D. In the run-on weather rule the run's own field counts as read. New: weather/run-on-value-then-its-own-letter.
+- E. A builder given no analog values writes five empty channels. New: build/telemetry-with-no-analog-values-or-bits.
+- F. Builder refusals follow the Refusal reasons order (no rule change). New: build/invalid-name-before-invalid-symbol-and-missing-field, build/value-has-no-form-before-missing-field.
+- G. Neutral telemetry with no sequence is `missing-field`, not `malformed`. New: encode/telemetry-without-a-sequence.
+
+Build cases are a new input form, `"build"` (a recipe, as generate.py --recipes writes it), in the new file cases/builder.json; expect is `{"tnc2": ...}` or a refusal. Your test runner calls the builder the way your dump tool does in build mode. Changed cases since the first version of this sheet: none besides those removed above.
+
 You are implementing round 4 of the APRS conformance vectors in one of the six libraries (aprs-cs, aprs-rs, aprs-py, aprs-ts, aprs-c, aprs-go). The rules live in packet-net/aprs-vectors, branch `round-4` (draft PR #29), head `4b7a7ec38c62463b2e7e4f40a323c2835b308ff1` at the time of writing; use the branch head. Work on a branch `round-4` in your library, with the vectors submodule moved to that commit. Do not change the vectors; if a case looks wrong, say so with the case id and your reasoning, and do not skip it.
 
 Read in aprs-vectors: README.md "Rules the cases rely on" (the bullets named below) and "Comparing implementations", interpretations.md (the six new sections before "Where these decisions and Ham::APRS::FAP differ"), codes.json (two new codes). The rule text there is the authority; this sheet points to it.
@@ -8,10 +69,10 @@ Read in aprs-vectors: README.md "Rules the cases rely on" (the bullets named bel
 
 - Rule: README Encoding ("An information field is 1 to 256 bytes ...") and Refusal reasons ("`too-long` has one place in the order ..."); interpretations.md "An information field is at most 256 bytes".
 - An encoder or builder refuses data whose information field, as written, is over 256 bytes, with refusal `too-long`, whatever the output (TNC2, AX.25, KISS). Count bytes (UTF-8), number text included. For third-party data count the outermost field: `}` + inner header + `:` + inner field.
-- `too-long` keeps its existing place in the refusal order (after `invalid-character`, before `padding-space`). When the record also has a fault later in the order, measure the size on the fields as given: a field with no place in the report, or one left out, makes no bytes; a malformed one makes the bytes given; a comment counts with any delimiter you would write.
+- The size is the last check, on the bytes actually written, after every other check including the read-back: a record any other rule refuses gets that rule's code; only a record with no other fault whose field as written is over 256 bytes is `too-long` for its size. A field over its own limit (message text over 67, and the like) stays `too-long` at the code's existing place in the order. (Revised after run 1, see the top.)
 - Decoding sets no limit. A decoded packet whose field is over 256 bytes re-encodes `refused`, `too-long`.
 - Remove any statement in your README or docs that the encoder has no size limit.
-- New cases: encode/status-of-256-bytes, encode/status-of-257-bytes, encode/status-of-256-bytes-in-utf8, encode/status-of-257-bytes-in-utf8, encode/position-comment-to-256-bytes, encode/position-comment-to-257-bytes, encode/object-comment-to-256-bytes, encode/object-comment-to-257-bytes, encode/telemetry-number-to-256-bytes, encode/telemetry-number-to-257-bytes, encode/third-party-to-256-bytes, encode/third-party-to-257-bytes, encode/nws-bulletin-of-257-bytes, encode/info-size-before-missing-field, encode/invalid-symbol-before-info-size, encode/info-size-before-field-not-allowed, encode/field-without-a-place-makes-no-bytes, status/information-field-over-256-bytes.
+- New cases: encode/status-of-256-bytes, encode/status-of-257-bytes, encode/status-of-256-bytes-in-utf8, encode/status-of-257-bytes-in-utf8, encode/position-comment-to-256-bytes, encode/position-comment-to-257-bytes, encode/object-comment-to-256-bytes, encode/object-comment-to-257-bytes, encode/telemetry-number-to-256-bytes, encode/telemetry-number-to-257-bytes, encode/third-party-to-256-bytes, encode/third-party-to-257-bytes, encode/nws-bulletin-of-257-bytes, encode/invalid-symbol-before-info-size, encode/missing-field-before-info-size, encode/field-not-allowed-before-info-size, encode/malformed-before-info-size, encode/inner-fault-before-third-party-size, status/information-field-over-256-bytes.
 - Changed cases: corpus/0107, corpus/0157, corpus/0277, third-party/nested-2000-deep (re-encode now `refused`, `too-long`).
 
 ## 2. A fixed capacity says so (R2)

@@ -1,0 +1,24 @@
+encode: 100,000 lines; 99,997 agree; 3 differ. 2 buckets.
+left out: #1 unsupported 0, implementation-limit 0, via tool 0; #2 unsupported 0, implementation-limit 0, via tool 1,106; #3 unsupported 0, implementation-limit 0, via tool 0; #4 unsupported 0, implementation-limit 0, via tool 0; #5 unsupported 0, implementation-limit 299, via tool 636; #6 unsupported 0, implementation-limit 0, via tool 487
+implementation-limit by limit (not checked against a capacity): #5 weather-extras 177, #5 information-field 73, #5 capabilities 49
+
+3  [mic-e] info: #2+#3+#4+#5+#6 | #1
+    line 3696: {"n":3696,"data":{"type":"mic-e","mic_e_message":"returning","type_code":"`","locator":"IO91","latitude":25.962,"longitude":-17.022,"symbol":"/j","course_degrees":251,"speed_knots":200,"comment":"X","telemetry":{"sequence":1946,"analog":[33
+      #1               ["602d593c30224f6a2f60494f39312f47202f587c3644245c3743212521213d277c", "R55W7R"]
+      #2+#3+#4+#5+#6   ["602d593c30224f6a2f60494f39312f4720587c3644245c3743212521213d277c", "R55W7R"]
+    line 36627: {"n":36627,"data":{"type":"mic-e","mic_e_message":"returning","type_code":"`","locator":"IO91","latitude":-51.410309523809524,"longitude":3.5495329670329667,"symbol":"/j","course_degrees":327,"speed_knots":20,"comment":"X","dao":{"datum":"W
+      #1               ["60793c7d6e23376a2f60494f39312f47202f5821776f3321", "U124V1"]
+      #2+#3+#4+#5+#6   ["60793c7d6e23376a2f60494f39312f47205821776f3321", "U124V1"]
+    line 92853: {"n":92853,"data":{"type":"mic-e","mic_e_message":"returning","type_code":"`","locator":"IO91","latitude":59.92183333333333,"longitude":-36.76316666666666,"symbol":"/j","course_degrees":199,"speed_knots":1,"comment":"X","frequency":{"mhz":1
+      #1               ["6040496b6c2b7f6a2f60494f39312f47203134352e3530304d487a20746f6666202b3030302058", "U95U3Q"]
+      #2+#3+#4+#5+#6   ["6040496b6c2b7f6a2f60494f39312f47203134352e3530304d487a20746f6666202b303030202f58", "U95U3Q"]
+
+1  [mic-e] again.data: #2+#3+#4+#5+#6 | #1
+    line 92853: {"n":92853,"data":{"type":"mic-e","mic_e_message":"returning","type_code":"`","locator":"IO91","latitude":59.92183333333333,"longitude":-36.76316666666666,"symbol":"/j","course_degrees":199,"speed_knots":1,"comment":"X","frequency":{"mhz":1
+      #1               {"course_degrees": 199, "device_suffix": " X", "frequency": {"mhz": 145.5, "narrow": true, "offset_khz": 0, "tone": "off"}, "latitude": 59.9218333, "locator": "IO91", "longitude": -36.7631667, "mic_e_message": "returning", "speed_knots": 1,
+      #2+#3+#4+#5+#6   {"comment": "X", "course_degrees": 199, "frequency": {"mhz": 145.5, "narrow": true, "offset_khz": 0, "tone": "off"}, "latitude": 59.9218333, "locator": "IO91", "longitude": -36.7631667, "mic_e_message": "returning", "speed_knots": 1, "symbo
+
+Each on its own: 1 problems
+
+1  #1 [mic-e] written bytes decode to different data: comment, device_suffix
+    line 92853: {"n":92853,"data":{"type":"mic-e","mic_e_message":"returning","type_code":"`","locator":"IO91","latitude":59.92183333333333,"longitude":-36.76316666666666,"symbol":"/j","course_degrees":199,"speed_knots":1,"comment":"X","frequency":{"mhz":1

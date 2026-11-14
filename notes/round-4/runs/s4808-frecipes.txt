@@ -1,0 +1,3 @@
+build: 100,000 lines; 100,000 agree; 0 differ. 0 buckets.
+left out: #1 unsupported 0, implementation-limit 0, via tool 3,168; #2 unsupported 0, implementation-limit 0, via tool 4,609; #3 unsupported 0, implementation-limit 0, via tool 0; #4 unsupported 0, implementation-limit 0, via tool 4,254; #5 unsupported 0, implementation-limit 23, via tool 9,201; #6 unsupported 0, implementation-limit 0, via tool 10,673
+implementation-limit by limit (not checked against a capacity): #5 information-field 23

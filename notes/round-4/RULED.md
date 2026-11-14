@@ -5,7 +5,7 @@ Each point the brief left open, how it was settled and why. Branch `round-4` of 
 ## R1. 256-byte information field ("An information field is at most 256 bytes")
 
 1. **Place of `too-long` in the Refusal reasons order: unchanged**, after `invalid-character` and before `padding-space`. A code has one place in the order, and `too-long` already had one for message text and project titles; moving it would change existing precedence cases the brief did not name. That place is already before what the frame cannot hold (`extension-conflict`, `field-not-allowed`) and the symbol and companions, which is what the brief asked for. See "What I think is wrong with the brief" in the report.
-2. **The size when other faults are present** (needed because `too-long` comes before later codes): the bytes the data's fields make as given. A field the report has no place for (`field-not-allowed`) or one left out (`missing-field`) makes none; a malformed one makes the bytes given; a comment counts with any delimiter the Encoding rule writes. Cases: `encode/info-size-before-missing-field`, `encode/info-size-before-field-not-allowed`, `encode/field-without-a-place-makes-no-bytes`, `encode/invalid-symbol-before-info-size`.
+2. **The size when other faults are present** (revised after run 1, coordinator's ruling A): the size is the last check, on bytes actually written, after every other check, read-back included. A record any other rule refuses gets that rule's code; only an otherwise sound record over 256 bytes is `too-long` for its size. A field over its own limit stays `too-long` at the code's place. Cases: `encode/invalid-symbol-before-info-size`, `encode/missing-field-before-info-size`, `encode/field-not-allowed-before-info-size`, `encode/malformed-before-info-size`, `encode/inner-fault-before-third-party-size`.
 3. **Bytes, not characters**: text counts as its UTF-8 bytes (`encode/status-of-257-bytes-in-utf8`).
 4. **Third-party**: the outermost field counts, `}` + inner header + `:` + inner field (`encode/third-party-to-25[67]-bytes`). A decoded third-party packet still re-encodes with its inner field as received, so a received one over 256 bytes is `refused`, `too-long` (`third-party/nested-2000-deep`).
 5. **NMEA and NWS bulletins**, which had "no length limit", now have none of their own beyond the field's 256 bytes (README text and the NMEA interpretation amended).
@@ -59,3 +59,35 @@ Each point the brief left open, how it was settled and why. Branch `round-4` of 
 - Worth a reviewer's eye: corpus/0657, 1169, 1285 (strict was a different reading; that reading's text holds a control character, so strict now rejects); corpus/0713 (`missing-field` becomes `invalid-character`), 1169 (`extension-conflict` becomes `invalid-character`), 1184 (`too-long` becomes `invalid-character`), 1251 (`field-not-allowed` for a PHG on a compressed position becomes `invalid-character`).
 
 Computed by a script from the rules (not by a library), then run against aprs-py, aprs-go and aprs-c at main: every failure is one of the new or changed cases, and every new case not about a new rule (the 27 AX.25 frames, the 14 live packets, the locator finding, the boundary cases already right) passes.
+
+## Revisions after run 1 (coordinator's rulings on RUN1-TRIAGE.md)
+
+- A: size checked last on bytes written (above, item 2); supersedes G1, G2, G8.
+- B (G4): Refusal reasons wording now "(a value no `/A=` holds exactly: not a whole number of feet, or beyond its 6 digits)"; mic-e/altitude-with-no-form-before-a-type-code.
+- C (G5): `missing-field` list now has "a status symbol beside a locator and a locator beside a status symbol, in a builder and in neutral data alike".
+- D (G6): Weather rule says the run's own field counts as read; weather/run-on-value-then-its-own-letter.
+- E (G7): Defaults say a telemetry report given no analog values writes five empty channels.
+- F (G3): no rule change; two build cases pin the order.
+- G: `missing-field` list now names a telemetry report's sequence; encode/telemetry-without-a-sequence.
+- New input form `build` (schema.json, README Input), file cases/builder.json.
+
+## Revisions after run 2 (coordinator's rulings on RUN2-TRIAGE.md)
+
+- H (G1): the size `too-long` is given only when no other code applies, `value-given-twice` included; "One quantity, one value" ranks a size-only refusal after `value-given-twice`. build/value-given-twice-before-info-size.
+- I (G2): Mic-E rule and "Where a Mic-E locator is read" now cover a PHG or RNG straight after a locator with its space missing (read as if the space were there). mic-e/phg-after-a-locator-missing-its-space.
+- J (G3): an Agrelo bearing joins the values rounded to their step. encode/agrelo-bearing-rounded-up-at-a-half, -rounded-down-below-a-half, -rounding-to-361.
+- Weather wording: "the run's own field (the field, not its letter: after a wind speed, `s` is snowfall)", from the triage's not-a-gap note.
+- K: README Encode records now limits `unsupported` to records with no definite result the library could report, gives the left-out-or-stand-in procedure for value-decided refusals, and adds an optional `via` key (`tool` or `library`, default `library`).
+
+## Revisions after review and run 4 (coordinator's rulings on REVIEW-aprs-vectors.md and RUN4-TRIAGE.md)
+
+- Review 1: schema.json fixes build reports, args and types, and the expect form per input form (check.py validates through it); README Build records table completed (Mic-E message values, `type_code`/`device_suffix`, absent `station`); 22 build cases, one per DEFAULTS.md row, drafted from the six builders at their round-4 heads (all agree).
+- Review 2: `limit` key, `limits.json`, compare.py `--limits` (a claim within capacity is a difference), `via_tool` counts; a test runner fails a within-capacity claim.
+- Review 3: refusal `information-field-too-long` (27 refusal ids), last in the order; precedence.py catalogue gains the size fault (long comment, status text, telemetry names, NMEA comment, a 40-entry inner path for third-party); precedence.json regenerated, 19 new pair cases, none excluded.
+- Review 4: interpretations.md states the run-on trade; "the end" includes the start of a trailing lifted element; two cases.
+- Review 5: value-given-twice is no longer listed as having no case (README, check.py).
+- Review 6: 231,932 m.
+- Review 7: interpretations.md now says ch. 5 forbids CR/LF only at the end, C1 bytes are not judged, discarded text before a late `!` is not judged, token versus value, and that a third-party inner control character re-encodes identical.
+- Review 8: the limit binds an APRS-IS-only program too; a writer of a held packet is not an encoder (README Encoding, one sentence).
+- Review 9: build sources "differential fuzzing 2026-11-14".
+- Run 4 G1: storm fields digits only (README data form wording, Refusal reasons `missing-field`); G2: MIC sequence `malformed`.

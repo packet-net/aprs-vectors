@@ -1,0 +1,3 @@
+encode: 100,000 lines; 100,000 agree; 0 differ. 0 buckets.
+left out: #1 unsupported 0, implementation-limit 0, via tool 0; #2 unsupported 0, implementation-limit 0, via tool 1,104; #3 unsupported 0, implementation-limit 0, via tool 0; #4 unsupported 0, implementation-limit 0, via tool 0; #5 unsupported 0, implementation-limit 302, via tool 627; #6 unsupported 0, implementation-limit 0, via tool 510
+implementation-limit by limit (not checked against a capacity): #5 weather-extras 182, #5 information-field 73, #5 capabilities 47

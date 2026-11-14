@@ -1,0 +1,33 @@
+decode: 200,000 lines; 199,997 agree; 3 differ. 3 buckets.
+left out: #1 unsupported 0, implementation-limit 0, via tool 0; #2 unsupported 0, implementation-limit 0, via tool 0; #3 unsupported 0, implementation-limit 0, via tool 0; #4 unsupported 0, implementation-limit 0, via tool 0; #5 unsupported 0, implementation-limit 429, via tool 0; #6 unsupported 0, implementation-limit 0, via tool 0
+implementation-limit by limit (not checked against a capacity): #5 information-field 250, #5 path 86, #5 capabilities 71, #5 weather-extras 22
+
+3  [position] lenient.data: #1+#3+#5+#6 | #2+#4
+    line 146433: N0CALL>APZ001:!4903.50N/07201.75W_220/100g005t2147483647|!!!!|7k SvxLink
+      #1+#3+#5+#6      {"comment": "74836477k SvxLink", "latitude": 49.0583333, "longitude": -72.0291667, "symbol": "/_", "telemetry": {"analog": [0], "sequence": 0}, "type": "position", "weather": {"temperature_f": 214, "wind_direction_degrees": 220, "wind_gust_
+      #2+#4            {"comment": "7k SvxLink", "latitude": 49.0583333, "longitude": -72.0291667, "symbol": "/_", "telemetry": {"analog": [0], "sequence": 0}, "type": "position", "weather": {"wind_direction_degrees": 220, "wind_gust_mph": 5, "wind_speed_mph": 10
+    line 155639: N0CALL>APZ001:!4903.50N/07201.75W_220/004g005t247483647!W12!12!
+      #1+#3+#5+#6      {"comment": "48364712!", "dao": {"datum": "W", "precision": "thousandths"}, "latitude": 49.05835, "longitude": -72.0292, "symbol": "/_", "type": "position", "weather": {"temperature_f": 247, "wind_direction_degrees": 220, "wind_gust_mph": 5
+      #2+#4            {"comment": "12!", "dao": {"datum": "W", "precision": "thousandths"}, "latitude": 49.05835, "longitude": -72.0292, "symbol": "/_", "type": "position", "weather": {"wind_direction_degrees": 220, "wind_gust_mph": 5, "wind_speed_mph": 4}}
+    line 195920: VK7DSH-1>APU25N,VK7RMD*,WIDE3-2,qAR,VK7DIK:@252047z/c7NIs@rE_!!bg000t04600780|!)%Z'n|!r000p003P000h94b10236
+      #1+#3+#5+#6      {"comment": "00780!r000p003P000h94b10236", "compressed": true, "compression": {"fix": "old", "origin": "tnc-beacon-text", "source": "other"}, "latitude": -41.0543334, "longitude": 145.821498, "messaging": true, "symbol": "/_", "telemetry": 
+      #2+#4            {"comment": "!r000p003P000h94b10236", "compressed": true, "compression": {"fix": "old", "origin": "tnc-beacon-text", "source": "other"}, "latitude": -41.0543334, "longitude": 145.821498, "messaging": true, "symbol": "/_", "telemetry": {"ana
+
+3  [position] lenient.diagnostics: #1+#3+#5+#6 | #2+#4
+    line 146433: N0CALL>APZ001:!4903.50N/07201.75W_220/100g005t2147483647|!!!!|7k SvxLink
+      #1+#3+#5+#6      ["warning:weather-comment"]
+      #2+#4            ["warning:out-of-range-value", "warning:weather-comment"]
+    line 155639: N0CALL>APZ001:!4903.50N/07201.75W_220/004g005t247483647!W12!12!
+      #1+#3+#5+#6      ["warning:weather-comment"]
+      #2+#4            ["warning:out-of-range-value", "warning:weather-comment"]
+    line 195920: VK7DSH-1>APU25N,VK7RMD*,WIDE3-2,qAR,VK7DIK:@252047z/c7NIs@rE_!!bg000t04600780|!)%Z'n|!r000p003P000h94b10236
+      #1+#3+#5+#6      ["warning:compression-type-reserved-bits", "warning:weather-comment"]
+      #2+#4            ["warning:compression-type-reserved-bits", "warning:out-of-range-value", "warning:weather-comment"]
+
+2  [position] strict.diagnostics: #1+#3+#5+#6 | #2+#4
+    line 146433: N0CALL>APZ001:!4903.50N/07201.75W_220/100g005t2147483647|!!!!|7k SvxLink
+      #1+#3+#5+#6      ["error:weather-comment"]
+      #2+#4            ["error:out-of-range-value"]
+    line 155639: N0CALL>APZ001:!4903.50N/07201.75W_220/004g005t247483647!W12!12!
+      #1+#3+#5+#6      ["error:weather-comment"]
+      #2+#4            ["error:out-of-range-value"]

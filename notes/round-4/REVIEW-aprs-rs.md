@@ -1,0 +1,8 @@
+# Review findings to fix: aprs-rs (reproducer /tmp/r4-review-aprs-rs/r4review.rs)
+1. Medium. Status and telemetry check the 256-byte size before the read-back (src/status.rs:132, src/telemetry.rs:127: `p.size` then `p.finish()?` before the read-back match). `status("092345z" + "x"*260)` gives too-long, expected text-reads-as-field; `Data::Telemetry{sequence:"MICA", comment:"x"*300}` likewise. Use finish_faults(), then the read-back, then check_size, as message.rs and the weather encoder do. Audit every encoder for the same order.
+2. Low. tests/vectors/build.rs:375: the tool-made missing-field for a missing telemetry sequence is returned as NotBuilt::Refused, so the dump says via library; it must be Tool / "via":"tool".
+3. Low. README.md:5 still says "apart from two encode cases (below)"; no case is skipped now.
+4. Low. CHANGELOG licence line must say: MIT from this release; versions up to 1.1.0 were published under AGPL-3.0-or-later.
+5. Low. Breaking list omits: neutral telemetry with an empty sequence now refuses missing-field (was malformed); `Code::ControlCharacterInText` was inserted mid-enum and `Code` derives Ord, so later variants' discriminants and sort order shift (say so, or append at the end if the order of codes.json is not required by a test).
+6. Low. Error messages at src/message.rs:468 and :477 say "line breaks" but now fire for any control character.
+7. Low. to_ax25() and to_tnc2() write `information` without a size check. Ruling: pass-through writers of an existing packet are not encoders and do not check; document that on both methods and in the CHANGELOG.
