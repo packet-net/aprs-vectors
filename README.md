@@ -12,7 +12,7 @@ The cases come from three places, and each says which:
 
 About 330 cases cover every example packet printed in APRS12c and UAP, the encoder, and every defect a lenient decoder may tolerate; another 1,395 are real packets of every distinct shape seen on APRS-IS; 40 more pin the rules on which two implementations disagreed over a whole capture, about 280 more the rules that differential fuzzing of the implementations settled, and 231 are the generated two-fault cases. `precedence.json`, made by `tools/precedence.py`, pins what a record with two faults gives: the refusal an encoder names, and the defect a strict decoder rejects a packet by.
 
-**Licence:** AGPL-3.0-or-later ([`LICENSE`](LICENSE)).
+**Licence:** the cases, the codes, the schema, the rulings and this document are dedicated to the public domain under [CC0 1.0](LICENSE): use them in any project, under any licence, with no conditions. The scripts in `tools/` are MIT ([`tools/LICENSE`](tools/LICENSE)).
 
 ## Implementations
 
