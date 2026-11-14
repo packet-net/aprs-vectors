@@ -23,7 +23,7 @@ implementation's published capacities, e.g. aprs-c's limits.json: {"information-
 a record that claims a limit the input does not exceed, where the input's size for that limit can be
 computed (information-field bytes and path entries of a decoded line, capability items, extra
 weather fields, a recipe's path; each the largest over every third-party level), is a difference;
-the others are counted by limit as not checked. `python3 -m doctest tools/compare.py` tests the measures. For encode and build dumps it also checks each implementation on its
+those over the capacity are counted by limit as checked, and the rest by limit as not checked (all of them, if no --limits file was given). `python3 -m doctest tools/compare.py` tests the measures. For encode and build dumps it also checks each implementation on its
 own: bytes written for exact data must decode to that data, cleanly; a built line must decode
 cleanly. `--input` is the input all the dumps read; with it, the report shows each bucket's
 example inputs. Exits 1 if any line differs. Standard library only.
@@ -267,6 +267,7 @@ def main():
         with open(path, encoding="utf-8") as f:
             limits[who] = json.load(f)
     by_limit = Counter()
+    over_capacity = Counter()
     via_tool = Counter()
     files = [gzip.open(p, "rt", encoding="utf-8") for p in args.dumps]
     inputs = gzip.open(args.input, "rt", encoding="utf-8", errors="replace") if args.input else None
@@ -319,6 +320,8 @@ def main():
                     any_diff = True
                     if len(examples[k]) < args.examples:
                         examples[k].append((n, show_input(mode, line), {names[i]: f"{lim}: input needs {need[lim]}, capacity {cap}"}))
+                elif cap is not None and lim in need:
+                    over_capacity[(names[i], lim)] += 1
                 else:
                     by_limit[(names[i], lim)] += 1
             if why[i]:
@@ -354,8 +357,13 @@ def main():
     print(f"{mode}: {total:,} lines; {total - differ:,} agree; {differ:,} differ. {len(buckets)} buckets.")
     print("left out: " + "; ".join(f"{name} unsupported {skipped[name]['unsupported']:,}, implementation-limit "
                                      f"{skipped[name]['implementation-limit']:,}, via tool {via_tool[name]:,}" for name in names))
+    if over_capacity:
+        print("implementation-limit by limit, checked and over the stated capacity (as expected): "
+              + ", ".join(f"{name} {lim} {c:,}" for (name, lim), c in over_capacity.most_common()))
     if by_limit:
-        print("implementation-limit by limit (not checked against a capacity): "
+        why_not = ("could not be checked for that limit (no capacity stated for it, or its size is not computable)"
+                   if args.limits else "none checked, no --limits file was given")
+        print(f"implementation-limit by limit, {why_not}: "
               + ", ".join(f"{name} {lim} {c:,}" for (name, lim), c in by_limit.most_common()))
     if unsupported:
         print("unsupported (left out): " + ", ".join(f"{name} {reason} {c:,}" for (name, reason), c in unsupported.most_common(20)))
@@ -384,6 +392,9 @@ def main():
                 "unsupported": [{"implementation": nm, "reason": r, "count": c} for (nm, r), c in unsupported.most_common()],
                 "left_out": {nm: {"unsupported": skipped[nm]["unsupported"], "implementation-limit": skipped[nm]["implementation-limit"],
                                   "via_tool": via_tool[nm]} for nm in names},
+                "limits_given": bool(args.limits),
+                "implementation_limit_over_capacity": [{"implementation": nm, "limit": lim, "count": c}
+                                                       for (nm, lim), c in over_capacity.most_common()],
                 "implementation_limit_unchecked": [{"implementation": nm, "limit": lim, "count": c} for (nm, lim), c in by_limit.most_common()],
             }, f, indent=1, ensure_ascii=False)
     return 1 if differ or own else 0
