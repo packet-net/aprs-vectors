@@ -4,6 +4,8 @@ builders (see the README, "Comparing implementations").
 
   python3 tools/generate.py data.jsonl.gz --count 1000000 --seed 1 [--inexact 0.05]
   python3 tools/generate.py recipes.jsonl.gz --recipes --count 1000000 --seed 1
+  python3 tools/generate.py faults.jsonl.gz --faults --count 1000000 --seed 1 [--nonfinite 0.01]
+  python3 tools/generate.py faults-recipes.jsonl.gz --recipes --faults --count 1000000 --seed 1
 
 Data: one {"n", "data", "exact"} object per line. The data is recombined from the cases' own
 decoded data (so every shape is one a decoder produces): a report takes parts from other reports
@@ -14,6 +16,17 @@ format holds, so an encoder rounds it.
 Recipes: one {"n", "station", "report", "args"} object per line, with values as a program would
 have them (a position from a GPS receiver, a speed in km/h) and every input given, the time
 included.
+
+With --faults, a line gets two or three faults on purpose where its report type has that many
+to give (fewer where it has fewer, none for a type with none), each on its own field, drawn from a
+list of single faults (a value at its exact bound, half a step either side of it, just past it;
+a field the report has no place for; a companion left out; a builder value given in two units),
+so that the refusal order (the README's "Refusal reasons") is exercised, which uniform data rarely
+does: most of its records have one fault or none. A line given faults has "exact": false and
+"faults": their names. A value at its bound is sometimes in range, so a line with faults can still
+be written. --nonfinite gives that share of fault lines a NaN or an infinity, written as
+the non-standard JSON tokens NaN, Infinity and -Infinity (Python's json module writes and reads
+them; a dump tool that does not read them can skip those lines, so the option is off by default).
 
 The same arguments always give the same lines. Standard library only.
 """
@@ -236,10 +249,11 @@ KNOT_MPH = 1852 / 1609.344
 
 
 class DataGen:
-    def __init__(self, rng: random.Random, pool: Pool, inexact: float) -> None:
+    def __init__(self, rng: random.Random, pool: Pool, inexact: float, nonfinite: float = 0.0) -> None:
         self.rng = rng
         self.pool = pool
         self.inexact = inexact
+        self.nonfinite = nonfinite
 
     WEIGHTS = {
         "position": 22, "mic-e": 12, "object": 10, "item": 6, "weather": 5, "message": 6, "ack": 2, "reject": 1,
@@ -684,6 +698,163 @@ class DataGen:
             return f"{rng.randint(0, 23):02d}{rng.randint(0, 59):02d}{rng.randint(0, 59):02d}h"
         return f"{rng.randint(1, 31):02d}{rng.randint(0, 23):02d}{rng.randint(0, 59):02d}{kind}"
 
+    # --- faults on purpose (--faults)
+
+    # Values at and around each field's bounds: the bound, half a step either side (a half is
+    # rounded away from zero, so one side is in range and the other not), and just past it.
+    EDGES = {
+        "latitude": [90.0, -90.0, 90 + 1 / 12000, -90 - 1 / 12000, 90 - 1 / 12000, 90.0001],
+        "longitude": [180.0, -180.0, 180 + 1 / 12000, -180 - 1 / 12000, 180 - 1 / 12000, -180.0001],
+        "course_degrees": [0, 0.4, 0.5, -0.4, -0.5, 1, 360, 360.4, 360.5, 361, 359.6],
+        "speed_knots": [0, -0.4, -0.5, 999, 999.4, 999.5, 1000, 799.5, 800],
+        "altitude_feet": [999999, 999999.4, 999999.5, -99999, -99999.4, -99999.5, 0.4, -0.5],
+        "range_miles": [0, 0.4, 1.9, 1.95, 9999, 9999.5, 10000],
+        "weather.wind_direction_degrees": [0, -0.4, -0.5, 360, 360.4, 360.5, 361],
+        "weather.wind_speed_mph": [0, -0.3, -0.03, -0.5, 999, 999.5],
+        "weather.wind_gust_mph": [0, -0.5, 999, 999.4, 999.5],
+        "weather.temperature_f": [-99, -99.4, -99.5, 999, 999.4, 999.5],
+        "weather.humidity_percent": [0, 0.4, 0.5, 1, 100, 100.4, 100.5],
+        "weather.pressure_mbar": [0, 9999.9, 9999.94, 9999.95, -0.05],
+        "weather.rain_1h_in": [0, 9.99, 9.994, 9.995, -0.005],
+        "weather.luminosity_w_m2": [0, 999, 1000, 1999, 1999.4, 1999.5],
+        "weather.snow_24h_in": [0.004, 0.005, 0.995, 9.95, 9.96, 999, 999.4, 999.5],
+    }
+
+    def _faults(self, d: dict) -> list[str]:
+        """Gives the record two or three faults; returns their names."""
+        rng = self.rng
+        weather = d["type"] == "weather" or isinstance(d.get("weather"), dict)
+        positioned = d["type"] in POSITIONED
+        compressed = bool(d.get("compressed"))
+        options = []
+        for key, values in self.EDGES.items():
+            if key.startswith("weather.") and not weather:
+                continue
+            if not key.startswith("weather.") and not positioned:
+                continue
+            options.append(("edge:" + key, key, values))
+        if positioned:
+            options += [
+                ("comment-with-a-line-break", "comment", ["a\rb", "\n"]),
+                ("comment-reads-as-a-field", "comment", ["/A=001234", "PHG5132", "x !W12!", "|!!!!|"]),
+                ("ambiguity-and-dao", None, None),
+                ("phg-digit-10", "phg", [{"power": 10, "height": 1, "gain": 1, "directivity": 1}]),
+                ("phg-and-course", None, None),
+                ("area-without-its-symbol", "area", [{"shape": "open-box", "color": "red", "lat_offset": 1, "lon_offset": 1}]),
+                ("invalid-symbol", "symbol", ["x-", "/\x7f", "/", ""]),
+                ("telemetry-values", "telemetry", [{"sequence": 1, "analog": []}, {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]},
+                                                   {"sequence": 8281, "analog": [1]}, {"sequence": 1, "analog": [8281]}]),
+                ("dao-datum", "dao", [{"datum": "!", "precision": "none"}, {"datum": "1", "precision": "base91"}]),
+            ]
+            if compressed:
+                options += [("course-without-speed", None, None), ("speed-without-course", None, None)]
+            if weather:
+                options += [("weather-comment", "comment", ["hello"]), ("weather-range", "range_miles", [2, 1, 10])]
+        if d["type"] in ("object", "item"):
+            options.append(("name-length", "name", ["", "AB", "ABCDEFGHI", "ABCDEFGHIJ", "OR4F ", " OR4F"]))
+        if d["type"] in ("object", "position", "status", "weather"):
+            options.append(("timestamp-edge", "timestamp", ["002345z", "322345z", "092460z", "240000h", "235960h", "13010000", "00010000", "322345/"]))
+        if d["type"] == "object":
+            options.append(("object-without-timestamp", "timestamp", [None]))
+        if "addressee" in d:
+            options.append(("addressee-length", "addressee", ["", "ABCDEFGHI", "ABCDEFGHIJ", "A B", "A:B"]))
+        if "text" in d:
+            options.append(("text-length", "text", ["x" * 67, "x" * 68, "a{b", "a\rb", " "]))
+        if d["type"] in ("message", "bulletin", "ack", "reject"):
+            options.append(("message-id", "message_id", ["", "12345", "123456", "A-1"]))
+        if d["type"] == "telemetry":
+            options += [("analog-count", "analog", [[1, 2, 3, 4], [1, 2, 3, 4, 5, 6], []]),
+                        ("bits", "bits", ["0000000", "000000000", "0000000x", None]),
+                        ("sequence", "sequence", ["", "MIC", "A B", "12,3"]),
+                        ("telemetry-comment", "comment", ["a\rb", "\n"])]
+        if d["type"] in ("telemetry-names", "telemetry-units"):
+            key = "names" if d["type"] == "telemetry-names" else "units"
+            options.append(("metadata-list", key, [[f"C{i}" for i in range(14)], ["a{b"], ["a,b"], ["a\rb"]]))
+        if d["type"] == "telemetry-coefficients":
+            options.append(("coefficient-count", "coefficients", [[1.0] * 16, [1.0, 2.0]]))
+        if d["type"] == "telemetry-bits":
+            options += [("bits", "bits", ["1111111", "11111112"]),
+                        ("project-length", "project", ["x" * 23, "x" * 24, "a{b"])]
+        if d["type"] == "status":
+            options += [("beam-code", "beam", [{"heading_code": "a", "power_code": "7"}, {"heading_code": "B", "power_code": "0"}]),
+                        ("locator", "locator", ["IO91S", "io91sx", "ZZ99"])]
+        if d["type"] == "capabilities":
+            options.append(("capabilities", "capabilities", [[], [["IG ATE"]], [["MSG_CNT", " 43"]], [["MSG_CNT", "4\x013"]], [["A,B"]]]))
+        if d["type"] in ("query", "directed-query"):
+            options.append(("query-type", "query_type", ["aprs", "APRS1", "", "X Y"]))
+        if d["type"] == "query":
+            options.append(("footprint", "footprint", [{"latitude": 90.0, "longitude": 180.0, "radius_miles": 9999},
+                                                       {"latitude": 90.00001, "longitude": 0, "radius_miles": 200},
+                                                       {"latitude": 0, "longitude": -180.00001, "radius_miles": 200},
+                                                       {"latitude": 0, "longitude": 0, "radius_miles": 10000}]))
+        if d["type"] == "directed-query":
+            options.append(("target", "target", ["", "ABCDEFGHIJ", "A B"]))
+        if d["type"] == "nmea":
+            options += [("sentence", "sentence", ["GPRMC,063909,A*00", "gprmc,1", "GPRMC,1*4G"]),
+                        ("nmea-comment", "comment", ["a\rb"]),
+                        ("nmea-course", "course_degrees", [361.0, -1.0])]
+        if d["type"] == "maidenhead-beacon":
+            options += [("maidenhead-locator", "locator", ["IO91S", "io91sx", "ZZ99"]), ("maidenhead-comment", "comment", ["a\rb"])]
+        if d["type"] == "agrelo-df":
+            options += [("bearing", "bearing_degrees", [360, 361, -1]), ("quality", "quality", [9, 10, -1])]
+        if d["type"] == "nws-bulletin":
+            options.append(("nws-addressee", "addressee", ["NWSBOT", "NWS-", "NWS_ABCDEFG"]))
+        if d["type"] == "third-party":
+            options.append(("inner-path", "packet.path", [["TCPIP", "G4ABC*"], ["TC+IP*"], ["A*", "B*"]]))
+            inner = d.get("packet", {}).get("data")
+            if isinstance(inner, dict) and inner.get("type") != "third-party":
+                options.append(("inner-faults", None, None))
+        if not options:
+            return []
+        names = []
+        used = set()
+        for _ in range(rng.choice([2, 2, 3])):
+            free = [o for o in options if o[0] not in used and (o[1] is None or o[1] not in used)]
+            if not free:
+                break
+            name, key, values = rng.choice(free)
+            used.add(name)
+            if key is not None:
+                used.add(key)
+                value = copy.deepcopy(rng.choice(values))
+                if key.startswith("packet."):
+                    obj, leaf = d["packet"], key[7:]
+                elif key.startswith("weather."):
+                    obj, leaf = d.setdefault("weather", {}), key[8:]
+                else:
+                    obj, leaf = d, key
+                if value is None:
+                    obj.pop(leaf, None)
+                else:
+                    obj[leaf] = value
+            elif name == "ambiguity-and-dao":
+                d["ambiguity"] = rng.randint(1, 4)
+                d["dao"] = {"datum": "W", "precision": rng.choice(["none", "thousandths", "base91"])}
+            elif name == "phg-and-course":
+                d["phg"] = {"power": 5, "height": 1, "gain": 3, "directivity": 2}
+                d["course_degrees"], d["speed_knots"] = 88, 36
+            elif name == "course-without-speed":
+                d["course_degrees"] = 88
+                d.pop("speed_knots", None)
+            elif name == "speed-without-course":
+                d["speed_knots"] = 10
+                d.pop("course_degrees", None)
+            elif name == "inner-faults":
+                options = [o for o in options if o[0] != "inner-faults"]
+                inner = self._faults(d["packet"]["data"])[:1]
+                if not inner:
+                    continue
+                name = "inner:" + inner[0]
+            names.append(name)
+        if self.nonfinite and rng.random() < self.nonfinite:
+            numeric = [k for k in self.EDGES if (k[8:] in d.get("weather", {}) if k.startswith("weather.") else k in d)]
+            if numeric:
+                key = rng.choice(numeric)
+                obj, leaf = (d["weather"], key[8:]) if key.startswith("weather.") else (d, key)
+                obj[leaf] = rng.choice([math.nan, math.inf, -math.inf])
+                names.append("non-finite:" + key)
+        return names
+
     # --- values between steps
 
     def _nudge(self, d: dict) -> bool:
@@ -787,6 +958,77 @@ class RecipeGen:
             args["telemetry"] = {"sequence": rng.randint(0, 8280), "analog": [rng.randint(0, 8280) for _ in range(n)]}
             if n == 5 and rng.random() < 0.5:
                 args["telemetry"]["digital"] = rng.randint(0, 255)
+
+    # Builder faults (--faults): values at their bounds, and a value given in two units.
+    RECIPE_EDGES = {
+        "course_degrees": [0, 0.4, 0.5, 360, 360.4, 360.5, -0.5],
+        "speed_knots": [-0.5, 999.4, 999.5, 799.5],
+        "speed_kmh": [-1, 1850.1, 1852 * 999.6],
+        "altitude_feet": [999999.4, 999999.5, -99999.5],
+        "altitude_m": [304799.9, 304800, -30480.2],
+        "latitude": [90.0, 90.00001, -90.00001],
+        "longitude": [180.0, 180.00001, -180.00001],
+        "wind_direction_degrees": [360.4, 360.5, -0.5],
+        "humidity_percent": [0.4, 0.5, 100.4, 100.5],
+        "temperature_c": [-73.1, 537.3],
+        "wind_gust_mph": [999.4, 999.5],
+    }
+    TWICE = [("altitude_feet", "altitude_m", 100.0, 30.48), ("temperature_f", "temperature_c", 77.0, 25.0),
+             ("rain_1h_in", "rain_1h_mm", 0.1, 2.54), ("speed_knots", "speed_kmh", 10.0, 18.52)]
+
+    # Faults for the reports with no position or weather: (name, arg, values).
+    OTHER_FAULTS = {
+        "message": [("addressee", "addressee", ["", "ABCDEFGHIJ", "A B"]), ("text", "text", ["x" * 68, "a{b", "a\rb"]),
+                    ("message-id", "message_id", ["", "123456", "A-1"]), ("reply-ack", "reply_ack", ["AB", "ABCDEF"])],
+        "ack": [("addressee", "addressee", ["", "ABCDEFGHIJ"]), ("message-id", "message_id", ["", "123456", "A-1"])],
+        "bulletin": [("id", "id", ["", "AB", "a"]), ("group", "group", ["TOOLONG", "a b"]), ("text", "text", ["x" * 68, "a{b"])],
+        "status": [("text", "text", ["a\rb", "x" * 63]), ("timestamp", "timestamp", [{"utc": "2026-09-27T09:23:45Z", "format": "hms"}]),
+                   ("locator", "locator", ["IO91S", "io91sx"]), ("beam", "beam", [{"heading_code": "a", "power_code": "7"}])],
+        "telemetry": [("sequence", "sequence", [1000, -1]), ("analog", "analog", [[1, 2, 3, 4], [1, 2, 3, 4, 5, 6], [256.5, 0, 0, 0, 0]]),
+                      ("bits", "bits", ["0000000", "0000000x"]), ("comment", "comment", ["a\rb"])],
+        "telemetry-names": [("names", "names", [[f"C{i}" for i in range(14)], ["a{b"], ["a,b"]]), ("addressee", "addressee", ["ABCDEFGHIJ"])],
+        "telemetry-units": [("units", "units", [[f"U{i}" for i in range(14)], ["a{b"]]), ("addressee", "addressee", ["ABCDEFGHIJ"])],
+        "telemetry-coefficients": [("coefficients", "coefficients", [[1.0] * 16, [1.0, 2.0]]), ("addressee", "addressee", ["ABCDEFGHIJ"])],
+        "telemetry-bits": [("bits", "bits", ["1111111", "11111112"]), ("project", "project", ["x" * 24, "a{b"]),
+                           ("addressee", "addressee", ["ABCDEFGHIJ"])],
+    }
+    OTHER_FAULTS["reject"] = OTHER_FAULTS["ack"]
+
+    def faults(self, recipe: dict, nonfinite: float) -> list[str]:
+        """Gives the recipe up to three faults, each on its own argument; returns their names."""
+        rng = self.rng
+        args = recipe["args"]
+        names = []
+        weather = recipe["report"] == "weather"
+        positioned = recipe["report"] in ("position", "object", "item", "mic-e")
+        options = []
+        if weather or positioned:
+            wx_keys = {"wind_direction_degrees", "humidity_percent", "temperature_c", "wind_gust_mph"}
+            for k in self.RECIPE_EDGES:
+                if (k in wx_keys) == weather and (k not in ("latitude", "longitude") or "latitude" in args):
+                    options.append(("edge:" + k, (k,), [[v] for v in self.RECIPE_EDGES[k]]))
+            for a, b, va, vb in self.TWICE:
+                if (a in ("temperature_f", "rain_1h_in")) == weather and not (a == "speed_knots" and recipe["report"] == "weather"):
+                    options.append(("twice:" + a, (a, b), [[va, vb]]))
+        for name, key, values in self.OTHER_FAULTS.get(recipe["report"], []):
+            options.append((name, (key,), [[v] for v in values]))
+        used: set = set()
+        for _ in range(rng.choice([2, 2, 3])):
+            free = [o for o in options if not used & set(o[1])]
+            if not free:
+                break
+            name, keys, values = rng.choice(free)
+            used |= set(keys)
+            for k, v in zip(keys, rng.choice(values)):
+                args[k] = copy.deepcopy(v)
+            names.append(name)
+        if nonfinite and rng.random() < nonfinite:
+            numeric = [k for k, v in args.items() if isinstance(v, (int, float)) and not isinstance(v, bool)]
+            if numeric:
+                key = rng.choice(numeric)
+                args[key] = rng.choice([math.nan, math.inf, -math.inf])
+                names.append("non-finite:" + key)
+        return names
 
     def _pick(self, good: list, bad: list, odd: float = 0.05):
         """Mostly a valid value, now and then one a builder should refuse."""
@@ -933,19 +1175,29 @@ def main() -> int:
     ap.add_argument("--count", type=int, default=1_000_000)
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--inexact", type=float, default=0.05, help="share of data lines with a value between steps")
+    ap.add_argument("--faults", action="store_true", help="two or three faults on purpose in every line, values at their bounds")
+    ap.add_argument("--nonfinite", type=float, default=0.0, help="with --faults, share of lines given a NaN or infinity")
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
     pool = Pool()
-    gen = RecipeGen(rng, pool) if args.recipes else DataGen(rng, pool, args.inexact)
+    gen = RecipeGen(rng, pool) if args.recipes else DataGen(rng, pool, args.inexact, args.nonfinite)
     with gzip.open(args.out, "wt", encoding="utf-8", compresslevel=6) as out:
         for n in range(args.count):
             if args.recipes:
                 record = {"n": n, **gen.recipe()}
+                if args.faults:
+                    record["faults"] = gen.faults(record, args.nonfinite)
             else:
                 data, exact = gen.data()
                 record = {"n": n, "data": data, "exact": exact}
-            out.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")))
+                if args.faults:
+                    names = gen._faults(data)
+                    if names:
+                        tidy(data)
+                        record["exact"] = False
+                        record["faults"] = names
+            out.write(json.dumps(record, ensure_ascii=False, separators=(",", ":"), allow_nan=bool(args.nonfinite)))
             out.write("\n")
     kind = "recipes" if args.recipes else "data objects"
     print(f"{args.out}: {args.count:,} {kind}", file=sys.stderr)

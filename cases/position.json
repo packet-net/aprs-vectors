@@ -795,6 +795,21 @@
       "strict": {"data": {"type": "position", "latitude": -32.30579955161895, "longitude": 115.81729784787598, "symbol": "/D", "compressed": true, "comment": "A=0&RNG0034 DMR-Bran00095Graywolf/0.14.13"}, "diagnostics": []},
       "reencode": "rounded",
       "canonical_info": "!/^l'(kfiXD{FCA=0& DMR-Bran00095Graywolf/0.14.13"
+    },
+    {
+      "id": "position/dao-without-digits-on-an-ambiguous-position",
+      "description": "A !DAO! with no added digits (!W  !) on an ambiguous position still reads with dao-with-ambiguity, as the Encoding rule says it does whatever its precision.",
+      "source": "differential fuzzing 2026-11-13",
+      "authority": "interpretation",
+      "interpretations": ["dao-on-an-ambiguous-position"],
+      "input": {"info": "!4903.5 N/07201.7 W-!W  !"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "ambiguity": 1, "symbol": "/-", "dao": {"datum": "W", "precision": "none"}},
+        "diagnostics": ["warning:dao-with-ambiguity"]
+      },
+      "strict": {"rejected_by": "dao-with-ambiguity"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     }
   ]
 }

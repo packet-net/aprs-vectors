@@ -260,6 +260,130 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "envelope/ax25-comma-in-the-source",
+      "description": "An AX.25 source call holding a comma, which would end it in TNC2 text: invalid-address, and the header is unusable.",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "82A0B4606062609C60588682986103F03E78"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "envelope/ax25-greater-than-in-the-destination",
+      "description": "An AX.25 destination holding >, which would end it in TNC2 text: invalid-address.",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "82A07CB46062609C60868298986103F03E78"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "envelope/ax25-colon-in-a-digipeater",
+      "description": "An AX.25 digipeater call holding :, which would end the TNC2 header early: invalid-address.",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "82A0B4606062609C608682989860AE9274888A626103F03E78"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "envelope/ax25-asterisk-in-a-digipeater",
+      "description": "An AX.25 digipeater call holding *, which TNC2 text reads as the used marker: invalid-address.",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "82A0B4606062609C608682989860828654B040406103F03E78"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "envelope/ax25-hyphen-in-the-source",
+      "description": "An AX.25 source call holding -, which TNC2 text reads as the start of the SSID: invalid-address.",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "82A0B4606062609C605A8682986103F03E78"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "envelope/ax25-space-inside-the-source",
+      "description": "An AX.25 source call with a space before its last character: spaces only pad a call at the end, so invalid-address.",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "82A0B4606062609C60408682986103F03E78"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "envelope/ax25-control-character-in-the-source",
+      "description": "An AX.25 source call holding a control character: invalid-address.",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "82A0B4606062609C60028682986103F03E78"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "envelope/ax25-all-space-source",
+      "description": "An AX.25 source call of six spaces has no characters: invalid-address, as an empty TNC2 source is unusable.",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "82A0B4606062604040404040406103F03E78"},
+      "expect": {
+        "header_error": ["error:invalid-address"]
+      },
+      "strict": "same"
+    },
+    {
+      "id": "envelope/ax25-all-space-destination",
+      "description": "An AX.25 destination of six spaces is an empty destination, tolerated as in TNC2 (empty-destination).",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "404040404040609C60868298986103F03E78"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": ""},
+        "data": {"type": "status", "text": "x"},
+        "diagnostics": ["warning:empty-destination"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "envelope/ax25-all-space-digipeater",
+      "description": "An AX.25 digipeater of six spaces is an empty path entry, tolerated as in TNC2 (empty-path-entry) and left out of the path.",
+      "source": "AX.25 2.2 section 3.12",
+      "authority": "interpretation",
+      "interpretations": ["an-ax25-address-is-letters-and-digits"],
+      "input": {"ax25_hex": "82A0B4606062609C60868298986040404040404060AE92888A62406103F03E78"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001", "path": ["WIDE1"]},
+        "data": {"type": "status", "text": "x"},
+        "diagnostics": ["warning:empty-path-entry"]
+      },
+      "strict": {"rejected_by": "empty-path-entry", "header": true}
     }
   ]
 }

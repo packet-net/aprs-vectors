@@ -14,11 +14,13 @@ Needs the jsonschema package (pip install jsonschema). Checks, beyond the schema
 - every `refusal` (in expect) and `reencode_refusal` names an id in the `refusals` list of codes.json,
   and no case names the fallback `does-not-read-back`;
 - every refusal id except the exempt ones (EXEMPT_REFUSALS) is named by at least one case;
-- every refused case names its refusal code (REFUSALS_REQUIRED).
+- every refused case names its refusal code (REFUSALS_REQUIRED);
+- cases/precedence.json is what tools/precedence.py writes.
 """
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -37,7 +39,7 @@ EXEMPT_REFUSALS = {
     "ax25-cannot-carry",  # needs a packet header
     "tnc2-cannot-carry",  # needs a packet header
     "value-given-twice",  # needs builder input in two units
-    "not-encodable",  # undecoded data: no form of it is held by all five libraries (rs not inside third-party, cs not at top level)
+    "not-encodable",  # undecoded data: no form of it is held by all six libraries (rs not inside third-party, cs not at top level)
 }
 # Every refused case names its code, and every refusal id is named by a case except these, each of
 # which an encode or decode case cannot produce (see the README's Refusal reasons rule).
@@ -164,6 +166,10 @@ def main():
     if REFUSALS_REQUIRED:
         for rid in sorted(refusal_ids - named_refusals - EXEMPT_REFUSALS):
             problems.append(f"codes.json: refusal id '{rid}' is named by no case")
+
+    made = subprocess.run([sys.executable, str(ROOT / "tools" / "precedence.py"), "--check"], capture_output=True, text=True)
+    if made.returncode != 0:
+        problems.append("cases/precedence.json: " + (made.stderr.strip() or "out of date"))
 
     for p in problems:
         print(p)

@@ -1,0 +1,2871 @@
+{
+  "cases": [
+    {
+      "id": "precedence/invalid-third-party-header-and-invalid-addressee",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and an addressee of 11 characters in the inner packet (invalid-addressee): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "message", "addressee": "TOOLONGCALL", "text": "Hello"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-invalid-name",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a name of 10 characters in the inner packet (invalid-name): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-invalid-timestamp",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a day of 32 in the inner packet (invalid-timestamp): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-value-out-of-range",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a latitude past 90 in the inner packet (value-out-of-range): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-value-has-no-form",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a course of 0 in the inner packet (value-has-no-form): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-invalid-code",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a !DAO! datum of ! in the inner packet (invalid-code): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-invalid-symbol",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and symbol table x in the inner packet (invalid-symbol): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-invalid-character",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a CR in the comment in the inner packet (invalid-character): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-too-long",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and six base-91 telemetry values in the inner packet (too-long): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-padding-space",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a name ending in a space in the inner packet (padding-space): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-malformed",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and base-91 telemetry with no analog values in the inner packet (malformed): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-invalid-message-id",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a message ID of 6 characters in the inner packet (invalid-message-id): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "message", "addressee": "N0CALL", "text": "Hello", "message_id": "123456"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-invalid-nmea",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a checksum that does not match in the inner packet (invalid-nmea): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*53", "has_checksum": true, "latitude": 33.823836666666665, "longitude": -117.00620166666667, "fix": "valid", "course_degrees": 89.3, "speed_knots": 43.022, "time": "06:39:09"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-extension-conflict",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and course/speed and PHG in the inner packet (extension-conflict): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-field-not-allowed",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a !DAO! on an ambiguous position in the inner packet (field-not-allowed): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-symbol-mismatch",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and an area without the area symbol in the inner packet (symbol-mismatch): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-missing-field",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and a course with no speed in the inner packet (missing-field): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-third-party-header-and-text-reads-as-field",
+      "description": "Two faults, an inner path entry, before a used one, not marked used (invalid-third-party-header) and comment text that reads as an altitude in the inner packet (text-reads-as-field): the refusal names invalid-third-party-header, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP", "G4ABC*"], "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "/A=001234"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "precedence/invalid-addressee-and-invalid-code",
+      "description": "Two faults, an addressee of 11 characters (invalid-addressee) and a query type in lower case (invalid-code): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "directed-query", "addressee": "TOOLONGCALL", "query_type": "aprsd"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "precedence/invalid-addressee-and-invalid-character",
+      "description": "Two faults, an addressee of 11 characters (invalid-addressee) and a { in the text (invalid-character): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "message", "addressee": "TOOLONGCALL", "text": "a{b"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "precedence/invalid-addressee-and-too-long",
+      "description": "Two faults, an addressee of 11 characters (invalid-addressee) and 68 characters of text (too-long): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "message", "addressee": "TOOLONGCALL", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "precedence/invalid-addressee-and-malformed",
+      "description": "Two faults, an addressee of 11 characters (invalid-addressee) and bits of 7 characters (malformed): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "telemetry-bits", "addressee": "TOOLONGCALL", "bits": "1111111", "project": "Balloon"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "precedence/invalid-addressee-and-invalid-message-id",
+      "description": "Two faults, an addressee of 11 characters (invalid-addressee) and a message ID of 6 characters (invalid-message-id): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "message", "addressee": "TOOLONGCALL", "text": "Hello", "message_id": "123456"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "precedence/invalid-addressee-and-field-not-allowed",
+      "description": "Two faults, an addressee of 11 characters (invalid-addressee) and a message ID on an ack (field-not-allowed): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "ack", "addressee": "TOOLONGCALL", "acked_id": "1", "message_id": "2"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "precedence/invalid-addressee-and-missing-field",
+      "description": "Two faults, an addressee of 11 characters (invalid-addressee) and a reply-ack with no message ID (missing-field): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "message", "addressee": "TOOLONGCALL", "text": "Hello", "reply_ack": "AB"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "precedence/invalid-addressee-and-text-reads-as-field",
+      "description": "Two faults, an addressee of 11 characters (invalid-addressee) and text that reads as a directed query (text-reads-as-field): the refusal names invalid-addressee, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "message", "addressee": "TOOLONGCALL", "text": "?WX"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-addressee"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-invalid-timestamp",
+      "description": "Two faults, a name of 10 characters (invalid-name) and a day of 32 (invalid-timestamp): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-value-out-of-range",
+      "description": "Two faults, a name of 10 characters (invalid-name) and a latitude past 90 (value-out-of-range): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-value-has-no-form",
+      "description": "Two faults, a name of 10 characters (invalid-name) and a humidity of 0 (value-has-no-form): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 0}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-invalid-code",
+      "description": "Two faults, a name of 10 characters (invalid-name) and a !DAO! datum of ! (invalid-code): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-invalid-symbol",
+      "description": "Two faults, a name of 10 characters (invalid-name) and symbol table x (invalid-symbol): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-invalid-character",
+      "description": "Two faults, a name of 10 characters (invalid-name) and a CR in the comment (invalid-character): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-too-long",
+      "description": "Two faults, a name of 10 characters (invalid-name) and six base-91 telemetry values (too-long): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-malformed",
+      "description": "Two faults, a name of 10 characters (invalid-name) and base-91 telemetry with no analog values (malformed): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-extension-conflict",
+      "description": "Two faults, a name of 10 characters (invalid-name) and course/speed and PHG (extension-conflict): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-field-not-allowed",
+      "description": "Two faults, a name of 10 characters (invalid-name) and a !DAO! on an ambiguous position (field-not-allowed): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-symbol-mismatch",
+      "description": "Two faults, a name of 10 characters (invalid-name) and an area without the area symbol (symbol-mismatch): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-missing-field",
+      "description": "Two faults, a name of 10 characters (invalid-name) and no timestamp (missing-field): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-name-and-text-reads-as-field",
+      "description": "Two faults, a name of 10 characters (invalid-name) and comment text that reads as an altitude (text-reads-as-field): the refusal names invalid-name, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "0123456789", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-value-out-of-range",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a latitude past 90 (value-out-of-range): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-value-has-no-form",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a course of 0 (value-has-no-form): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "timestamp": "322345z", "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-invalid-code",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a !DAO! datum of ! (invalid-code): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "dao": {"datum": "!", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-invalid-symbol",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and symbol table x (invalid-symbol): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "timestamp": "322345z"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-invalid-character",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a CR in the comment (invalid-character): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "comment": "a\rb"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-too-long",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and six base-91 telemetry values (too-long): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-padding-space",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a name ending in a space (padding-space): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-malformed",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and base-91 telemetry with no analog values (malformed): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "telemetry": {"sequence": 1, "analog": []}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-extension-conflict",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and course/speed and PHG (extension-conflict): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-field-not-allowed",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a !DAO! on an ambiguous position (field-not-allowed): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-symbol-mismatch",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and an area without the area symbol (symbol-mismatch): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-missing-field",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and a course with no speed (missing-field): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "timestamp": "322345z", "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/invalid-timestamp-and-text-reads-as-field",
+      "description": "Two faults, a day of 32 (invalid-timestamp) and comment text that reads as an altitude (text-reads-as-field): the refusal names invalid-timestamp, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "timestamp": "322345z", "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-timestamp"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-value-has-no-form",
+      "description": "Two faults, a speed of 800 knots (value-out-of-range) and a course of 0 (value-has-no-form): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 0, "speed_knots": 800}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-invalid-code",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and a !DAO! datum of ! (invalid-code): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-invalid-symbol",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and symbol table x (invalid-symbol): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "x-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-invalid-character",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and a CR in the comment (invalid-character): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb"}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-too-long",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and six base-91 telemetry values (too-long): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-padding-space",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and a name ending in a space (padding-space): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-malformed",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and base-91 telemetry with no analog values (malformed): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-extension-conflict",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and course/speed and PHG (extension-conflict): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-field-not-allowed",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and a !DAO! on an ambiguous position (field-not-allowed): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-symbol-mismatch",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and an area without the area symbol (symbol-mismatch): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-missing-field",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and no timestamp (missing-field): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "LEADER", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-out-of-range-and-text-reads-as-field",
+      "description": "Two faults, a latitude past 90 (value-out-of-range) and comment text that reads as an altitude (text-reads-as-field): the refusal names value-out-of-range, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 91.0, "longitude": -72.02916666666667, "symbol": "/-", "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-invalid-code",
+      "description": "Two faults, a course of 0 (value-has-no-form) and a !DAO! datum of ! (invalid-code): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "dao": {"datum": "!", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-invalid-symbol",
+      "description": "Two faults, a course of 0 (value-has-no-form) and symbol table x (invalid-symbol): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "x-", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-invalid-character",
+      "description": "Two faults, a course of 0 (value-has-no-form) and a CR in the comment (invalid-character): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "comment": "a\rb"}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-too-long",
+      "description": "Two faults, a course of 0 (value-has-no-form) and six base-91 telemetry values (too-long): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-padding-space",
+      "description": "Two faults, a humidity of 0 (value-has-no-form) and a name ending in a space (padding-space): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 0}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-malformed",
+      "description": "Two faults, a course of 0 (value-has-no-form) and base-91 telemetry with no analog values (malformed): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "telemetry": {"sequence": 1, "analog": []}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-extension-conflict",
+      "description": "Two faults, a humidity of 0 (value-has-no-form) and wind and PHG (extension-conflict): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 0}, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-field-not-allowed",
+      "description": "Two faults, a course of 0 (value-has-no-form) and PHG on a compressed position (field-not-allowed): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-symbol-mismatch",
+      "description": "Two faults, a humidity of 0 (value-has-no-form) and weather on a symbol that is not the weather station (symbol-mismatch): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 0}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-missing-field",
+      "description": "Two faults, a humidity of 0 (value-has-no-form) and a wind speed with no direction (missing-field): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "other", "origin": "software"}, "weather": {"wind_speed_mph": 0, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": 0}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/value-has-no-form-and-text-reads-as-field",
+      "description": "Two faults, a course of 0 (value-has-no-form) and comment text that reads as an altitude (text-reads-as-field): the refusal names value-has-no-form, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 0, "speed_knots": 0, "compression": {"fix": "current", "source": "other", "origin": "software"}, "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-invalid-symbol",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and symbol table x (invalid-symbol): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "dao": {"datum": "!", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-invalid-character",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and a CR in the comment (invalid-character): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}, "comment": "a\rb"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-too-long",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and six base-91 telemetry values (too-long): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}, "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-padding-space",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and a name ending in a space (padding-space): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-malformed",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and base-91 telemetry with no analog values (malformed): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}, "telemetry": {"sequence": 1, "analog": []}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-extension-conflict",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and course/speed and PHG (extension-conflict): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}, "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-field-not-allowed",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and PHG on a compressed position (field-not-allowed): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "dao": {"datum": "!", "precision": "none"}, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-symbol-mismatch",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and an area without the area symbol (symbol-mismatch): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}, "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-missing-field",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and a course with no speed (missing-field): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "dao": {"datum": "!", "precision": "none"}, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-code-and-text-reads-as-field",
+      "description": "Two faults, a !DAO! datum of ! (invalid-code) and comment text that reads as an altitude (text-reads-as-field): the refusal names invalid-code, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "dao": {"datum": "!", "precision": "none"}, "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-code"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-invalid-character",
+      "description": "Two faults, symbol table x (invalid-symbol) and a CR in the comment (invalid-character): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "comment": "a\rb"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-too-long",
+      "description": "Two faults, symbol table x (invalid-symbol) and six base-91 telemetry values (too-long): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-padding-space",
+      "description": "Two faults, symbol table x (invalid-symbol) and a name ending in a space (padding-space): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-malformed",
+      "description": "Two faults, symbol table x (invalid-symbol) and base-91 telemetry with no analog values (malformed): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "telemetry": {"sequence": 1, "analog": []}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-extension-conflict",
+      "description": "Two faults, symbol table x (invalid-symbol) and course/speed and PHG (extension-conflict): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-field-not-allowed",
+      "description": "Two faults, symbol table x (invalid-symbol) and a !DAO! on an ambiguous position (field-not-allowed): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-symbol-mismatch",
+      "description": "Two faults, symbol table x (invalid-symbol) and an area without the area symbol (symbol-mismatch): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-missing-field",
+      "description": "Two faults, symbol table x (invalid-symbol) and a course with no speed (missing-field): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "x-", "compressed": true, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-symbol-and-text-reads-as-field",
+      "description": "Two faults, symbol table x (invalid-symbol) and comment text that reads as an altitude (text-reads-as-field): the refusal names invalid-symbol, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "x-", "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-symbol"
+      }
+    },
+    {
+      "id": "precedence/invalid-character-and-too-long",
+      "description": "Two faults, a CR in the comment (invalid-character) and six base-91 telemetry values (too-long): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "precedence/invalid-character-and-padding-space",
+      "description": "Two faults, a CR in the comment (invalid-character) and a name ending in a space (padding-space): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "precedence/invalid-character-and-malformed",
+      "description": "Two faults, a CR in the comment (invalid-character) and base-91 telemetry with no analog values (malformed): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb", "telemetry": {"sequence": 1, "analog": []}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "precedence/invalid-character-and-invalid-message-id",
+      "description": "Two faults, a { in the text (invalid-character) and a message ID of 6 characters (invalid-message-id): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "message", "addressee": "N0CALL", "text": "a{b", "message_id": "123456"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "precedence/invalid-character-and-invalid-nmea",
+      "description": "Two faults, a CR in the comment (invalid-character) and a checksum that does not match (invalid-nmea): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "nmea", "sentence": "GPRMC,063909,A,3349.4302,N,11700.3721,W,43.022,89.3,291099,13.6,E*53", "has_checksum": true, "latitude": 33.823836666666665, "longitude": -117.00620166666667, "fix": "valid", "course_degrees": 89.3, "speed_knots": 43.022, "time": "06:39:09", "comment": "a\rb"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "precedence/invalid-character-and-extension-conflict",
+      "description": "Two faults, a CR in the comment (invalid-character) and course/speed and PHG (extension-conflict): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "precedence/invalid-character-and-field-not-allowed",
+      "description": "Two faults, a CR in the comment (invalid-character) and a !DAO! on an ambiguous position (field-not-allowed): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "precedence/invalid-character-and-symbol-mismatch",
+      "description": "Two faults, a CR in the comment (invalid-character) and an area without the area symbol (symbol-mismatch): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "a\rb", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "precedence/invalid-character-and-missing-field",
+      "description": "Two faults, a CR in the comment (invalid-character) and a course with no speed (missing-field): the refusal names invalid-character, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "comment": "a\rb", "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-character"
+      }
+    },
+    {
+      "id": "precedence/too-long-and-padding-space",
+      "description": "Two faults, six base-91 telemetry values (too-long) and a name ending in a space (padding-space): the refusal names too-long, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "precedence/too-long-and-malformed",
+      "description": "Two faults, a project title of 24 characters (too-long) and bits of 7 characters (malformed): the refusal names too-long, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "telemetry-bits", "addressee": "N0CALL", "bits": "1111111", "project": "abcdefghijklmnopqrstuvwx"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "precedence/too-long-and-invalid-message-id",
+      "description": "Two faults, 68 characters of text (too-long) and a message ID of 6 characters (invalid-message-id): the refusal names too-long, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "message", "addressee": "N0CALL", "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "message_id": "123456"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "precedence/too-long-and-extension-conflict",
+      "description": "Two faults, six base-91 telemetry values (too-long) and course/speed and PHG (extension-conflict): the refusal names too-long, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}, "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "precedence/too-long-and-field-not-allowed",
+      "description": "Two faults, six base-91 telemetry values (too-long) and a !DAO! on an ambiguous position (field-not-allowed): the refusal names too-long, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}, "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "precedence/too-long-and-symbol-mismatch",
+      "description": "Two faults, six base-91 telemetry values (too-long) and an area without the area symbol (symbol-mismatch): the refusal names too-long, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}, "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "precedence/too-long-and-missing-field",
+      "description": "Two faults, six base-91 telemetry values (too-long) and a course with no speed (missing-field): the refusal names too-long, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "precedence/too-long-and-text-reads-as-field",
+      "description": "Two faults, six base-91 telemetry values (too-long) and comment text that reads as an altitude (text-reads-as-field): the refusal names too-long, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": [1, 2, 3, 4, 5, 6]}, "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "too-long"
+      }
+    },
+    {
+      "id": "precedence/padding-space-and-malformed",
+      "description": "Two faults, a name ending in a space (padding-space) and base-91 telemetry with no analog values (malformed): the refusal names padding-space, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}}},
+      "expect": {
+        "refused": true,
+        "refusal": "padding-space"
+      }
+    },
+    {
+      "id": "precedence/padding-space-and-extension-conflict",
+      "description": "Two faults, a name ending in a space (padding-space) and course/speed and PHG (extension-conflict): the refusal names padding-space, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "padding-space"
+      }
+    },
+    {
+      "id": "precedence/padding-space-and-field-not-allowed",
+      "description": "Two faults, a name ending in a space (padding-space) and a !DAO! on an ambiguous position (field-not-allowed): the refusal names padding-space, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "padding-space"
+      }
+    },
+    {
+      "id": "precedence/padding-space-and-symbol-mismatch",
+      "description": "Two faults, a name ending in a space (padding-space) and an area without the area symbol (symbol-mismatch): the refusal names padding-space, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "padding-space"
+      }
+    },
+    {
+      "id": "precedence/padding-space-and-missing-field",
+      "description": "Two faults, a name ending in a space (padding-space) and no timestamp (missing-field): the refusal names padding-space, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-"}},
+      "expect": {
+        "refused": true,
+        "refusal": "padding-space"
+      }
+    },
+    {
+      "id": "precedence/padding-space-and-text-reads-as-field",
+      "description": "Two faults, a name ending in a space (padding-space) and comment text that reads as an altitude (text-reads-as-field): the refusal names padding-space, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "OR4F ", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "padding-space"
+      }
+    },
+    {
+      "id": "precedence/malformed-and-invalid-message-id",
+      "description": "Two faults, bits of 7 characters (malformed) and a message ID of 6 characters (invalid-message-id): the refusal names malformed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "telemetry-bits", "addressee": "N0CALL", "bits": "1111111", "project": "Balloon", "message_id": "123456"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "precedence/malformed-and-extension-conflict",
+      "description": "Two faults, base-91 telemetry with no analog values (malformed) and course/speed and PHG (extension-conflict): the refusal names malformed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}, "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "precedence/malformed-and-field-not-allowed",
+      "description": "Two faults, base-91 telemetry with no analog values (malformed) and a !DAO! on an ambiguous position (field-not-allowed): the refusal names malformed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}, "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "precedence/malformed-and-symbol-mismatch",
+      "description": "Two faults, base-91 telemetry with no analog values (malformed) and an area without the area symbol (symbol-mismatch): the refusal names malformed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}, "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "precedence/malformed-and-missing-field",
+      "description": "Two faults, base-91 telemetry with no analog values (malformed) and a course with no speed (missing-field): the refusal names malformed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "telemetry": {"sequence": 1, "analog": []}, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "precedence/malformed-and-text-reads-as-field",
+      "description": "Two faults, base-91 telemetry with no analog values (malformed) and comment text that reads as an altitude (text-reads-as-field): the refusal names malformed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "telemetry": {"sequence": 1, "analog": []}, "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "malformed"
+      }
+    },
+    {
+      "id": "precedence/invalid-message-id-and-field-not-allowed",
+      "description": "Two faults, an acked ID of 6 characters (invalid-message-id) and a message ID on an ack (field-not-allowed): the refusal names invalid-message-id, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "ack", "addressee": "N0CALL", "acked_id": "123456", "message_id": "2"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-message-id"
+      }
+    },
+    {
+      "id": "precedence/invalid-message-id-and-missing-field",
+      "description": "Two faults, a message ID of 6 characters (invalid-message-id) and a reply-ack with no message ID (missing-field): the refusal names invalid-message-id, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "message", "addressee": "N0CALL", "text": "Hello", "message_id": "123456", "reply_ack": "AB"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-message-id"
+      }
+    },
+    {
+      "id": "precedence/invalid-message-id-and-text-reads-as-field",
+      "description": "Two faults, a message ID of 6 characters (invalid-message-id) and text that reads as a directed query (text-reads-as-field): the refusal names invalid-message-id, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "message", "addressee": "N0CALL", "text": "?WX", "message_id": "123456"}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-message-id"
+      }
+    },
+    {
+      "id": "precedence/extension-conflict-and-field-not-allowed",
+      "description": "Two faults, course/speed and PHG (extension-conflict) and a !DAO! on an ambiguous position (field-not-allowed): the refusal names extension-conflict, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "extension-conflict"
+      }
+    },
+    {
+      "id": "precedence/extension-conflict-and-symbol-mismatch",
+      "description": "Two faults, course/speed and PHG (extension-conflict) and an area without the area symbol (symbol-mismatch): the refusal names extension-conflict, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "extension-conflict"
+      }
+    },
+    {
+      "id": "precedence/extension-conflict-and-missing-field",
+      "description": "Two faults, course/speed and PHG (extension-conflict) and no timestamp (missing-field): the refusal names extension-conflict, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "LEADER", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}}},
+      "expect": {
+        "refused": true,
+        "refusal": "extension-conflict"
+      }
+    },
+    {
+      "id": "precedence/extension-conflict-and-text-reads-as-field",
+      "description": "Two faults, course/speed and PHG (extension-conflict) and comment text that reads as an altitude (text-reads-as-field): the refusal names extension-conflict, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "course_degrees": 88, "speed_knots": 36, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "extension-conflict"
+      }
+    },
+    {
+      "id": "precedence/field-not-allowed-and-symbol-mismatch",
+      "description": "Two faults, a !DAO! on an ambiguous position (field-not-allowed) and an area without the area symbol (symbol-mismatch): the refusal names field-not-allowed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}, "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "field-not-allowed"
+      }
+    },
+    {
+      "id": "precedence/field-not-allowed-and-missing-field",
+      "description": "Two faults, PHG on a compressed position (field-not-allowed) and a course with no speed (missing-field): the refusal names field-not-allowed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "field-not-allowed"
+      }
+    },
+    {
+      "id": "precedence/field-not-allowed-and-text-reads-as-field",
+      "description": "Two faults, a !DAO! on an ambiguous position (field-not-allowed) and comment text that reads as an altitude (text-reads-as-field): the refusal names field-not-allowed, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "ambiguity": 2, "dao": {"datum": "W", "precision": "none"}, "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "field-not-allowed"
+      }
+    },
+    {
+      "id": "precedence/symbol-mismatch-and-missing-field",
+      "description": "Two faults, an area without the area symbol (symbol-mismatch) and no timestamp (missing-field): the refusal names symbol-mismatch, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "object", "name": "LEADER", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}}},
+      "expect": {
+        "refused": true,
+        "refusal": "symbol-mismatch"
+      }
+    },
+    {
+      "id": "precedence/symbol-mismatch-and-text-reads-as-field",
+      "description": "Two faults, an area without the area symbol (symbol-mismatch) and comment text that reads as an altitude (text-reads-as-field): the refusal names symbol-mismatch, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/-", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10, "lon_offset": 10}, "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "symbol-mismatch"
+      }
+    },
+    {
+      "id": "precedence/missing-field-and-text-reads-as-field",
+      "description": "Two faults, a course with no speed (missing-field) and comment text that reads as an altitude (text-reads-as-field): the refusal names missing-field, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 49.5, "longitude": -72.75, "symbol": "/>", "compressed": true, "course_degrees": 88, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "comment": "/A=001234"}},
+      "expect": {
+        "refused": true,
+        "refusal": "missing-field"
+      }
+    },
+    {
+      "id": "strict-order/position-empty-destination-then-two-used-markers",
+      "description": "Two tolerated defects, empty-destination and then multiple-used-markers: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W>Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:empty-destination", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/position-empty-destination-then-day-32",
+      "description": "Two tolerated defects, empty-destination and then invalid-timestamp: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/322345z4903.50N/07201.75W>Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:empty-destination", "warning:invalid-timestamp"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/position-empty-destination-then-lower-case-n",
+      "description": "Two tolerated defects, empty-destination and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50n/07201.75W>Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:empty-destination", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/position-empty-destination-then-lower-case-w",
+      "description": "Two tolerated defects, empty-destination and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75w>Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:empty-destination", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/position-empty-destination-then-course-400",
+      "description": "Two tolerated defects, empty-destination and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75W>400/010Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "speed_knots": 10},
+        "diagnostics": ["warning:empty-destination", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/position-empty-destination-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, empty-destination and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.5 N/07201.7 W>Test!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:empty-destination"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/position-empty-destination-then-latin-1-comment",
+      "description": "Two tolerated defects, empty-destination and then non-utf8-text: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4E3043414C4C3E3A2F3039323334357A343930332E35304E2F30373230312E3735573E54E97374"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Tést"},
+        "diagnostics": ["warning:empty-destination", "warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/position-empty-destination-then-trailing-cr",
+      "description": "Two tolerated defects, empty-destination and then trailing-line-break: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75W>Test\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:empty-destination", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/position-two-used-markers-then-day-32",
+      "description": "Two tolerated defects, multiple-used-markers and then invalid-timestamp: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/322345z4903.50N/07201.75W>Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:invalid-timestamp", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/position-two-used-markers-then-lower-case-n",
+      "description": "Two tolerated defects, multiple-used-markers and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50n/07201.75W>Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/position-two-used-markers-then-lower-case-w",
+      "description": "Two tolerated defects, multiple-used-markers and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75w>Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/position-two-used-markers-then-course-400",
+      "description": "Two tolerated defects, multiple-used-markers and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W>400/010Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "speed_knots": 10},
+        "diagnostics": ["warning:multiple-used-markers", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/position-two-used-markers-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, multiple-used-markers and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.5 N/07201.7 W>Test!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/position-two-used-markers-then-latin-1-comment",
+      "description": "Two tolerated defects, multiple-used-markers and then non-utf8-text: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030312C57494445312D312A2C57494445322D312A3A2F3039323334357A343930332E35304E2F30373230312E3735573E54E97374"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Tést"},
+        "diagnostics": ["warning:multiple-used-markers", "warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/position-two-used-markers-then-trailing-cr",
+      "description": "Two tolerated defects, multiple-used-markers and then trailing-line-break: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W>Test\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:multiple-used-markers", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/position-day-32-then-lower-case-n",
+      "description": "Two tolerated defects, invalid-timestamp and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50n/07201.75W>Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:invalid-timestamp", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/position-day-32-then-lower-case-w",
+      "description": "Two tolerated defects, invalid-timestamp and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75w>Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:invalid-timestamp", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/position-day-32-then-course-400",
+      "description": "Two tolerated defects, invalid-timestamp and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75W>400/010Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "speed_knots": 10},
+        "diagnostics": ["warning:invalid-timestamp", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/position-day-32-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, invalid-timestamp and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.5 N/07201.7 W>Test!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:invalid-timestamp"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/position-day-32-then-latin-1-comment",
+      "description": "Two tolerated defects, invalid-timestamp and then non-utf8-text: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030313A2F3332323334357A343930332E35304E2F30373230312E3735573E54E97374"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Tést"},
+        "diagnostics": ["warning:invalid-timestamp", "warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/position-trailing-cr-then-day-32",
+      "description": "Two tolerated defects, trailing-line-break and then invalid-timestamp: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75W>Test\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:invalid-timestamp", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/position-lower-case-n-then-course-400",
+      "description": "Two tolerated defects, lowercase-hemisphere and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50n/07201.75W>400/010Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "speed_knots": 10},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/position-lower-case-n-then-latin-1-comment",
+      "description": "Two tolerated defects, lowercase-hemisphere and then non-utf8-text: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030313A2F3039323334357A343930332E35306E2F30373230312E3735573E54E97374"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Tést"},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/position-trailing-cr-then-lower-case-n",
+      "description": "Two tolerated defects, trailing-line-break and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50n/07201.75W>Test\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/position-lower-case-w-then-course-400",
+      "description": "Two tolerated defects, lowercase-hemisphere and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75w>400/010Test"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "speed_knots": 10},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/position-lower-case-w-then-latin-1-comment",
+      "description": "Two tolerated defects, lowercase-hemisphere and then non-utf8-text: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030313A2F3039323334357A343930332E35304E2F30373230312E3735773E54E97374"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Tést"},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/position-trailing-cr-then-lower-case-w",
+      "description": "Two tolerated defects, trailing-line-break and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75w>Test\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test"},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/position-course-400-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, out-of-range-value and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by out-of-range-value, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.5 N/07201.7 W>400/010Test!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "speed_knots": 10, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"}
+    },
+    {
+      "id": "strict-order/position-course-400-then-latin-1-comment",
+      "description": "Two tolerated defects, out-of-range-value and then non-utf8-text: a lenient decoder reports both, and a strict one rejects the packet by out-of-range-value, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030313A2F3039323334357A343930332E35304E2F30373230312E3735573E3430302F30313054E97374"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Tést", "speed_knots": 10},
+        "diagnostics": ["warning:non-utf8-text", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"}
+    },
+    {
+      "id": "strict-order/position-trailing-cr-then-course-400",
+      "description": "Two tolerated defects, trailing-line-break and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W>400/010Test\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "speed_knots": 10},
+        "diagnostics": ["warning:out-of-range-value", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/position-dao-on-ambiguity-then-latin-1-comment",
+      "description": "Two tolerated defects, dao-with-ambiguity and then non-utf8-text: a lenient decoder reports both, and a strict one rejects the packet by dao-with-ambiguity, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030313A2F3039323334357A343930332E35204E2F30373230312E3720573E54E973742157313221"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Tést", "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:non-utf8-text"]
+      },
+      "strict": {"rejected_by": "dao-with-ambiguity"}
+    },
+    {
+      "id": "strict-order/position-trailing-cr-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, trailing-line-break and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.5 N/07201.7 W>Test!W12!\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Test", "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/position-trailing-cr-then-latin-1-comment",
+      "description": "Two tolerated defects, trailing-line-break and then non-utf8-text: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2_hex": "4E3043414C4C3E41505A3030313A2F3039323334357A343930332E35304E2F30373230312E3735573E54E973740D"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "comment": "Tést"},
+        "diagnostics": ["warning:non-utf8-text", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-two-used-markers",
+      "description": "Two tolerated defects, empty-destination and then multiple-used-markers: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W_220/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:empty-destination", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-day-32",
+      "description": "Two tolerated defects, empty-destination and then invalid-timestamp: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/322345z4903.50N/07201.75W_220/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:empty-destination", "warning:invalid-timestamp"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-lower-case-n",
+      "description": "Two tolerated defects, empty-destination and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50n/07201.75W_220/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:empty-destination", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-lower-case-w",
+      "description": "Two tolerated defects, empty-destination and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75w_220/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:empty-destination", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-wind-from-400",
+      "description": "Two tolerated defects, empty-destination and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75W_400/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:empty-destination", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-wind-as-fields",
+      "description": "Two tolerated defects, empty-destination and then wind-fields-instead-of-extension: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75W_c220s004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:empty-destination", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-gust-in-two-digits",
+      "description": "Two tolerated defects, empty-destination and then non-standard-weather-field-width: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75W_220/004g05t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:empty-destination", "warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-no-temperature",
+      "description": "Two tolerated defects, empty-destination and then incomplete-weather: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75W_220/004g005"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["warning:empty-destination", "warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, empty-destination and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.5 N/07201.7 W_220/004g005t077!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:empty-destination"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-text-after-weather",
+      "description": "Two tolerated defects, empty-destination and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75W_220/004g005t077 hello"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:empty-destination", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-empty-destination-then-trailing-cr",
+      "description": "Two tolerated defects, empty-destination and then trailing-line-break: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>:/092345z4903.50N/07201.75W_220/004g005t077\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:empty-destination", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "empty-destination", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-day-32",
+      "description": "Two tolerated defects, multiple-used-markers and then invalid-timestamp: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/322345z4903.50N/07201.75W_220/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:invalid-timestamp", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-lower-case-n",
+      "description": "Two tolerated defects, multiple-used-markers and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50n/07201.75W_220/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-lower-case-w",
+      "description": "Two tolerated defects, multiple-used-markers and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75w_220/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-wind-from-400",
+      "description": "Two tolerated defects, multiple-used-markers and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W_400/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:multiple-used-markers", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-wind-as-fields",
+      "description": "Two tolerated defects, multiple-used-markers and then wind-fields-instead-of-extension: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W_c220s004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:multiple-used-markers", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-gust-in-two-digits",
+      "description": "Two tolerated defects, multiple-used-markers and then non-standard-weather-field-width: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W_220/004g05t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:multiple-used-markers", "warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-no-temperature",
+      "description": "Two tolerated defects, multiple-used-markers and then incomplete-weather: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W_220/004g005"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["warning:incomplete-weather", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, multiple-used-markers and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.5 N/07201.7 W_220/004g005t077!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:multiple-used-markers"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-text-after-weather",
+      "description": "Two tolerated defects, multiple-used-markers and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W_220/004g005t077 hello"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:multiple-used-markers", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-two-used-markers-then-trailing-cr",
+      "description": "Two tolerated defects, multiple-used-markers and then trailing-line-break: a lenient decoder reports both, and a strict one rejects the packet by multiple-used-markers, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001,WIDE1-1*,WIDE2-1*:/092345z4903.50N/07201.75W_220/004g005t077\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:multiple-used-markers", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "multiple-used-markers", "header": true}
+    },
+    {
+      "id": "strict-order/weather-day-32-then-lower-case-n",
+      "description": "Two tolerated defects, invalid-timestamp and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50n/07201.75W_220/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:invalid-timestamp", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/weather-day-32-then-lower-case-w",
+      "description": "Two tolerated defects, invalid-timestamp and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75w_220/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:invalid-timestamp", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/weather-day-32-then-wind-from-400",
+      "description": "Two tolerated defects, invalid-timestamp and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75W_400/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:invalid-timestamp", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/weather-day-32-then-wind-as-fields",
+      "description": "Two tolerated defects, invalid-timestamp and then wind-fields-instead-of-extension: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75W_c220s004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:invalid-timestamp", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/weather-day-32-then-gust-in-two-digits",
+      "description": "Two tolerated defects, invalid-timestamp and then non-standard-weather-field-width: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75W_220/004g05t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:invalid-timestamp", "warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/weather-day-32-then-no-temperature",
+      "description": "Two tolerated defects, invalid-timestamp and then incomplete-weather: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75W_220/004g005"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["warning:incomplete-weather", "warning:invalid-timestamp"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/weather-day-32-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, invalid-timestamp and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.5 N/07201.7 W_220/004g005t077!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:invalid-timestamp"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/weather-day-32-then-text-after-weather",
+      "description": "Two tolerated defects, invalid-timestamp and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by invalid-timestamp, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75W_220/004g005t077 hello"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:invalid-timestamp", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "invalid-timestamp"}
+    },
+    {
+      "id": "strict-order/weather-trailing-cr-then-day-32",
+      "description": "Two tolerated defects, trailing-line-break and then invalid-timestamp: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/322345z4903.50N/07201.75W_220/004g005t077\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "322345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:invalid-timestamp", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-n-then-wind-from-400",
+      "description": "Two tolerated defects, lowercase-hemisphere and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50n/07201.75W_400/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-n-then-wind-as-fields",
+      "description": "Two tolerated defects, lowercase-hemisphere and then wind-fields-instead-of-extension: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50n/07201.75W_c220s004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-n-then-gust-in-two-digits",
+      "description": "Two tolerated defects, lowercase-hemisphere and then non-standard-weather-field-width: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50n/07201.75W_220/004g05t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-n-then-no-temperature",
+      "description": "Two tolerated defects, lowercase-hemisphere and then incomplete-weather: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50n/07201.75W_220/004g005"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["warning:incomplete-weather", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-n-then-text-after-weather",
+      "description": "Two tolerated defects, lowercase-hemisphere and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50n/07201.75W_220/004g005t077 hello"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-trailing-cr-then-lower-case-n",
+      "description": "Two tolerated defects, trailing-line-break and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50n/07201.75W_220/004g005t077\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-w-then-wind-from-400",
+      "description": "Two tolerated defects, lowercase-hemisphere and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75w_400/004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-w-then-wind-as-fields",
+      "description": "Two tolerated defects, lowercase-hemisphere and then wind-fields-instead-of-extension: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75w_c220s004g005t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-w-then-gust-in-two-digits",
+      "description": "Two tolerated defects, lowercase-hemisphere and then non-standard-weather-field-width: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75w_220/004g05t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-w-then-no-temperature",
+      "description": "Two tolerated defects, lowercase-hemisphere and then incomplete-weather: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75w_220/004g005"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["warning:incomplete-weather", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-lower-case-w-then-text-after-weather",
+      "description": "Two tolerated defects, lowercase-hemisphere and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by lowercase-hemisphere, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75w_220/004g005t077 hello"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "lowercase-hemisphere"}
+    },
+    {
+      "id": "strict-order/weather-trailing-cr-then-lower-case-w",
+      "description": "Two tolerated defects, trailing-line-break and then lowercase-hemisphere: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75w_220/004g005t077\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:lowercase-hemisphere", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/weather-wind-from-400-then-gust-in-two-digits",
+      "description": "Two tolerated defects, out-of-range-value and then non-standard-weather-field-width: a lenient decoder reports both, and a strict one rejects the packet by out-of-range-value, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_400/004g05t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:non-standard-weather-field-width", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"}
+    },
+    {
+      "id": "strict-order/weather-wind-from-400-then-no-temperature",
+      "description": "Two tolerated defects, out-of-range-value and then incomplete-weather: a lenient decoder reports both, and a strict one rejects the packet by out-of-range-value, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_400/004g005"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["warning:incomplete-weather", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"}
+    },
+    {
+      "id": "strict-order/weather-wind-from-400-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, out-of-range-value and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by out-of-range-value, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.5 N/07201.7 W_400/004g005t077!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:out-of-range-value"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"}
+    },
+    {
+      "id": "strict-order/weather-wind-from-400-then-text-after-weather",
+      "description": "Two tolerated defects, out-of-range-value and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by out-of-range-value, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_400/004g005t077 hello"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:out-of-range-value", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "out-of-range-value"}
+    },
+    {
+      "id": "strict-order/weather-trailing-cr-then-wind-from-400",
+      "description": "Two tolerated defects, trailing-line-break and then out-of-range-value: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_400/004g005t077\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:out-of-range-value", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/weather-wind-as-fields-then-gust-in-two-digits",
+      "description": "Two tolerated defects, wind-fields-instead-of-extension and then non-standard-weather-field-width: a lenient decoder reports both, and a strict one rejects the packet by wind-fields-instead-of-extension, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_c220s004g05t077"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:non-standard-weather-field-width", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "wind-fields-instead-of-extension"}
+    },
+    {
+      "id": "strict-order/weather-wind-as-fields-then-no-temperature",
+      "description": "Two tolerated defects, wind-fields-instead-of-extension and then incomplete-weather: a lenient decoder reports both, and a strict one rejects the packet by wind-fields-instead-of-extension, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_c220s004g005"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["warning:incomplete-weather", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "wind-fields-instead-of-extension"}
+    },
+    {
+      "id": "strict-order/weather-wind-as-fields-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, wind-fields-instead-of-extension and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by wind-fields-instead-of-extension, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.5 N/07201.7 W_c220s004g005t077!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "wind-fields-instead-of-extension"}
+    },
+    {
+      "id": "strict-order/weather-wind-as-fields-then-text-after-weather",
+      "description": "Two tolerated defects, wind-fields-instead-of-extension and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by wind-fields-instead-of-extension, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_c220s004g005t077 hello"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:weather-comment", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "wind-fields-instead-of-extension"}
+    },
+    {
+      "id": "strict-order/weather-trailing-cr-then-wind-as-fields",
+      "description": "Two tolerated defects, trailing-line-break and then wind-fields-instead-of-extension: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_c220s004g005t077\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:trailing-line-break", "warning:wind-fields-instead-of-extension"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/weather-gust-in-two-digits-then-no-temperature",
+      "description": "Two tolerated defects, non-standard-weather-field-width and then incomplete-weather: a lenient decoder reports both, and a strict one rejects the packet by non-standard-weather-field-width, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_220/004g05"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["warning:incomplete-weather", "warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "non-standard-weather-field-width"}
+    },
+    {
+      "id": "strict-order/weather-gust-in-two-digits-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, non-standard-weather-field-width and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by non-standard-weather-field-width, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.5 N/07201.7 W_220/004g05t077!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:non-standard-weather-field-width"]
+      },
+      "strict": {"rejected_by": "non-standard-weather-field-width"}
+    },
+    {
+      "id": "strict-order/weather-gust-in-two-digits-then-text-after-weather",
+      "description": "Two tolerated defects, non-standard-weather-field-width and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by non-standard-weather-field-width, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_220/004g05t077 hello"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:non-standard-weather-field-width", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "non-standard-weather-field-width"}
+    },
+    {
+      "id": "strict-order/weather-trailing-cr-then-gust-in-two-digits",
+      "description": "Two tolerated defects, trailing-line-break and then non-standard-weather-field-width: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_220/004g05t077\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}},
+        "diagnostics": ["warning:non-standard-weather-field-width", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/weather-no-temperature-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, incomplete-weather and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by incomplete-weather, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.5 N/07201.7 W_220/004g005!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:incomplete-weather"]
+      },
+      "strict": {"rejected_by": "incomplete-weather"}
+    },
+    {
+      "id": "strict-order/weather-no-temperature-then-text-after-weather",
+      "description": "Two tolerated defects, incomplete-weather and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by incomplete-weather, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_220/004g005 hello"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}, "comment": "hello"},
+        "diagnostics": ["warning:incomplete-weather", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "incomplete-weather"}
+    },
+    {
+      "id": "strict-order/weather-trailing-cr-then-no-temperature",
+      "description": "Two tolerated defects, trailing-line-break and then incomplete-weather: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_220/004g005\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5}},
+        "diagnostics": ["warning:incomplete-weather", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/weather-dao-on-ambiguity-then-text-after-weather",
+      "description": "Two tolerated defects, dao-with-ambiguity and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by dao-with-ambiguity, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.5 N/07201.7 W_220/004g005t077 hello!W12!"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "hello"},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "dao-with-ambiguity"}
+    },
+    {
+      "id": "strict-order/weather-trailing-cr-then-dao-on-ambiguity",
+      "description": "Two tolerated defects, trailing-line-break and then dao-with-ambiguity: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.5 N/07201.7 W_220/004g005t077!W12!\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05916666666667, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "ambiguity": 1, "dao": {"datum": "W", "precision": "thousandths"}},
+        "diagnostics": ["warning:dao-with-ambiguity", "warning:trailing-line-break"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    },
+    {
+      "id": "strict-order/weather-trailing-cr-then-text-after-weather",
+      "description": "Two tolerated defects, trailing-line-break and then weather-comment: a lenient decoder reports both, and a strict one rejects the packet by trailing-line-break, which it meets first.",
+      "source": "README The order of checks (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APZ001:/092345z4903.50N/07201.75W_220/004g005t077 hello\r"},
+      "expect": {
+        "data": {"type": "position", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "hello"},
+        "diagnostics": ["warning:trailing-line-break", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "trailing-line-break"}
+    }
+  ]
+}
