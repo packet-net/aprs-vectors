@@ -2008,6 +2008,63 @@
         "refused": true,
         "refusal": "invalid-third-party-header"
       }
+    },
+    {
+      "id": "encode/compressed-gga-weather-altitude-far-below-1-foot",
+      "description": "A compressed GGA weather report with an altitude of -99999.4 feet: the cs bytes carry 1 foot for any altitude of 1 foot or less, and a weather report has no comment for a /A=, so the nearest cs value alone is written (`!!`).",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_f": 81, "humidity_percent": 49}, "altitude_feet": -99999.4}},
+      "expect": {
+        "info": "!/8Ph1N.a/_!!Qg...t081h49"
+      }
+    },
+    {
+      "id": "encode/compressed-gga-weather-altitude-under-1-foot",
+      "description": "A compressed GGA weather report with an altitude of 0.4 feet: written as the nearest cs value, 1 foot.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["re-encoding-into-compressed-bytes-rounds"],
+      "input": {"encode": {"type": "position", "latitude": 43.46125756708652, "longitude": -1.36065272520122, "symbol": "/_", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "weather": {"temperature_f": 81, "humidity_percent": 49}, "altitude_feet": 0.4}},
+      "expect": {
+        "info": "!/8Ph1N.a/_!!Qg...t081h49"
+      }
+    },
+    {
+      "id": "encode/third-party-inner-header-with-a-tolerated-defect",
+      "description": "A third-party packet whose inner packet carries the warning its header gave (two used markers): the defect is part of the data, so no clean form writes it: invalid-third-party-header.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["third-party-header-addresses"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ", "path": ["WIDE1-1*", "WIDE2-1*"], "data": {"type": "status", "text": "x"}, "diagnostics": ["warning:multiple-used-markers"]}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-third-party-header"
+      }
+    },
+    {
+      "id": "encode/third-party-two-used-path-entries-without-the-warning",
+      "description": "The same third-party header given without the warning is data with two used entries, which TNC2 writes with one marker on the last: written, as it reads back the same.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["third-party-header-addresses"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ", "path": ["WIDE1-1*", "WIDE2-1*"], "data": {"type": "status", "text": "x"}}}},
+      "expect": {
+        "info": "}N0CALL>APZ,WIDE1-1,WIDE2-1*:>x"
+      }
+    },
+    {
+      "id": "encode/gga-weather-on-a-non-weather-symbol-with-wind",
+      "description": "Wind beside a GGA altitude in the cs bytes (extension-conflict) on a symbol that is not the weather station (symbol-mismatch): extension-conflict, which the order puts first.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 45.88342880244457, "longitude": 10.178323348891922, "symbol": "/j", "compressed": true, "compression": {"fix": "current", "source": "gga", "origin": "compressed"}, "altitude_feet": 836.5388541992596, "weather": {"temperature_f": -99, "wind_speed_mph": 999}}},
+      "expect": {
+        "refused": true,
+        "refusal": "extension-conflict"
+      }
     }
   ]
 }
