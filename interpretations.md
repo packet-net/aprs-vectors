@@ -360,6 +360,14 @@ Snowfall has three forms (the README's Encoding rule): it is rounded to hundredt
 
 **Decision:** these four fields only are read as empty text when absent: an object or item with no name is `invalid-name`, a message or other addressed report with no addressee `invalid-addressee`, a query or directed query with no type `invalid-code` (an empty type is not upper-case letters), and a positioned report with no symbol `invalid-symbol`. Every other required field left out stays `missing-field`, as codes.json and the cases already give it: an object's timestamp, a telemetry report's bits, a capability, and a field needed only because another is there (a status symbol beside a locator, a message ID beside a reply-ack). A library whose own data cannot hold the record writes `unsupported` in its dump, and the record is not compared.
 
+## A `/A=` altitude wins over a Mic-E or compressed one
+
+- APRS12c ch. 6: an altitude "may be anywhere in the comment", as `/A=` and six digits of feet. Ch. 10 gives Mic-E its own altitude, three base-91 characters and `}` in metres, and ch. 9 lets a compressed position's cs bytes hold one from a GGA sentence, in steps of 0.2 percent.
+- A packet can hold two. direwolf reads the Mic-E or compressed altitude first and then sets the altitude again from a `/A=` in the comment; FAP's Mic-E reader does not look for `/A=` at all.
+- In two APRS-IS captures the only Mic-E packets with both are corrupt ones (several packets run together).
+
+**Decision:** when a report holds a `/A=` altitude as well as a Mic-E or compressed one, the `/A=` is the altitude, wherever it is in the text, as direwolf has it. It is the form every kind of report shares and the only one that is exact in feet, and one rule for every report is simpler to check than an order that depends on where each was found. The data form has one altitude, so the other is not reported; an encoder writes the `/A=`.
+
 ## Where these decisions and Ham::APRS::FAP differ
 
 Found by comparing Packet.Aprs with FAP on the same 33,000 APRS-IS packets (see [aprs-cs's validation notes](https://github.com/packet-net/aprs-cs/blob/main/docs/aprs-validation.md#5-against-hamaprsfap)):
@@ -374,6 +382,10 @@ Found by comparing Packet.Aprs with FAP on the same 33,000 APRS-IS packets (see 
 | PHGR with rate `0` (`PHG01000/`) | accepted | plain PHG; `0/` stays in the comment | the rate is 1-9 then A-Z |
 | Mic-E comment | keeps device prefix and suffix | lifts them into `type_code` / `device_suffix` | APRS12c §10 says applications should remove them |
 | voice frequency | stays in the comment | lifted into `frequency` | APRS12c §18 |
+| a weather symbol with fields that do not start `DDD/SSS`, `c...s...` or `g...t...` | no weather | weather, fields read as a run | the weather station symbol makes the report a weather report (README, Weather) |
+| `/A=` in a Mic-E status text | not read; only the Mic-E altitude bytes | the altitude, ahead of the Mic-E bytes | [above](#a-a-altitude-wins-over-a-mic-e-or-compressed-one) |
+| `000/000` straight after a compressed position | a course and speed, replacing the cs bytes | comment text, unless the report is weather | a compressed position has no `DDD/SSS` extension (APRS12c ch. 9) |
+| a first byte of `,` and a `!` position later in the field | the position | test data | `,` is a data type identifier of its own (APRS12c ch. 5) |
 
 ## Errata in APRS12c's own examples
 
