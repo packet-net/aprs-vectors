@@ -57,6 +57,11 @@
       "tolerable": true
     },
     {
+      "id": "control-character-in-text",
+      "meaning": "Text holds a byte below 0x20 or the byte 0x7F (a TAB, or a CR or LF inside the text, included); one per text, which is kept as sent (APRS12c gives text as printable characters).",
+      "tolerable": true
+    },
+    {
       "id": "truncated",
       "meaning": "The information field is shorter than its format requires.",
       "tolerable": false
@@ -320,6 +325,11 @@
       "id": "free-text-capabilities",
       "meaning": "A < station capabilities packet holds free text rather than TOKEN / TOKEN=VALUE items: a token that is empty or holds a space or a control character, or a value that holds a control character (APRS12c ch. 15).",
       "tolerable": true
+    },
+    {
+      "id": "implementation-limit",
+      "meaning": "The packet needs more than the implementation's fixed capacity holds (an information field, path entries, capabilities, extra weather fields); only an implementation with such a capacity gives it, as a header error or with the data unrecognized, and never reads the packet differently instead.",
+      "tolerable": false
     }
   ],
   "refusals": [
@@ -357,7 +367,7 @@
     },
     {
       "id": "too-long",
-      "meaning": "Free text or a list is longer than its field allows: message text over 67 characters, a project title over 23, more than 13 names, more than 5 analog values."
+      "meaning": "Free text or a list is longer than its field allows (message text over 67 characters, a project title over 23, more than 13 names, more than 5 analog values), or the information field as written is over 256 bytes (APRS12c ch. 3)."
     },
     {
       "id": "malformed",
@@ -365,7 +375,7 @@
     },
     {
       "id": "invalid-character",
-      "meaning": "Free text holds a character its field cannot carry: a line break (or a field that would end in CR or LF), a `{` in message-like text, or a character outside printable ASCII where only that is allowed."
+      "meaning": "Free text holds a character its field cannot carry: a control character (a byte below 0x20, a line break included, or 0x7F), a `{` in message-like text, or a character outside printable ASCII where only that is allowed."
     },
     {
       "id": "text-reads-as-field",
