@@ -264,6 +264,8 @@ def main():
     for spec in args.limits:
         who, _, path = spec.partition("=")
         who = names[int(who) - 1] if who.isdigit() else who
+        if who not in names:
+            sys.exit(f"--limits: no dump is named {who!r} (names: {', '.join(names)})")
         with open(path, encoding="utf-8") as f:
             limits[who] = json.load(f)
     by_limit = Counter()
