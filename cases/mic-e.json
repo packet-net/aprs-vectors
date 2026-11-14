@@ -1079,6 +1079,53 @@
       "strict": {"data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 40.297271062271065, "longitude": -74.05664285714286, "symbol": "/v", "course_degrees": 133, "speed_knots": 6, "altitude_feet": 62.33595800524934, "dao": {"datum": "W", "precision": "base91"}, "comment": "PHG5132"}, "diagnostics": ["info:mic-e-missing-device-type"]},
       "reencode": "equivalent",
       "canonical_info": "`f[Cl]=v/\"4*}PHG5132!wZo!"
+    },
+    {
+      "id": "mic-e/lower-case-locator-missing-its-space",
+      "description": "A lower-case locator with no space before the comment reads as IO91 with missing-space-after-locator; an encoder writes it in upper case with the space, and the comment X after a / so that it does not read as a locator's symbol.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`Io91/GX"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "X"},
+        "diagnostics": ["warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`IO91/G /X"
+    },
+    {
+      "id": "mic-e/comment-starting-with-a-space-after-a-phg",
+      "description": "After a Mic-E PHG, one of two leading spaces is dropped and the comment keeps the other; an encoder writes a / before a comment that starts with a space, so it reads back as itself.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "N0CALL>SUSPU4:'C=?] \u001c#S]IO91/GPHG3330  W_c220s004g024PH}#SlW1="},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "SUSPU4"},
+        "data": {"type": "mic-e", "mic_e_message": "off-duty", "old_data": true, "type_code": "]", "device_suffix": "=", "locator": "IO91", "latitude": 35.509, "longitude": 139.55583333333334, "symbol": "S#", "speed_knots": 650, "altitude_feet": 497555.7742782152, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": " W_c220s004g02#SlW1"},
+        "diagnostics": ["warning:missing-space-after-locator", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "'C=?] \u001c#S]4PH}IO91/G PHG3330/ W_c220s004g02#SlW1="
+    },
+    {
+      "id": "mic-e/locator-then-telemetry-then-a-spaced-comment",
+      "description": "Base-91 telemetry is lifted before the locator is read, so the comment after it follows the locator's space: no missing-space-after-locator, and a strict decoder accepts it.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G|!:&0'p| DG2MM"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "DG2MM"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`IO91/G DG2MM|!:&0'p|"
     }
   ]
 }
