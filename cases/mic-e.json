@@ -1016,6 +1016,22 @@
       "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "type_code": ">", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "IO9\"4-}1SX/G Hellowor!d"}},
       "reencode": "equivalent",
       "canonical_info": "`(_fn\"Oj/>\"4-}/IO91SX/G Hellowor!d"
+    },
+    {
+      "id": "mic-e/altitude-with-no-form-before-a-type-code",
+      "description": "A later Mic-E altitude of 231,913 metres, which no /A= holds exactly, written with no type code would start with >, which reads back as one: it has no form, value-has-no-form.",
+      "source": "differential fuzzing 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
+      "input": {"tnc2": "N1OPS-7>S8UW0Q:`i4|l54o\\4o\\>4W}&"},
+      "expect": {
+        "header": {"source": "N1OPS-7", "destination": "S8UW0Q"},
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 38.95016666666667, "longitude": -77.416, "symbol": "\\o", "course_degrees": 124, "speed_knots": 2, "altitude_feet": 760931.7585301837, "comment": "4o\\&"},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 38.95016666666667, "longitude": -77.416, "symbol": "\\o", "course_degrees": 124, "speed_knots": 2, "comment": "4o\\>4W}&"}, "diagnostics": ["info:mic-e-missing-device-type"]},
+      "reencode": "refused",
+      "reencode_refusal": "value-has-no-form"
     }
   ]
 }

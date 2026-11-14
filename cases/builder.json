@@ -1,0 +1,51 @@
+{
+  "cases": [
+    {
+      "id": "build/invalid-name-before-invalid-symbol-and-missing-field",
+      "description": "A builder given an object name of 11 characters, no symbol and no timestamp names invalid-name, first of the three in the Refusal reasons order.",
+      "source": "differential run 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets", "builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "object", "args": {"name": "TOOLONGNAME", "latitude": -49.58, "longitude": -27.17, "altitude_m": 1443.5}}},
+      "expect": {
+        "refused": true,
+        "refusal": "invalid-name"
+      }
+    },
+    {
+      "id": "build/value-has-no-form-before-missing-field",
+      "description": "A builder given a positionless weather report with a humidity of 0 and no timestamp names value-has-no-form, which comes before missing-field.",
+      "source": "differential run 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets", "builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "weather", "args": {"humidity_percent": 0, "temperature_c": 0}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
+      "id": "build/status-symbol-without-a-locator",
+      "description": "A status builder given a symbol and no locator refuses it as missing-field rather than build without the symbol.",
+      "source": "differential run 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "status", "args": {"text": "Net Control Center", "symbol": "/>"}}},
+      "expect": {
+        "refused": true,
+        "refusal": "missing-field"
+      }
+    },
+    {
+      "id": "build/telemetry-with-no-analog-values-or-bits",
+      "description": "A telemetry builder given a sequence only writes five empty channels and the bits 00000000.",
+      "source": "differential run 2026-11-14",
+      "authority": "interpretation",
+      "interpretations": ["builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "telemetry", "args": {"sequence": 1}}},
+      "expect": {
+        "tnc2": "N0CALL>APZ001:T#001,,,,,,00000000"
+      }
+    }
+  ]
+}
