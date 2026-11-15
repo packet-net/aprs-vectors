@@ -2429,6 +2429,17 @@
         "info": "`@Ikl+j/`IO91/G 145.500MHz toff +000 /X",
         "destination": "U95U3Q"
       }
+    },
+    {
+      "id": "encode/text-after-a-frequency-and-a-signpost-takes-its-space",
+      "description": "Free text after a frequency and braces is written after a space even when it looks like a tone: the braces cut it off from the frequency.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["where-a-voice-frequency-goes", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"encode": {"type": "item", "name": "147.345+", "latitude": 51.5565, "longitude": -112.337, "symbol": "\\m", "phg": {"power": 4, "height": 4, "gain": 8, "directivity": 0}, "frequency": {"mhz": 147.345}, "comment": "C107", "signpost": "5"}},
+      "expect": {
+        "info": ")147.345+!5133.39N\\11220.22WmPHG4480/147.345MHz{5} C107"
+      }
     }
   ]
 }

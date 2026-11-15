@@ -501,6 +501,46 @@
       "strict": "same",
       "reencode": "refused",
       "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "object/text-after-a-frequency-and-a-signpost-takes-its-space",
+      "description": "Braces cut a frequency off from what follows, so text after them that looks like an offset is written after a space, as free text after a frequency is: re-encodes identical.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "where-a-voice-frequency-goes"],
+      "input": {"info": ";SIGN     *092345z4903.50N\\07201.75Wm146.520MHz{55} -060"},
+      "expect": {
+        "data": {"type": "object", "name": "SIGN", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "frequency": {"mhz": 146.52}, "signpost": "55", "comment": "-060"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "object/text-after-a-tone-and-a-signpost-takes-no-slash",
+      "description": "Text that looks like a range after a frequency's tone and braces needs no /: the braces already cut it off from the frequency, so a delimiter is not needed and is not written.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "where-a-voice-frequency-goes"],
+      "input": {"info": ";SIGN     *092345z4903.50N\\07201.75Wm146.520MHz T100{55} R25m x"},
+      "expect": {
+        "data": {"type": "object", "name": "SIGN", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "signpost": "55", "comment": "R25m x"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "object/tone-after-a-space-and-a-signpost-is-text",
+      "description": "Braces between a frequency's space and its tone cut them off, so T100 is comment text, written back after the braces and a space.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "where-a-voice-frequency-goes"],
+      "input": {"info": ";SIGN     *092345z4903.50N\\07201.75Wm146.520MHz {55}T100 x"},
+      "expect": {
+        "data": {"type": "object", "name": "SIGN", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "\\m", "frequency": {"mhz": 146.52}, "signpost": "55", "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": ";SIGN     *092345z4903.50N\\07201.75Wm146.520MHz{55} T100 x"
     }
   ]
 }

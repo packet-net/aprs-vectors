@@ -1144,6 +1144,215 @@
       "strict": "same",
       "reencode": "equivalent",
       "canonical_info": "!4903.50N/07201.75W>146.520MHzT100 x|!!!!|"
+    },
+    {
+      "id": "position/tone-after-a-space-and-a-dao-is-text",
+      "description": "A !DAO! between a frequency's space and its tone cuts them off: a field's space and value stand together as sent, and only a /A= may stand before the space, so T100 is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz !W12!T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHzT100 x!W12!"
+    },
+    {
+      "id": "position/tone-after-a-space-and-telemetry-is-text",
+      "description": "Base-91 telemetry between a frequency's space and its tone cuts them off, so T100 is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz |!!!!|T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHzT100 x|!!!!|"
+    },
+    {
+      "id": "position/offset-after-a-space-and-a-dao-is-text",
+      "description": "A !DAO! between an offset's space and its value cuts the offset off the tone before it, so -060 is comment text, written back after a space and a /.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T100 !W12!-060 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "-060 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100 /-060 x!W12!"
+    },
+    {
+      "id": "position/tone-after-an-altitude-with-its-space-before-the-altitude-is-text",
+      "description": "A field's space and value stand together as sent: with the space before the /A= and T100 straight after it, the /A= stands inside the field ( T100) and splits it, so T100 is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz /A=000100T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz/A=000100T100 x"
+    },
+    {
+      "id": "position/offset-after-an-altitude-with-its-space-before-the-altitude-is-text",
+      "description": "The tone is complete at the space; the offset's value follows a /A= whose space came before it, so -060 is comment text, written back straight after the /A=.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "where-a-voice-frequency-goes"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T100 /A=000100-060 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "-060 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100/A=000100-060 x"
+    },
+    {
+      "id": "position/spaces-either-side-of-an-altitude-after-a-frequency",
+      "description": "A space before and after a /A= put two bytes between the frequency and the tone, so the tone does not follow the frequency and is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz /A=000100 T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz/A=000100T100 x"
+    },
+    {
+      "id": "position/frequency-after-a-slash-and-telemetry",
+      "description": "The comment's one leading / and the start of the text are judged on the text left, so a frequency after a / and lifted telemetry is at the start.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W>/|!!!!|146.520MHz T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100 x|!!!!|"
+    },
+    {
+      "id": "position/text-reading-as-an-offset-after-a-tone-and-an-altitude",
+      "description": "Text that would read as an offset, after a tone and a /A=, is written straight after the /A=: it reads back as itself with no delimiter, so none is written and the report re-encodes identical.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "where-a-voice-frequency-goes"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T100/A=000100-060 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "-060 x"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/leading-space-before-telemetry",
+      "description": "The comment's leading space is judged on the text left, so a space, telemetry and x give the comment x.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W> |!!!!|x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>x|!!!!|"
+    },
+    {
+      "id": "position/phg-rate-split-by-a-dao-is-text",
+      "description": "PHG2360 stands whole and is a PHG; its rate byte and / are split by a !DAO!, so they are not a PHGR and are comment text, written back after a / so they are not read as one.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W#PHG23605!W12!/x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/#", "phg": {"power": 2, "height": 3, "gain": 6, "directivity": 0}, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "5/x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W#PHG2360/5/x!W12!"
+    },
+    {
+      "id": "position/phg-rate-after-an-altitude-is-text",
+      "description": "A /A= between a PHG and a rate byte and / splits the PHGR: the PHG is read and 5/x is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W#PHG2360/A=0001005/x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "altitude_feet": 100, "phg": {"power": 2, "height": 3, "gain": 6, "directivity": 0}, "comment": "5/x"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/second-altitude-is-text",
+      "description": "Only the first /A= that stands whole is the altitude; a second is comment text, and its / is dropped as the comment's leading delimiter.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W>/A=000100/A=000200"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "comment": "A=000200"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>/A=000100A=000200"
+    },
+    {
+      "id": "position/whole-altitude-after-one-split-by-a-dao",
+      "description": "A /A= split by a !DAO! is not one, so the first whole /A= later in the text is the altitude and the split one is comment text, written after the altitude.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>x/A=0001!W12!00 /A=000200 y"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "altitude_feet": 200, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "x/A=000100  y"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>/A=000200x/A=000100  y!W12!"
+    },
+    {
+      "id": "position/second-altitude-after-a-space-is-text",
+      "description": "A second /A= after a space is comment text; the space is the dropped delimiter, so the comment starts with / and is written back after a /.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W>/A=000100 /A=000200"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "comment": "/A=000200"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>/A=000100//A=000200"
+    },
+    {
+      "id": "position/tone-after-a-space-and-a-late-range-is-text",
+      "description": "A late RNG lifted between a frequency's space and its tone cuts them off, so T100 is comment text, written back straight after the frequency; strict leaves the RNG in the text, where it is no field either.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "a-late-data-extension-is-the-first-well-formed-one"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz RNG0050T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "range_miles": 50, "frequency": {"mhz": 146.52}, "comment": "T100 x"},
+        "diagnostics": ["warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "frequency": {"mhz": 146.52}, "comment": "RNG0050T100 x"}},
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>RNG0050/146.520MHzT100 x"
     }
   ]
 }

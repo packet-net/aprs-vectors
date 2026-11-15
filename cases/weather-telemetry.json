@@ -1036,6 +1036,20 @@
       "strict": {"rejected_by": "weather-comment"},
       "reencode": "refused",
       "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/software-and-unit-after-a-dao",
+      "description": "The software type and unit are judged on what is left once the !DAO! is lifted: xRSW stands whole, so it is the software type and unit.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W_090/005g010t058!W12!xRSW"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/_", "dao": {"datum": "W", "precision": "thousandths"}, "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 58, "software": "x", "unit": "RSW"}}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W_090/005g010t058xRSW!W12!"
     }
   ]
 }
