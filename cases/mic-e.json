@@ -1817,6 +1817,22 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "mic-e/comment-that-would-start-a-phg-after-the-altitude-takes-a-slash",
+      "description": "Status text /\"4e}PHG1|146.520MHz!!|: the later altitude and the telemetry |146.520MHz!!| are lifted and the comment is PHG1. Written back after the altitude bytes, PHG1|14 would read as a PHG with height code | and take the telemetry's first |, so the comment is written after a /.",
+      "source": "differential fuzzing 2026-11-15 (round 5 last run)",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj3/\"4e}PHG1|146.520MHz!!|"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "3j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "telemetry": {"sequence": 1475, "analog": [1924, 1837, 1409, 3638, 0]}, "comment": "PHG1"},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "3j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 1475, "analog": [1924, 1837, 1409, 3638, 0]}, "comment": "\"4e}PHG1"}, "diagnostics": ["info:mic-e-missing-device-type"]},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj3\"4e}/PHG1|146.520MHz!!|"
     }
   ]
 }
