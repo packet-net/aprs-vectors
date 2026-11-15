@@ -565,6 +565,22 @@
       "strict": "same",
       "reencode": "equivalent",
       "canonical_info": "=/:y_LUH-=>>d1/A=000223/ [4S] Radyo Amatorlerine 73-88"
+    },
+    {
+      "id": "differential/garbled-timestamp-before-an-uncompressed-position",
+      "description": "A weather station whose timestamp has R for a digit: an uncompressed position follows the seven bytes, so it is read there (as FAP and direwolf read it), not as the compressed position R30549z2831.0 straight after the DTI.",
+      "source": "APRS-IS 2026-11-14",
+      "authority": "observed",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"tnc2": "MC2BRB-1>APRS,WC4PEM-14,WC4PEM-4,WIDE2*,qAR,N4TDX:@R30549z2831.07N/08142.92W_015/001g006t058r000p000P000h-5b10170.DsVP"},
+      "expect": {
+        "header": {"source": "MC2BRB-1", "destination": "APRS", "path": ["WC4PEM-14*", "WC4PEM-4*", "WIDE2*", "qAR", "N4TDX"], "q_construct": {"construct": "qAR", "station": "N4TDX"}},
+        "data": {"type": "position", "messaging": true, "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0}, "comment": "h-5b10170.DsVP"},
+        "diagnostics": ["warning:malformed-timestamp", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     }
   ]
 }

@@ -855,6 +855,126 @@
       "strict": {"rejected_by": "control-character-in-text"},
       "reencode": "refused",
       "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "position/garbled-timestamp-before-an-uncompressed-position",
+      "description": "Seven bytes ending in z, the first a letter where a digit belongs, then an uncompressed position: the timestamp is garbled and the position is read after it, although R30549z2831.0 would read as a compressed position straight after the DTI.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549z2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-timestamp-before-an-uncompressed-position-without-messaging",
+      "description": "The same with the DTI /: the position after the seven bytes, and the report re-encodes with !.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "/R30549z2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "!2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-local-timestamp-before-an-uncompressed-position",
+      "description": "Seven bytes ending in / (local time), the first a letter, then an uncompressed position: read after the seven bytes.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549/2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-hms-timestamp-before-an-uncompressed-position",
+      "description": "Seven bytes ending in h (hours, minutes, seconds), the first a letter, then an uncompressed position: read after the seven bytes.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549h2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/compressed-without-timestamp-seventh-byte-z",
+      "description": "A compressed position straight after the DTI whose seventh byte is z, with no uncompressed position after the seven bytes: it stays the compressed position, with malformed-timestamp for the missing timestamp as before.",
+      "source": "APRS12c ch. 6, ch. 9",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@/5L!!<ze7>7P["},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -69.27174306820747, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88, "speed_knots": 36.23201216883807},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=/5L!!<ze7>7P["
+    },
+    {
+      "id": "position/garbled-timestamp-before-a-compressed-position",
+      "description": "Seven bytes ending in z, then a compressed position, where the bytes straight after the DTI also read as one: a compressed position is weak evidence, so the reading straight after the DTI stands.",
+      "source": "APRS12c ch. 6, ch. 9",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549z/5L!!<*e7>7P["},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 54.06038968198548, "longitude": -81.1671190729958, "symbol": "RL", "compressed": true, "compression": {"fix": "old", "source": "rmc", "origin": "reserved3"}, "course_degrees": 360, "speed_knots": 0, "comment": "*e7>7P["},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=R30549z/5L!!<*e7>7P["
+    },
+    {
+      "id": "position/seven-bytes-not-ending-in-a-time-indicator-before-an-uncompressed-position",
+      "description": "Seven bytes ending in x, not z, / or h, then an uncompressed position: they do not look like a timestamp, so the compressed position straight after the DTI is read, as before.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549x2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 54.06038968198548, "longitude": -81.25262649438474, "symbol": "R3", "compressed": true, "compression": {"fix": "old", "source": "gll", "origin": "digipeater-conversion"}, "course_degrees": 64, "speed_knots": 1.719623726164499, "comment": "7N/08142.92W_015/001g006t058"},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=R30549x2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-timestamp-before-a-position-that-does-not-decode",
+      "description": "Seven bytes ending in z, then what would be an uncompressed position but for its longitude hemisphere X: no uncompressed position follows, so the compressed position straight after the DTI is read, as before.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549z2831.07N/08142.92X_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 54.06038968198548, "longitude": -81.1656699726456, "symbol": "R3", "compressed": true, "compression": {"fix": "old", "source": "gll", "origin": "digipeater-conversion"}, "course_degrees": 64, "speed_knots": 1.719623726164499, "comment": "7N/08142.92X_015/001g006t058"},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=R30549z2831.07N/08142.92X_015/001g006t058"
     }
   ]
 }

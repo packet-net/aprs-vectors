@@ -4,7 +4,8 @@
 Reads seed packets (a capture's lines file, one hex-encoded TNC2 line per line, and the inputs of
 every case here), and writes variants of them in the same form: cut short, bytes changed to ones
 APRS gives meaning to, fields spliced in from other packets, numbers pushed to their limits, the
-data type changed, letters' case flipped. Run each implementation's dump over the result and
+data type changed, letters' case flipped, one byte of a position report's or object's timestamp
+damaged (a digit to a letter or punctuation, the time indicator to another character). Run each implementation's dump over the result and
 compare them with compare.py; every disagreement is a rule the cases do not pin yet.
 
     python3 tools/mutate.py lines.hex.gz fuzz.hex.gz --seeds 50000 --count 2000000 --seed 1
@@ -34,6 +35,22 @@ SIGNIFICANT = (
 DTIS = b"!=/@;)`':>T_#*$<?{}%,&+.[_"
 BOUNDARIES = [b"0", b"00", b"000", b"9", b"99", b"999", b"360", b"361", b"90", b"91", b"180", b"181", b"59", b"60", b"100", b"1000", b"8280", b"8281", b"255", b"256", b"12", b"13", b"24", b"31", b"32"]
 DIGITS = re.compile(rb"[0-9]+")
+TIMESTAMP = re.compile(rb"[0-9]{6}[zh/]")
+# What a damaged timestamp digit or time indicator becomes: a letter (a symbol table character for a
+# compressed position, often) or punctuation.
+NOT_A_DIGIT = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/\\._-: *#!"
+NOT_AN_INDICATOR = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgijklmnopqrstuvwxy\\._-: *#!"
+
+
+def timestamp_at(info):
+    """Where a position report's or object's timestamp starts, or None when it has none."""
+    if info[:1] in (b"/", b"@"):
+        at = 1
+    elif info[:1] == b";" and len(info) > 10 and info[10:11] in (b"*", b"_"):
+        at = 11
+    else:
+        return None
+    return at if TIMESTAMP.fullmatch(info, at, at + 7) else None
 
 
 def seeds_from_cases():
@@ -81,7 +98,7 @@ def mutate(line, seeds, rng):
     head, info = split(line)
     info = bytearray(info)
     for _ in range(rng.choice((1, 1, 1, 2, 2, 3))):
-        op = rng.randrange(10)
+        op = rng.randrange(11)
         n = len(info)
         if op == 0 and n > 1:  # cut short
             del info[rng.randrange(1, n) :]
@@ -116,6 +133,11 @@ def mutate(line, seeds, rng):
         elif op == 9 and n > 2:  # swap two bytes
             i, j = rng.randrange(n), rng.randrange(n)
             info[i], info[j] = info[j], info[i]
+        elif op == 10:  # damage one byte of a position report's or object's timestamp
+            at = timestamp_at(info)
+            if at is not None:
+                i = at + rng.randrange(7)
+                info[i] = rng.choice(NOT_AN_INDICATOR if i == at + 6 else NOT_A_DIGIT)
     return head + bytes(info)
 
 
