@@ -12077,7 +12077,7 @@
       "input": {"tnc2": "KN6PHW>S4QURW,K6ERN*,W6SCE-10,qAR,KK6CKK-1:`/* l 7>/'\"44}|(0%<(,|!w$U!|3ÀÀ\u0000†¢@@@@`–l˜†š@z®l¦†Š@ô®’ˆŠd@c\u0003ðk6lcm.com"},
       "expect": {
         "header": {"source": "KN6PHW", "destination": "S4QURW", "path": ["K6ERN*", "W6SCE-10", "qAR", "KK6CKK-1"], "q_construct": {"construct": "qAR", "station": "KK6CKK-1"}},
-        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 34.254505494505494, "longitude": -119.23409523809524, "symbol": "/>", "course_degrees": 27, "speed_knots": 0, "altitude_feet": 95.14435695538057, "dao": {"datum": "W", "precision": "base91"}, "comment": "|(0%<(,||3ÀÀ\u0000†¢@@@@`–l˜†š@z®l¦†Š@ô®’ˆŠd@c\u0003ðk6lcm.com"},
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 34.254505494505494, "longitude": -119.23409523809524, "symbol": "/>", "course_degrees": 27, "speed_knots": 0, "altitude_feet": 95.14435695538057, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 652, "analog": [391, 648]}, "comment": "|3ÀÀ\u0000†¢@@@@`–l˜†š@z®l¦†Š@ô®’ˆŠd@c\u0003ðk6lcm.com"},
         "diagnostics": ["warning:control-character-in-text"]
       },
       "strict": {"rejected_by": "control-character-in-text"},
@@ -14335,7 +14335,7 @@
       "input": {"tnc2": "KJ0SHL>S4QURT,W6DPM-15*,WIDE1,W6SCE-10,qAR,KK6CKK-1:`.?{l#9k/'\"7.}|%6%O(-|!wXe!|3ÀÀ\u0000‚ ¨fbh`–”`¦˜à®lˆ š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð>Mobile Micro-Trak RTG"},
       "expect": {
         "header": {"source": "KJ0SHL", "destination": "S4QURT", "path": ["W6DPM-15*", "WIDE1", "W6SCE-10", "qAR", "KK6CKK-1"], "q_construct": {"construct": "qAR", "station": "KK6CKK-1"}},
-        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 34.25410073260073, "longitude": -118.5992912087912, "symbol": "/k", "course_degrees": 329, "speed_knots": 0, "altitude_feet": 971.1286089238844, "dao": {"datum": "W", "precision": "base91"}, "comment": "|%6%O(-||3ÀÀ\u0000‚ ¨fbh`–”`¦˜à®lˆ š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð>Mobile Micro-Trak RTG"},
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 34.25410073260073, "longitude": -118.5992912087912, "symbol": "/k", "course_degrees": 329, "speed_knots": 0, "altitude_feet": 971.1286089238844, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 385, "analog": [410, 649]}, "comment": "|3ÀÀ\u0000‚ ¨fbh`–”`¦˜à®lˆ š@þ®’ˆŠb@à®l¦†Š@õ\u0003ð>Mobile Micro-Trak RTG"},
         "diagnostics": ["warning:control-character-in-text"]
       },
       "strict": {"rejected_by": "control-character-in-text"},
@@ -18540,7 +18540,7 @@
       "input": {"tnc2": "KN6PHW>S4QURV,K6ERN*,N6EX-4,qAR,KK6CKK-1:`/* l 7>/'\"40}|+s%<'`|!wsX!|3ÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84N111737.43W#PHG5760"},
       "expect": {
         "header": {"source": "KN6PHW", "destination": "S4QURV", "path": ["K6ERN*", "N6EX-4", "qAR", "KK6CKK-1"], "q_construct": {"construct": "qAR", "station": "KK6CKK-1"}},
-        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 34.25448351648352, "longitude": -119.23410073260072, "symbol": "/>", "course_degrees": 27, "speed_knots": 0, "altitude_feet": 82.02099737532808, "phg": {"power": 5, "height": 7, "gain": 6, "directivity": 0}, "dao": {"datum": "W", "precision": "base91"}, "comment": "|+s%<'`||3ÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84N111737.43W#"},
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 34.25448351648352, "longitude": -119.23410073260072, "symbol": "/>", "course_degrees": 27, "speed_knots": 0, "altitude_feet": 82.02099737532808, "phg": {"power": 5, "height": 7, "gain": 6, "directivity": 0}, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 992, "analog": [391, 609]}, "comment": "|3ÀÀ\u0000‚ œªbràœlŠ°@@i\u0003ð!3347.84N111737.43W#"},
         "diagnostics": ["warning:data-extension-in-comment", "warning:control-character-in-text"]
       },
       "strict": {"rejected_by": "control-character-in-text"},

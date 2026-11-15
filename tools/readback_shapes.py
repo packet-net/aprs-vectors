@@ -76,6 +76,8 @@ ELEMENTS = [
     # other reports
     "T#001,1,2,3,4,5,00000000", "T#MIC", "T#", "$GPGGA,", "$GPRMC,1,2", "!4903.50N/07201.75W-", "@", ";", ")", "<IGATE",
     "}N0CALL>APRS:test", "_10092345", "*", "#", "%", "%123/4", "[IO91SX]", "/5L!!<*e7>7P[",
+    # bars: telemetry is the last pair of bars around a valid block (R27)
+    "|144.190|", "| a |", "||", "|!a!'!#|", "|!!!!| a |b c|", "|!!!!|x|!\"!#|", "|x y|!!!!|",
     # delimiters
     "\\", "/", "//", " ", "  ", "x ", " x", "/x", "x/", " /", "/ ",
 ]

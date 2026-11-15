@@ -3124,6 +3124,24 @@
       "interpretations": ["an-encoder-reads-back-what-it-wrote"],
       "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "frequency": {"mhz": 146.52, "offset_khz": 605}}},
       "expect": {"refused": true, "refusal": "value-has-no-form"}
+    },
+    {
+      "id": "encode/comment-holding-a-telemetry-block-before-bars-around-text",
+      "description": "A comment holding a valid block, with bars around text after it and no telemetry in the data: the block reads back as telemetry whatever follows: text-reads-as-field.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "base-91-telemetry-is-the-last-valid-block"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "comment": "|!!!!| a |b c|"}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/telemetry-with-a-comment-holding-a-block",
+      "description": "Telemetry with a comment holding a valid block: the comment is written first and the telemetry last, so the comment's block reads back as text.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "base-91-telemetry-is-the-last-valid-block"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 1, "analog": [2]}, "comment": "x|!!!!|y"}},
+      "expect": {"info": "!5130.00N/00030.00W>x|!!!!|y|!\"!#|"}
     }
   ]
 }

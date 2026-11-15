@@ -66,6 +66,8 @@ def shape(rng):
             parts.append(rng.choice(SPACES))
         else:
             parts.append(rng.choice(ELEMENTS))
+    if rng.random() < 0.2:
+        parts += [rng.choice(BARS) for _ in range(rng.randrange(2, 4))]
     if rng.random() < 0.7:
         # the locator first, as a sender puts it; otherwise wherever the shuffle leaves it
         head, rest = parts[:1], parts[1:]
@@ -92,6 +94,9 @@ LIFTED = [b"/A=000100", b"/A=-00016", b"|!!!!|", b"|!:&0'p|", b"!W12!", b"!w3U!"
 # in Mic-E status text a later Mic-E altitude is lifted too, beside a /A= or overlapping one
 MICE_LIFTED = LIFTED + [b'"4e}', b"abc}", b"/A=000100}", b"/A=-00016}"]
 COMMENT_ELEMENTS = [b"PHG2360", b"RNG0050", b"DFS2360", b"{55}", b"/A=000123", b"x", b"hello", b" ", b"  "]
+# Bars: valid base-91 blocks (one holding a !DAO!-shaped run), bars around text, empty bars and lone bars,
+# for the rule that telemetry is the last pair of bars around a valid block (R27).
+BARS = [b"|!!!!|", b"|!a!'!#|", b"|!:&0hl!Y[='p|", b"|144.190|", b"| IGate PCBUnit 2 LoRa |", b"||", b"|ab|", b"|!!!!!|", b"|", b"|x y|", b"|!w3U!|"]
 WEATHER_FIELDS = [b"t077", b"r000", b"p010", b"P020", b"h50", b"b10132", b"L123", b"s001", b"Xyz", b"X yz"]
 
 
@@ -117,6 +122,10 @@ def comment_shape(rng):
         parts += freq
     for _ in range(rng.randrange(0, 4)):
         parts.append(rng.choice(COMMENT_ELEMENTS + lifted))
+    if rng.random() < 0.35:
+        # two to four runs of bars, valid blocks and text, in any order
+        for _ in range(rng.randrange(2, 5)):
+            parts.insert(rng.randrange(0, len(parts) + 1), rng.choice(BARS))
     if rng.random() < 0.5 and parts:
         i = rng.randrange(len(parts))
         parts[i] = split_inside(rng, parts[i], lifted)

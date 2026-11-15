@@ -1833,6 +1833,16 @@
       "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "3j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 1475, "analog": [1924, 1837, 1409, 3638, 0]}, "comment": "\"4e}PHG1"}, "diagnostics": ["info:mic-e-missing-device-type"]},
       "reencode": "equivalent",
       "canonical_info": "`(_fn\"Oj3\"4e}/PHG1|146.520MHz!!|"
+    },
+    {
+      "id": "mic-e/telemetry-before-text-with-bars",
+      "description": "Mic-E status text: telemetry followed by text with bars is the last valid block, as in any comment.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N83MZ>T2TQ5U,WA1PLE-4*:`c.l+@&'/'\"G:} KJ6TMS|!:&0'p| fw |1.2|"},
+      "expect": {"header": {"source": "N83MZ", "destination": "T2TQ5U", "path": ["WA1PLE-4*"]}, "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 42.6925, "longitude": -71.31333333333333, "symbol": "/'", "course_degrees": 210, "speed_knots": 153, "altitude_feet": 5787.401574803149, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "KJ6TMS fw |1.2|"}},
+      "strict": "same"
     }
   ]
 }

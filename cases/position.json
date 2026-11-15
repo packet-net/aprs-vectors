@@ -1381,6 +1381,83 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "position/telemetry-before-text-with-bars",
+      "description": "YC0TBU-4's beacon: base-91 telemetry followed by free text holding bars is the last valid block, and no !DAO! is read from its bytes (the old rule took !a!'! as a DAO and moved the longitude).",
+      "source": "aprs-vectors#32, APRS-IS 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "YC0TBU-4>APE32L,TCPIP*,qAC,T2HAKATA:!0617.38S/10647.62E,PHG1130/A=000163|!a!'!#|| IGate PCBUnit 2 LoRa |144.190| BW10.4 SF8 CR5"},
+      "expect": {"header": {"source": "YC0TBU-4", "destination": "APE32L", "path": ["TCPIP*", "qAC", "T2HAKATA"], "q_construct": {"construct": "qAC", "station": "T2HAKATA"}}, "data": {"type": "position", "latitude": -6.289666666666666, "longitude": 106.79366666666667, "symbol": "/,", "altitude_feet": 163, "phg": {"power": 1, "height": 1, "gain": 3, "directivity": 0}, "telemetry": {"sequence": 64, "analog": [6, 2]}, "comment": "| IGate PCBUnit 2 LoRa |144.190| BW10.4 SF8 CR5"}},
+      "strict": "same"
+    },
+    {
+      "id": "position/two-valid-telemetry-blocks-the-last-wins",
+      "description": "Two valid blocks: the last is the telemetry, and the first is comment text; written back, the comment goes before the telemetry, where its block stays text.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|!!!!|y|!\"!#|z"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 1, "analog": [2]}, "comment": "x|!!!!|yz"}},
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!5130.00N/00030.00W>x|!!!!|yz|!\"!#|"
+    },
+    {
+      "id": "position/valid-block-then-bars-around-text",
+      "description": "A valid block, then bars around text holding a space: the bars are text and the block is the telemetry.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|!!!!|y z|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "xy z|"}},
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!5130.00N/00030.00W>xy z||!!!!|"
+    },
+    {
+      "id": "position/bars-around-text-then-a-valid-block",
+      "description": "Bars around text, then a valid block sharing the bar between them: the block is the telemetry.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|y z|!!!!|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "x|y z"}},
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/empty-bars-are-text",
+      "description": "Two bars with nothing between them enclose no block: text, with no diagnostic.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x||y"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "comment": "x||y"}},
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/empty-bars-before-a-valid-block",
+      "description": "Empty bars before a valid block: the block, using the second bar, is the telemetry, and the first bar is text.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x||!!!!|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "x|"}},
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/dao-after-telemetry-before-text-with-bars",
+      "description": "A !DAO! after the telemetry and before text with bars: the telemetry is the last valid block and the !DAO! is read outside it.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|!!!!|!W12!y|a b|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.50001666666667, "longitude": -0.5000333333333333, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "telemetry": {"sequence": 0, "analog": [0]}, "comment": "xy|a b|"}},
+      "strict": "same"
     }
   ]
 }
