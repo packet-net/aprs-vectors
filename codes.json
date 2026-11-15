@@ -339,11 +339,11 @@
     },
     {
       "id": "ax25-cannot-carry",
-      "meaning": "An AX.25 frame cannot carry the header: a call over 6 characters or in lower case, an SSID over 15 or written with a leading zero or as -0, more than 8 path entries."
+      "meaning": "An AX.25 frame cannot carry the header: a call over 6 characters or in lower case, an SSID over 15 or written with a leading zero or as -0, more than 8 path entries, a path entry not marked used before one that is (it reads back used)."
     },
     {
       "id": "tnc2-cannot-carry",
-      "meaning": "A TNC2 line cannot carry the packet: its information field is not UTF-8 text."
+      "meaning": "A TNC2 line cannot carry the packet: its information field is not UTF-8 text, or its path has an entry not marked used before one that is, which reads back used."
     },
     {
       "id": "invalid-third-party-header",
@@ -371,7 +371,7 @@
     },
     {
       "id": "malformed",
-      "meaning": "Text in a fixed-form field is not that form: a locator, a bit sense, telemetry bits, signpost text, a capability token, a weather extra field, too few telemetry values."
+      "meaning": "Text in a fixed-form field is not that form: a locator, a bit sense, telemetry bits, signpost text, a capability token, too few telemetry values."
     },
     {
       "id": "invalid-character",
@@ -379,7 +379,7 @@
     },
     {
       "id": "text-reads-as-field",
-      "meaning": "Free text would read back as a structured element (an altitude, a `!DAO!`, telemetry, a frequency, PHG/RNG/DFS, a timestamp or locator, a Mic-E device suffix, a weather field), and no clean form avoids it."
+      "meaning": "Free text would read back as a structured element (an altitude, a `!DAO!`, telemetry, a frequency, PHG/RNG/DFS, a timestamp or locator, a Mic-E device suffix, a weather field; a weather report's software type, unit and extra fields are free text), and no clean form avoids it."
     },
     {
       "id": "not-a-number",
@@ -435,7 +435,7 @@
     },
     {
       "id": "does-not-read-back",
-      "meaning": "Fallback: the library's own read-back check found the bytes decode to different data and no rule above names why."
+      "meaning": "Fallback: the read-back every encoder ends with (README, Read-back) found the bytes decode to different data, and no rule above names why."
     },
     {
       "id": "information-field-too-long",

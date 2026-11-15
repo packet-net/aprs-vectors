@@ -337,6 +337,60 @@
       "interpretations": ["delimiters-at-the-start-of-free-text", "lifting-an-element-never-joins-the-text-either-side-of-it"],
       "input": {"build": {"station": {"source": "W1AW"}, "report": "mic-e", "args": {"latitude": -35.49151, "longitude": -11.54059, "symbol": "/#", "course_degrees": 74, "speed_kmh": 165.9, "comment": "/{}WX", "mic_e_message": "returning"}}},
       "expect": {"tnc2": "W1AW>S5294Y:`'<Hu f#/' /{}WX"}
+    },
+    {
+      "id": "build/path-entry-before-a-used-one-not-marked",
+      "description": "A path whose entry not marked used comes before one that is cannot be written as a TNC2 line: the line reads back with that entry used (an entry before a used one is used): tnc2-cannot-carry.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "status", "args": {"text": "hi"}}},
+      "expect": {"refused": true, "refusal": "tnc2-cannot-carry"}
+    },
+    {
+      "id": "build/path-entry-before-a-used-one-not-marked-in-a-frame",
+      "description": "The same path written as an AX.25 frame: the entry's H bit can be left clear, but the frame reads back with that entry used all the same: ax25-cannot-carry.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "status", "args": {"text": "hi"}}, "write": "ax25"},
+      "expect": {"refused": true, "refusal": "ax25-cannot-carry"}
+    },
+    {
+      "id": "build/two-used-path-entries-mark-the-last",
+      "description": "A path with two used entries is written with * on the last used one only, which reads back with both used and no multiple-used-markers warning.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1*", "N0CALL-1*", "WIDE2-1"]}, "report": "status", "args": {"text": "hi"}}},
+      "expect": {"tnc2": "N0CALL>APZ001,WIDE1-1,N0CALL-1*,WIDE2-1:>hi"}
+    },
+    {
+      "id": "build/two-used-path-entries-in-a-frame",
+      "description": "The same path as an AX.25 frame sets the H bit of every used entry and reads back the same.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1*", "N0CALL-1*", "WIDE2-1"]}, "report": "status", "args": {"text": "hi"}}, "write": "ax25"},
+      "expect": {"ax25_hex": "82A0B4606062E09C608682989860AE92888A6240E29C6086829898E2AE92888A64406303F03E6869"}
+    },
+    {
+      "id": "build/first-path-entry-used",
+      "description": "A path whose first entry is used is written with that entry's *.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"build": {"station": {"source": "N0CALL", "path": ["N0CALL-1*", "WIDE2-1"]}, "report": "status", "args": {"text": "hi"}}},
+      "expect": {"tnc2": "N0CALL>APZ001,N0CALL-1*,WIDE2-1:>hi"}
+    },
+    {
+      "id": "build/path-with-no-used-entry",
+      "description": "A path with no used entry is written as given.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "WIDE2-1"]}, "report": "status", "args": {"text": "hi"}}},
+      "expect": {"tnc2": "N0CALL>APZ001,WIDE1-1,WIDE2-1:>hi"}
     }
   ]
 }

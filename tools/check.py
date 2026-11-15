@@ -17,7 +17,8 @@ Needs the jsonschema package (pip install jsonschema). Checks, beyond the schema
 - every refusal id except the exempt ones (EXEMPT_REFUSALS) is named by at least one case;
 - every refused case names its refusal code (REFUSALS_REQUIRED);
 - (by the schema) a build case's report is one the README lists, with only the args that report takes,
-  and each input form has its own expect form: decode keys, info for encode, tnc2 for build;
+  and each input form has its own expect form: decode keys, info for encode, tnc2 for build, ax25_hex for
+  build with "write": "ax25";
 - cases/precedence.json is what tools/precedence.py writes;
 - tools/compare.py's doctests pass (among them, diagnostics compare as multisets at every depth,
   a third-party packet's inner diagnostics included, as the README's Comparing says).
@@ -40,9 +41,7 @@ FALLBACK = "does-not-read-back"
 EXEMPT_REFUSALS = {
     FALLBACK,
     "not-a-number",  # JSON cannot carry NaN or infinity
-    "invalid-address",  # needs a packet header, which an encode case does not give
-    "ax25-cannot-carry",  # needs a packet header
-    "tnc2-cannot-carry",  # needs a packet header
+    "invalid-address",  # needs a packet header, which an encode case does not give (ax25- and tnc2-cannot-carry have build cases)
     "not-encodable",  # undecoded data: no form of it is held by all six libraries (rs not inside third-party, cs not at top level)
 }
 # Every refused case names its code, and every refusal id is named by a case except these, each of

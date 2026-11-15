@@ -171,6 +171,13 @@
             "build": {
               "$ref": "#/$defs/build"
             },
+            "write": {
+              "enum": [
+                "tnc2",
+                "ax25"
+              ],
+              "description": "With build: write the packet built as a TNC2 line (the default) or an AX.25 frame."
+            },
             "source": {
               "type": "string"
             },
@@ -220,7 +227,12 @@
                 "build"
               ]
             }
-          ]
+          ],
+          "dependentRequired": {
+            "write": [
+              "build"
+            ]
+          }
         },
         "expect": {
           "type": "object",
@@ -255,6 +267,10 @@
             },
             "tnc2": {
               "type": "string"
+            },
+            "ax25_hex": {
+              "type": "string",
+              "pattern": "^([0-9A-Fa-f]{2})*$"
             },
             "destination": {
               "type": "string"
@@ -378,7 +394,17 @@
               "input": {
                 "required": [
                   "build"
-                ]
+                ],
+                "not": {
+                  "properties": {
+                    "write": {
+                      "const": "ax25"
+                    }
+                  },
+                  "required": [
+                    "write"
+                  ]
+                }
               }
             }
           },
@@ -427,6 +453,36 @@
                     "header",
                     "header_error",
                     "device"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "input": {
+                "required": [
+                  "build",
+                  "write"
+                ],
+                "properties": {
+                  "write": {
+                    "const": "ax25"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "expect": {
+                "propertyNames": {
+                  "enum": [
+                    "ax25_hex",
+                    "refused",
+                    "refusal"
                   ]
                 }
               }

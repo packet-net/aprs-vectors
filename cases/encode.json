@@ -2449,6 +2449,393 @@
       "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
       "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 123, "comment": "A=-00016}"}},
       "expect": {"info": "`(_fn\"Oj/`/A=000123/A=-00016}", "destination": "S32UVT"}
+    },
+    {
+      "id": "encode/weather-extra-reading-as-a-rain-counter",
+      "description": "A positionless weather report's extra field # 123 would be written #123, which reads back as the raw rain counter 123 and no extra field: free text that reads back changed, text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "weather", "timestamp": "10092345", "weather": {"pressure_mbar": 1013.2, "extra": [{"letter": "#", "value": "123"}]}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-extra-reading-as-humidity",
+      "description": "A weather position's extra field h 50 would be written h50, which reads back as a humidity of 50 percent: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"pressure_mbar": 1013.2, "extra": [{"letter": "h", "value": "50"}]}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-extra-reading-as-software-and-unit",
+      "description": "A weather position's extra field A A00 would be written AA00, which reads back as the software type A and the unit A00: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"pressure_mbar": 1013.2, "extra": [{"letter": "A", "value": "A00"}]}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-extra-reading-as-a-field-already-read",
+      "description": "A positionless report's extra field t 077, after the t... the report always carries, would be written t077, which ends the fields at a defined field already read and reads back as comment text with weather-comment: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "weather", "timestamp": "10092345", "weather": {"pressure_mbar": 1013.2, "extra": [{"letter": "t", "value": "077"}]}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-extra-of-one-digit-reads-as-text",
+      "description": "An extra field is a letter and a run of two or more characters, so X 1 would be written X1 and read back as comment text with weather-comment: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "weather", "timestamp": "10092345", "weather": {"pressure_mbar": 1013.2, "extra": [{"letter": "X", "value": "1"}]}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-extra-ending-in-a-dot-reads-as-text",
+      "description": "An extra field's run ends in a digit, so X 12. would be written X12. and read back as comment text with weather-comment: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "weather", "timestamp": "10092345", "weather": {"pressure_mbar": 1013.2, "extra": [{"letter": "X", "value": "12."}]}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-extra-reading-as-snowfall",
+      "description": "In a weather position, whose wind is the course/speed extension, an s before any c is snowfall, so the extra field s 012 would read back as 12 inches of snow: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"pressure_mbar": 1013.2, "extra": [{"letter": "s", "value": "012"}]}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-extra-reading-as-luminosity",
+      "description": "A weather position's extra field L 123 would be written L123, which reads back as a luminosity of 123 W/m2: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"pressure_mbar": 1013.2, "extra": [{"letter": "L", "value": "123"}]}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-extras-of-undefined-letters-are-written",
+      "description": "Extra fields of letters the spec does not define, each with a run of two or more characters ending in a digit, are written after the defined fields and read back as themselves.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "weather", "timestamp": "10092345", "weather": {"pressure_mbar": 1013.2, "extra": [{"letter": "X", "value": "01"}, {"letter": "Y", "value": "-1"}]}}},
+      "expect": {"info": "_10092345c...s...g...t...b10132X01Y-1"}
+    },
+    {
+      "id": "encode/weather-software-type-that-is-not-a-letter",
+      "description": "A software type is a letter, so { with the unit 1x would be written {1x after the fields and read back as comment text: free text that reads back changed, text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"temperature_f": 70, "software": "{", "unit": "1x"}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-unit-of-one-character",
+      "description": "A unit is 2-4 characters, so the software type x and the unit R would be written xR and read back as comment text: text-reads-as-field, since the software type and unit are free text (not too-long: R is short, not long).",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"temperature_f": 70, "software": "x", "unit": "R"}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/comment-after-storm-data-reading-as-a-whole-gale-radius",
+      "description": "A comment %123/4 straight after storm data would read back as a whole gale radius of 123 and the comment 4, so it is written after a /, where it reads back as itself.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "delimiters-at-the-start-of-free-text"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/@", "storm": {"type": "hurricane", "sustained_wind_knots": 150, "gust_knots": 200, "central_pressure_mbar": 980, "hurricane_radius_nm": 90, "tropical_storm_radius_nm": 30}, "comment": "%123/4"}},
+      "expect": {"info": "!5130.00N/00030.00W@.../.../HC/150^200/0980>090&030/%123/4"}
+    },
+    {
+      "id": "encode/status-text-reading-as-a-timestamp",
+      "description": "Status text that starts with what reads as a DHM timestamp would read back with that timestamp and shorter text; status text has no delimiter that avoids it: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "status", "text": "092345z hi"}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/status-text-ending-in-a-beam-heading",
+      "description": "Status text ending ^B7 would read back as a beam heading B and power code 7 and shorter text: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "status", "text": "x^B7"}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/status-text-ending-in-what-is-not-a-beam-heading",
+      "description": "Status text ending ^B0 is written as it is: 0 is not an ERP code, so it reads back as text.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "status", "text": "x^B0"}},
+      "expect": {"info": ">x^B0"}
+    },
+    {
+      "id": "encode/telemetry-comment-starting-with-a-digit",
+      "description": "A telemetry comment that starts with a digit is written straight after the eight bits: the bits are eight characters and what follows them is the comment.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [1, 2, 3, 4, 5], "bits": "00000000", "comment": "1"}},
+      "expect": {"info": "T#001,001,002,003,004,005,000000001"}
+    },
+    {
+      "id": "encode/telemetry-values-without-their-text-read-back",
+      "description": "Analog values given as numbers are written as the shortest decimals that read back as the same numbers, with no exponent: 1e20, 0.5, -0.25, 1e-7 and 1000.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "numbers-given-without-their-text"],
+      "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [1e+20, 0.5, -0.25, 1e-07, 1000], "bits": "00000000"}},
+      "expect": {"info": "T#001,100000000000000000000,0.5,-0.25,0.0000001,1000,00000000"}
+    },
+    {
+      "id": "encode/telemetry-name-holding-a-comma",
+      "description": "A telemetry name holding a comma would read back as two names: a character the list cannot carry, invalid-character.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "telemetry-names", "addressee": "N0CALL", "names": ["a,b"]}},
+      "expect": {"refused": true, "refusal": "invalid-character"}
+    },
+    {
+      "id": "encode/telemetry-units-ending-in-an-empty-unit",
+      "description": "An empty last unit is written as a trailing comma, which reads back as that empty unit.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "telemetry-units", "addressee": "N0CALL", "units": ["V", ""]}},
+      "expect": {"info": ":N0CALL   :UNIT.V,"}
+    },
+    {
+      "id": "encode/telemetry-project-title-holding-a-comma",
+      "description": "The project title is the rest of a BITS. message, so a comma in it is written and reads back as part of the title.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "telemetry-bits", "addressee": "N0CALL", "bits": "11111111", "project": "a,b"}},
+      "expect": {"info": ":N0CALL   :BITS.11111111,a,b"}
+    },
+    {
+      "id": "encode/positionless-weather-software-and-unit-reading-as-a-field",
+      "description": "A positionless report's software type h and unit 5x would be written h5x, which reads back as a humidity of 5 with non-standard-weather-field-width: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "weather", "timestamp": "10092345", "weather": {"temperature_f": 70, "software": "h", "unit": "5x"}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-position-software-and-unit-reading-as-a-field",
+      "description": "A weather position's software type h and unit 5x would be written h5x, which reads back as a humidity of 5 with non-standard-weather-field-width: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"temperature_f": 70, "software": "h", "unit": "5x"}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-position-software-and-unit-read-back",
+      "description": "A weather position's software type x and unit RSW are written after the fields and read back as themselves.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"temperature_f": 70, "software": "x", "unit": "RSW"}}},
+      "expect": {"info": "!5130.00N/00030.00W_.../...g...t070xRSW"}
+    },
+    {
+      "id": "encode/raw-weather-with-empty-data",
+      "description": "Raw weather data given empty is written as the format's prefix alone; it reads back with no data, which is the same value, since the data form leaves an empty string out.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "absent-text-is-empty-text"],
+      "input": {"encode": {"type": "raw-weather", "format": "peet-bros-hash", "data": ""}},
+      "expect": {"info": "#"}
+    },
+    {
+      "id": "encode/raw-ultimeter-logging-with-empty-data",
+      "description": "Ultimeter logging data given empty is written !! alone, which reads back as raw weather with no data (with an obsolete-format info, which the form itself carries), not as a position.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "absent-text-is-empty-text"],
+      "input": {"encode": {"type": "raw-weather", "format": "ultimeter-logging", "data": ""}},
+      "expect": {"info": "!!"}
+    },
+    {
+      "id": "encode/maidenhead-beacon-comment-after-a-four-character-locator",
+      "description": "A four-character locator's comment that starts with letters is written after the ], which keeps it out of the locator.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "maidenhead-beacon", "locator": "IO91", "comment": "SX hi"}},
+      "expect": {"info": "[IO91]SX hi"}
+    },
+    {
+      "id": "encode/maidenhead-beacon-comment-starting-with-a-bracket",
+      "description": "A comment starting ] is written straight after the locator's ], and reads back as itself.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "maidenhead-beacon", "locator": "IO91SX", "comment": "]x"}},
+      "expect": {"info": "[IO91SX]]x"}
+    },
+    {
+      "id": "encode/footprint-latitude-of-a-tenth-of-a-millionth",
+      "description": "A footprint latitude of 1e-7 is written 0.0000001, with its leading space, and reads back as the same number.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "numbers-given-without-their-text"],
+      "input": {"encode": {"type": "query", "query_type": "APRS", "footprint": {"latitude": 1e-07, "longitude": -117.15, "radius_miles": 200}}},
+      "expect": {"info": "?APRS? 0.0000001,-117.15,0200"}
+    },
+    {
+      "id": "encode/query-without-a-footprint",
+      "description": "A general query with no footprint is its type between question marks.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "query", "query_type": "IGATE"}},
+      "expect": {"info": "?IGATE?"}
+    },
+    {
+      "id": "encode/capability-with-an-empty-value",
+      "description": "A capability given an empty value is written with its =, which reads back as the token with an empty value.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "station-capabilities-items-tokens-and-values"],
+      "input": {"encode": {"type": "capabilities", "capabilities": [["IGATE", ""]]}},
+      "expect": {"info": "<IGATE="}
+    },
+    {
+      "id": "encode/capability-value-holding-an-equals-sign",
+      "description": "An item splits at its first =, so a value holding = is written as it is and reads back whole.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "station-capabilities-items-tokens-and-values"],
+      "input": {"encode": {"type": "capabilities", "capabilities": [["IGATE", "a=b"]]}},
+      "expect": {"info": "<IGATE=a=b"}
+    },
+    {
+      "id": "encode/third-party-inner-status-ending-in-a-beam-heading",
+      "description": "A third-party packet's inner status text ending ^B7 would read back as a beam heading: the inner packet is read back like any other, text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APRS", "path": ["TCPIP*"], "data": {"type": "status", "text": "x^B7"}}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/third-party-inner-message-reading-as-a-query",
+      "description": "A third-party packet's inner message text ?APRSP would read back as a directed query: text-reads-as-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APRS", "data": {"type": "message", "addressee": "N0CALL", "text": "?APRSP"}}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/user-defined-braces-throughout",
+      "description": "User-defined data whose user ID, packet type and data are all braces is written as it came and reads back as the same.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "user-defined", "user_id": "{", "packet_type": "{", "data": "{1"}},
+      "expect": {"info": "{{{{1"}
+    },
+    {
+      "id": "encode/user-defined-data-ending-in-a-line-break",
+      "description": "User-defined data ending in LF would lose it: a CR or LF at the end of the information field is taken off before it is read. The field cannot carry it: invalid-character.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "user-defined", "user_id": "A", "packet_type": "x", "data": "x\n"}},
+      "expect": {"refused": true, "refusal": "invalid-character"}
+    },
+    {
+      "id": "encode/test-data-holding-a-position",
+      "description": "Test data that reads as a position report on its own is written after the , and reads back as test data.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "test", "data": "!4903.50N/07201.75W-"}},
+      "expect": {"info": ",!4903.50N/07201.75W-"}
+    },
+    {
+      "id": "encode/test-data-ending-in-a-line-break",
+      "description": "Test data ending in CR would lose it, as it is taken off the end of the information field: invalid-character.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "test", "data": "x\r"}},
+      "expect": {"refused": true, "refusal": "invalid-character"}
+    },
+    {
+      "id": "encode/agrelo-bearing-rounding-to-360",
+      "description": "A bearing of 359.5 rounds, half away from zero, to 360, the top of the range, and reads back as 360.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "values-between-steps-are-rounded", "an-agrelo-bearing-is-0-to-360"],
+      "input": {"encode": {"type": "agrelo-df", "bearing_degrees": 359.5, "quality": 0}},
+      "expect": {"info": "%360/0"}
+    },
+    {
+      "id": "encode/agrelo-bearing-rounding-to-0",
+      "description": "A bearing of 0.4 rounds to 0 and reads back as 0.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "values-between-steps-are-rounded", "an-agrelo-bearing-is-0-to-360"],
+      "input": {"encode": {"type": "agrelo-df", "bearing_degrees": 0.4, "quality": 9}},
+      "expect": {"info": "%000/9"}
+    },
+    {
+      "id": "encode/nmea-comment-after-the-checksum",
+      "description": "A comment given with a sentence that ends in a checksum is written straight after it; the sentence reads back with the fields it determines (latitude, longitude, fix, time), which the data leaves out and the comparison allows.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "nmea-data-is-its-sentence"],
+      "input": {"encode": {"type": "nmea", "sentence": "GPGLL,4916.45,N,12311.12,W,225444,A*31", "has_checksum": true, "comment": " hi"}},
+      "expect": {"info": "$GPGLL,4916.45,N,12311.12,W,225444,A*31 hi"}
+    },
+    {
+      "id": "encode/nmea-field-given-beside-a-sentence-without-a-checksum",
+      "description": "A latitude given beside a sentence with no checksum, agreeing with it, is written as the sentence alone and reads back with that latitude and the other fields the sentence determines.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "nmea-data-is-its-sentence"],
+      "input": {"encode": {"type": "nmea", "sentence": "GPGLL,4916.45,N,12311.12,W,225444,A", "latitude": 49.274166666666666}},
+      "expect": {"info": "$GPGLL,4916.45,N,12311.12,W,225444,A"}
+    },
+    {
+      "id": "encode/empty-message-id-is-no-message-id",
+      "description": "A message ID given as an empty string is no message ID (the data form leaves an empty string out), so the message is written without one and reads back the same.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "absent-text-is-empty-text"],
+      "input": {"encode": {"type": "message", "addressee": "N0CALL", "text": "hi", "message_id": ""}},
+      "expect": {"info": ":N0CALL   :hi"}
+    },
+    {
+      "id": "encode/empty-query-target-is-no-target",
+      "description": "A directed query's target given as an empty string is no target, so the query is written without one and reads back the same.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "absent-text-is-empty-text"],
+      "input": {"encode": {"type": "directed-query", "addressee": "N0CALL", "query_type": "APRSP", "target": ""}},
+      "expect": {"info": ":N0CALL   :?APRSP"}
     }
   ]
 }
