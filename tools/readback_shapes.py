@@ -356,6 +356,19 @@ def data_catalogue():
     for d in agrelo():
         # an Agrelo bearing between whole degrees is rounded (README Encoding), so it is not exact
         yield d, float(d["bearing_degrees"]).is_integer()
+    # header-sensitive inner data: Mic-E under its own destination, under others, and a Mic-E-shaped
+    # destination under data that is not Mic-E (README Read-back: read back under the header written)
+    mic_e = {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -12.129,
+             "symbol": "/j", "course_degrees": 251, "speed_knots": 20}
+    for dest in ("S32U6T", "S32U6T-3", "APRS", "APZ001", "S32U6", "GPSLJ", "SPCL"):
+        for data in (mic_e, {"type": "status", "text": "hi"}, dict(POSITION)):
+            for depth in (1, 2):
+                d = nested(data, depth)
+                inner = d
+                while inner["packet"]["data"]["type"] == "third-party":
+                    inner = inner["packet"]["data"]
+                inner["packet"]["destination"] = dest
+                yield d, True
     for path in paths():
         yield {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APRS", "path": path,
                                                  "data": {"type": "status", "text": "hi"}}}, True
@@ -418,6 +431,10 @@ def recipe_catalogue():
         for text in placed(t):
             yield {"station": {"source": "N0CALL", "destination": text[:9]}, "report": "status", "args": {"text": "hi"}}
             yield {"station": {"source": text[:9]}, "report": "status", "args": {"text": "hi"}}
+    for dest in ("S32U6T", "GPSLJ", "SPCL", "APRS"):
+        for report, args in (("status", {"text": "`(_fn\"Oj/"}), ("message", {"addressee": "N0CALL", "text": "hi"}),
+                             ("position", {"latitude": 51.5, "longitude": -0.5, "symbol": "/>"})):
+            yield {"station": {"source": "N0CALL", "destination": dest}, "report": report, "args": args}
     for sep in SEPARATED:
         yield {"station": {"source": sep}, "report": "status", "args": {"text": "hi"}}
         yield {"station": {"source": "N0CALL", "destination": sep}, "report": "status", "args": {"text": "hi"}}

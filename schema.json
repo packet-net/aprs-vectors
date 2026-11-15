@@ -355,6 +355,28 @@
             },
             "ax25_refusal": {
               "$ref": "#/$defs/code"
+            },
+            "header": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source",
+                "destination"
+              ],
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         },
@@ -375,6 +397,28 @@
             },
             "ax25_refusal": {
               "$ref": "#/$defs/code"
+            },
+            "header": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source",
+                "destination"
+              ],
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         },

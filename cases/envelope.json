@@ -949,6 +949,50 @@
       "strict": {"rejected_by": "trailing-line-break"},
       "reencode": "identical",
       "pass_through": {"tnc2": "N0CALL>APZ001:>hi\r\n\r\n", "ax25_hex": "82A0B4606062E09C60868298986103F03E68690D0A0D0A"}
+    },
+    {
+      "id": "envelope/held-field-re-addressed-to-a-mic-e-destination",
+      "description": "Undecoded bytes shaped like Mic-E, held under APZ001, re-addressed to S32U6T would read as a Mic-E position: the field is read back under the header written, and nothing the call can write is the data: not-encodable.",
+      "source": "aprs-cs second review 2026-11-16 (R29)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"tnc2": "N0CALL>APZ001:`(_fn\"Oj/"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "unrecognized", "reason": "malformed"}, "diagnostics": ["error:invalid-mic-e-destination"]},
+      "strict": "same",
+      "pass_through": {"tnc2_refusal": "not-encodable", "ax25_refusal": "not-encodable", "header": {"source": "N0CALL", "destination": "S32U6T"}}
+    },
+    {
+      "id": "envelope/held-field-re-addressed-to-another-plain-destination",
+      "description": "The same bytes re-addressed to APRS read as they did under APZ001, with the same error the held packet carries: written as received.",
+      "source": "aprs-cs second review 2026-11-16 (R29)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"tnc2": "N0CALL>APZ001:`(_fn\"Oj/"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "unrecognized", "reason": "malformed"}, "diagnostics": ["error:invalid-mic-e-destination"]},
+      "strict": "same",
+      "pass_through": {"header": {"source": "N0CALL", "destination": "APRS"}, "tnc2": "N0CALL>APRS:`(_fn\"Oj/", "ax25_hex": "82A0A4A64040E09C60868298986103F060285F666E224F6A2F"}
+    },
+    {
+      "id": "envelope/held-mic-e-report-re-addressed",
+      "description": "A held Mic-E report re-addressed to APZ001 loses half its position: not-encodable.",
+      "source": "aprs-cs second review 2026-11-16 (R29)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"tnc2": "N0CALL>S32U6T:`(_fn\"Oj/"},
+      "expect": {"header": {"source": "N0CALL", "destination": "S32U6T"}, "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -12.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20}},
+      "strict": "same",
+      "pass_through": {"tnc2_refusal": "not-encodable", "ax25_refusal": "not-encodable", "header": {"source": "N0CALL", "destination": "APZ001"}}
+    },
+    {
+      "id": "envelope/held-inner-field-re-addressed-to-a-mic-e-destination",
+      "description": "A third-party inner packet of Mic-E-shaped undecoded bytes, written on its own under a destination that makes them Mic-E: not-encodable.",
+      "source": "aprs-cs second review 2026-11-16 (R29)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"tnc2": "N0CALL>APZ001:}N0CALL>APZ001:`(_fn\"Oj/"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "data": {"type": "unrecognized", "reason": "malformed"}, "diagnostics": ["error:invalid-mic-e-destination"]}}},
+      "strict": "same",
+      "pass_through_inner": {"tnc2_refusal": "not-encodable", "ax25_refusal": "not-encodable", "header": {"source": "N0CALL", "destination": "S32U6T"}}
     }
   ]
 }

@@ -435,7 +435,7 @@
     },
     {
       "id": "not-encodable",
-      "meaning": "The call has nothing it can write: undecoded data, or Mic-E through a call that cannot return the destination."
+      "meaning": "The call has nothing it can write: undecoded data, Mic-E through a call that cannot return the destination, or an information field under a header where it reads as other data (Mic-E-shaped bytes under a Mic-E destination, Mic-E data under another destination)."
     },
     {
       "id": "does-not-read-back",
