@@ -340,21 +340,21 @@
     },
     {
       "id": "build/path-entry-before-a-used-one-not-marked",
-      "description": "A path whose entry not marked used comes before one that is cannot be written as a TNC2 line: the line reads back with that entry used (an entry before a used one is used): tnc2-cannot-carry.",
+      "description": "A path whose entry not marked used comes before one that is: no line or frame reads back that way and no decoder gives one, so it is a fault of the header given: invalid-path.",
       "source": "read-back audit 2026-11-15",
       "authority": "interpretation",
       "interpretations": ["an-encoder-reads-back-what-it-wrote"],
       "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "status", "args": {"text": "hi"}}},
-      "expect": {"refused": true, "refusal": "tnc2-cannot-carry"}
+      "expect": {"refused": true, "refusal": "invalid-path"}
     },
     {
       "id": "build/path-entry-before-a-used-one-not-marked-in-a-frame",
-      "description": "The same path written as an AX.25 frame: the entry's H bit can be left clear, but the frame reads back with that entry used all the same: ax25-cannot-carry.",
+      "description": "The same path written as an AX.25 frame: invalid-path too, whatever form is written.",
       "source": "read-back audit 2026-11-15",
       "authority": "interpretation",
       "interpretations": ["an-encoder-reads-back-what-it-wrote"],
       "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "status", "args": {"text": "hi"}}, "write": "ax25"},
-      "expect": {"refused": true, "refusal": "ax25-cannot-carry"}
+      "expect": {"refused": true, "refusal": "invalid-path"}
     },
     {
       "id": "build/two-used-path-entries-mark-the-last",
@@ -402,13 +402,13 @@
       "expect": {"refused": true, "refusal": "invalid-address"}
     },
     {
-      "id": "build/data-fault-before-an-unwritable-path",
-      "description": "An object name of 11 characters and a path entry not marked used before a used one, built as a TNC2 line: data is judged before a form is chosen, so invalid-name; tnc2-cannot-carry belongs to writing the line.",
+      "id": "build/unwritable-path-before-a-data-fault",
+      "description": "An object name of 11 characters and a path entry not marked used before a used one: the path is a fault of the header given, met before the data, invalid-path.",
       "source": "read-back follow-up 2026-11-15",
       "authority": "interpretation",
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets"],
       "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "object", "args": {"name": "TOOLONGNAME", "latitude": 1, "longitude": 2, "symbol": "/>", "timestamp": {"utc": "2026-09-27T09:23:45Z", "format": "dhm"}}}},
-      "expect": {"refused": true, "refusal": "invalid-name"}
+      "expect": {"refused": true, "refusal": "invalid-path"}
     },
     {
       "id": "build/call-of-nine-characters-in-a-line",
@@ -456,13 +456,13 @@
       "expect": {"tnc2": "N0CALL>UQ3PPP:`v:\u001cl \u001c>/`/A=001000//A=001234 x"}
     },
     {
-      "id": "build/data-fault-before-an-unwritable-path-in-a-frame",
-      "description": "The same recipe written as an AX.25 frame: invalid-name, before ax25-cannot-carry, which belongs to writing the frame.",
+      "id": "build/unwritable-path-before-a-data-fault-in-a-frame",
+      "description": "The same recipe written as an AX.25 frame: invalid-path.",
       "source": "refusal order 2026-11-15 (R25)",
       "authority": "interpretation",
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets"],
       "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "object", "args": {"name": "TOOLONGNAME", "latitude": 1, "longitude": 2, "symbol": "/>", "timestamp": {"utc": "2026-09-27T09:23:45Z", "format": "dhm"}}}, "write": "ax25"},
-      "expect": {"refused": true, "refusal": "invalid-name"}
+      "expect": {"refused": true, "refusal": "invalid-path"}
     },
     {
       "id": "build/data-fault-before-a-call-a-frame-cannot-carry",
@@ -474,22 +474,76 @@
       "expect": {"refused": true, "refusal": "invalid-name"}
     },
     {
-      "id": "build/size-before-an-unwritable-path",
-      "description": "Sound status text whose information field is 257 bytes, from a path entry not marked used before a used one, built as a TNC2 line: the size is the data's last check, before any form is chosen, so information-field-too-long; tnc2-cannot-carry belongs to writing the line.",
+      "id": "build/unwritable-path-before-size",
+      "description": "Status text whose information field is 257 bytes, from a path entry not marked used before a used one: the header given is judged first, invalid-path.",
       "source": "refusal order 2026-11-15 (R25)",
       "authority": "interpretation",
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets", "an-information-field-is-at-most-256-bytes"],
       "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "status", "args": {"text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}},
-      "expect": {"refused": true, "refusal": "information-field-too-long"}
+      "expect": {"refused": true, "refusal": "invalid-path"}
     },
     {
-      "id": "build/size-before-an-unwritable-path-in-a-frame",
-      "description": "The same recipe written as an AX.25 frame: information-field-too-long, before ax25-cannot-carry.",
+      "id": "build/unwritable-path-before-size-in-a-frame",
+      "description": "The same recipe written as an AX.25 frame: invalid-path.",
       "source": "refusal order 2026-11-15 (R25)",
       "authority": "interpretation",
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets", "an-information-field-is-at-most-256-bytes"],
       "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "status", "args": {"text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}, "write": "ax25"},
+      "expect": {"refused": true, "refusal": "invalid-path"}
+    },
+    {
+      "id": "build/size-before-a-call-a-frame-cannot-carry",
+      "description": "Status text whose information field is 257 bytes from a nine-character source, written as an AX.25 frame: the size is the data's last check, before the form, so information-field-too-long, not ax25-cannot-carry.",
+      "source": "read-back review 2026-11-15 (R26)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"build": {"station": {"source": "N0CALLXYZ"}, "report": "status", "args": {"text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}, "write": "ax25"},
       "expect": {"refused": true, "refusal": "information-field-too-long"}
+    },
+    {
+      "id": "build/empty-message-id",
+      "description": "A builder's empty message ID is a value the program gave, out of range (1-5 letters or digits): invalid-message-id, though neutral data treats empty as absent.",
+      "source": "read-back review 2026-11-15 (R26)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "message", "args": {"addressee": "N0CALL", "text": "hi", "message_id": ""}}},
+      "expect": {"refused": true, "refusal": "invalid-message-id"}
+    },
+    {
+      "id": "build/empty-message-id-on-an-ack",
+      "description": "An ack built with an empty message ID: invalid-message-id.",
+      "source": "read-back review 2026-11-15 (R26)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "ack", "args": {"addressee": "N0CALL", "message_id": ""}}},
+      "expect": {"refused": true, "refusal": "invalid-message-id"}
+    },
+    {
+      "id": "build/empty-comment-is-no-comment",
+      "description": "A builder's empty comment is no text, written as nothing.",
+      "source": "read-back review 2026-11-15 (R26)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "position", "args": {"latitude": 51.5, "longitude": -0.5, "symbol": "/>", "comment": ""}}},
+      "expect": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>"}
+    },
+    {
+      "id": "build/empty-destination",
+      "description": "A builder given an empty destination: not an address, invalid-address; the default destination is for one not given.",
+      "source": "read-back review 2026-11-15 (R26)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "builder-defaults"],
+      "input": {"build": {"station": {"source": "N0CALL", "destination": ""}, "report": "status", "args": {"text": "hi"}}},
+      "expect": {"refused": true, "refusal": "invalid-address"}
+    },
+    {
+      "id": "build/mic-e-altitude-in-the-mic-e-bytes",
+      "description": "A builder's 1000 feet with no comment goes in the Mic-E bytes first, as 305 m, and reads back by the rounding allowance.",
+      "source": "read-back review 2026-11-15 (R26)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
+      "input": {"build": {"station": {"source": "N0CALL"}, "report": "mic-e", "args": {"latitude": 51.5, "longitude": -0.5, "symbol": "/>", "mic_e_message": "en-route", "messaging": true, "altitude_feet": 1000}}},
+      "expect": {"tnc2": "N0CALL>UQ3PPP:`v:\u001cl \u001c>/`\"77}"}
     }
   ]
 }

@@ -44,14 +44,27 @@ from collections import Counter, defaultdict
 
 
 def norm(v):
-    """A value with numbers cut to 9 significant digits, so that equal-within-1e-9 compares equal."""
+    """A value with numbers cut to 9 significant digits, so that equal-within-1e-9 compares equal;
+    a whole number below 2**53 (an integer, or a float holding one exactly) is kept whole, so integers compare exactly.
+
+    >>> norm(1234567891), norm(1234567891.0) == norm(1234567891), norm(1234567892) == norm(1234567891)
+    (1234567891, True, False)
+    """
     if isinstance(v, bool) or v is None or isinstance(v, str):
         return v
-    if isinstance(v, (int, float)):
+    if isinstance(v, int) and abs(v) < 2 ** 53:
+        return v
+    if isinstance(v, int):
+        v = float(v)
+    if isinstance(v, float):
         if v != v:
             return "nan"
+        if v in (float("inf"), float("-inf")):
+            return str(v)
+        if v.is_integer() and abs(v) < 2 ** 53:
+            return int(v)
         r = float(f"{v:.9g}")
-        return int(r) if r == int(r) and abs(r) < 1e15 else r
+        return int(r) if r.is_integer() and abs(r) < 1e15 else r
     if isinstance(v, dict):
         return {k: norm(x) for k, x in v.items()}
     if isinstance(v, list):
@@ -170,7 +183,7 @@ def without_inner_info(data):
 
 def dropped_empty(v, field=None):
     """The data with every field given as an empty string or an empty list left out, as the data form
-    leaves them out (README, Read-back: empty and absent are one value), except `reply_ack`, where ""
+    leaves them out, and every null or false (README, Read-back: empty and absent are one value), except `reply_ack`, where ""
     is a value, and a header's `source` and `destination`. Items of a list are values, kept as they are.
 
     >>> dropped_empty({"type": "message", "text": "hi", "message_id": "", "reply_ack": ""})
@@ -180,7 +193,7 @@ def dropped_empty(v, field=None):
     """
     if isinstance(v, dict):
         return {k: dropped_empty(x, k) for k, x in v.items()
-                if k in ("reply_ack", "source", "destination") or not (x is None or x == "" or x == [])}
+                if k in ("reply_ack", "source", "destination") or not (x is None or x is False or x == "" or x == [])}
     if isinstance(v, list):
         return [dropped_empty(x) for x in v]
     return v
@@ -192,7 +205,8 @@ NMEA_FIELDS = ("has_checksum", "latitude", "longitude", "fix", "course_degrees",
 
 def read_back(given, again):
     """Whether data read back (`again`) matches the data given, for data whose every value is one its
-    format holds (exact), by the README's Read-back comparison: field by field in the neutral form,
+    format holds (exact), by the README's Read-back comparison (data with a value between steps,
+    "exact": false, is only checked to decode cleanly: the rounding allowance is not implemented here): field by field in the neutral form,
     at every depth, with only the allowances that rule lists that exact data can meet (rounding has
     nothing to do): empty and absent are one value; a value the form must carry where the data leaves
     it out (the default compression type, a Mic-E speed of 0, the fields an NMEA sentence determines);
@@ -276,6 +290,72 @@ def _header(source, destination, entries):
     if entries:
         h["path"] = [text + ("*" if i <= last else "") for i, (text, _) in enumerate(entries)]
     return h
+
+
+def written_header_codes(form, raw):
+    """The header diagnostics a written TNC2 line or AX.25 frame reads back with, as far as the
+    header alone shows them: several `*` marks, an empty destination or path entry (a line); an
+    empty or lower-case call, which no frame may hold (a frame).
+
+    >>> written_header_codes("tnc2", b"N0CALL>APZ001,A*,B*:>x"), written_header_codes("ax25", bytes.fromhex("404040404040E09C60868298986103F03E78"))
+    (['multiple-used-markers'], ['an address AX.25 forbids'])
+    """
+    codes = []
+    if form == "tnc2":
+        head = raw.partition(b":")[0]
+        _, _, rest = head.partition(b">")
+        fields = rest.split(b",")
+        if head.count(b"*") > 1:
+            codes.append("multiple-used-markers")
+        if fields[0] == b"":
+            codes.append("empty-destination")
+        if any(f in (b"", b"*") for f in fields[1:]):
+            codes.append("empty-path-entry")
+        return codes
+    for i in range(0, len(raw) - 6, 7):
+        a = raw[i:i + 7]
+        call = bytes(b >> 1 for b in a[:6]).rstrip(b" ")
+        if not call or any(not (48 <= c <= 57 or 65 <= c <= 90) for c in call):
+            return ["an address AX.25 forbids"]
+        if a[6] & 1:
+            break
+    return codes
+
+
+def written_info(form, raw):
+    """The information field of a written TNC2 line or AX.25 frame, or None."""
+    if form == "tnc2":
+        head, colon, info = raw.partition(b":")
+        return info if colon else None
+    for i in range(0, len(raw) - 6, 7):
+        if raw[i + 6] & 1:
+            rest = raw[i + 7:]
+            return rest[2:] if rest[:2] == b"\x03\xf0" else None
+    return None
+
+
+# The infos a read-back may carry (README, Read-back), by what the data asks for.
+def allowed_infos(data):
+    """The `info:` diagnostics the bytes written for this data may read back with, or None when
+    there is no data to judge by.
+
+    >>> sorted(allowed_infos({"type": "mic-e", "comment": "x"}))
+    ['info:mic-e-missing-device-type']
+    """
+    if not isinstance(data, dict):
+        return None
+    t = data.get("type")
+    ok = set()
+    if t in ("weather", "raw-weather", "nmea", "maidenhead-beacon"):
+        ok.add("info:obsolete-format")
+    if t == "mic-e":
+        if data.get("legacy_telemetry"):
+            ok.add("info:obsolete-format")
+        if not data.get("type_code"):
+            ok.add("info:mic-e-missing-device-type")
+    if t == "message":
+        ok |= {"info:invalid-query", "info:invalid-telemetry-metadata"}
+    return ok
 
 
 def header_differs(written, expected):
@@ -368,11 +448,12 @@ def left_out(mode, r):
     return result if result in ("unsupported", "implementation-limit") else None
 
 
-def own_checks(mode, r, inp):
+def own_checks(mode, r, inp, line=None):
     """What is wrong with one implementation's record on its own, or None."""
     if mode == "encode" and r.get("result") == "written":
         again = r.get("again") or {}
-        bad = [d for d in again.get("diagnostics", []) if not d.startswith("info:")]
+        allowed = allowed_infos(inp.get("data") if inp else None)
+        bad = [d for d in again.get("diagnostics", []) if not d.startswith("info:") or (allowed is not None and d not in allowed)]
         if "header_error" in again:
             bad = bad + again["header_error"]
         if bad:
@@ -409,20 +490,38 @@ def own_checks(mode, r, inp):
     if mode == "decode":
         if r.get("reencode") == "fails":
             return "re-encoded bytes do not read back as the same data (reencode fails: a fault, or a value the form rounds)"
-        header = (r.get("lenient") or {}).get("header")
+        lenient = r.get("lenient") or {}
+        header = lenient.get("header")
         api = r.get("api") or {}
         if header:
             expected = {"source": header.get("source"), "destination": header.get("destination"), "path": header.get("path") or []}
+            held = {d.partition(":")[2] for d in lenient.get("diagnostics", [])}
+            received = None
+            if inp is None and line is not None:
+                try:
+                    received = bytes.fromhex(line.strip()).partition(b":")[2]
+                except ValueError:
+                    received = None
             for form, parse in (("tnc2", tnc2_header), ("ax25", ax25_header)):
                 written = api.get(form)
                 if not isinstance(written, str) or written == "refused":
                     continue
                 try:
-                    differs = header_differs(parse(bytes.fromhex(written)), expected)
+                    raw = bytes.fromhex(written)
                 except ValueError:
                     continue
+                differs = header_differs(parse(raw), expected)
                 if differs:
                     return f"written {form} header decodes to a different header: " + ", ".join(differs)
+                new = [c for c in written_header_codes(form, raw) if c not in held]
+                if new:
+                    return f"written {form} header reads back with " + ", ".join(new)
+                info = written_info(form, raw)
+                if received is not None and info is not None and info not in (received, received.rstrip(b"\r\n")):
+                    return f"written {form} information field is not the one received"
+                inside = info.rstrip(b"\r\n") if info is not None else None
+                if form == "tnc2" and inside is not None and (b"\r" in inside or b"\n" in inside):
+                    return "written tnc2 line holds a CR or LF in its information field (tnc2-cannot-carry)"
     return None
 
 
@@ -524,7 +623,7 @@ def main():
                 unsupported[(names[i], r.get("reason", "?"))] += 1
             if why[i]:
                 continue
-            problem = own_checks(mode, r, inp)
+            problem = own_checks(mode, r, inp, line)
             if problem:
                 k = (names[i], kind, problem)
                 own[k] += 1

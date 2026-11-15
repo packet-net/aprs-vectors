@@ -21,6 +21,14 @@ seed:
   course/speed, PHG, RNG, DFS, frequency, telemetry, `!DAO!`, area, signpost, compression);
 - every user-defined user ID and packet type (printable ASCII), every Agrelo bearing and quality,
   and bearings either side of a half;
+- ack and reject IDs, message IDs and reply-acks, bulletin groups and addressees of element text,
+  a third-party inner source and destination, and recipe sources and destinations;
+- Mic-E altitudes held by both forms, by a `/A=` only, and by neither, beside comments holding a
+  `/A=`, telemetry, a `!DAO!` and a locator, with and without a type code; telemetry coefficients
+  and general-query footprints of awkward numbers;
+- non-integers in fields held only in whole units or as codes (PHG and DFS digits, comment telemetry,
+  area offsets, a DF bearing, storm fields), values between steps ("exact": false), and faults
+  planted in third-party inner data one and two levels deep;
 - weather extra fields of every printable letter with values that read as other fields, as too
   short a run, or as a software type and unit;
 - with --recipes, header paths of every shape a station may give, entries used before, after and
@@ -176,6 +184,21 @@ def text_slots():
         ("third-party message text", lambda t: tp({"type": "message", "addressee": "N0CALL", "text": t}, ())),
         ("third-party comment", lambda t: tp(pos(comment=t))),
         ("user-defined data", lambda t: {"type": "user-defined", "user_id": "A", "packet_type": "x", "data": t}),
+        ("ack id", lambda t: {"type": "ack", "addressee": "N0CALL", "acked_id": t[:5]}),
+        ("reject id", lambda t: {"type": "reject", "addressee": "N0CALL", "rejected_id": t[:5]}),
+        ("message id", lambda t: {"type": "message", "addressee": "N0CALL", "text": "hi", "message_id": t[:5]}),
+        ("reply-ack", lambda t: {"type": "message", "addressee": "N0CALL", "text": "hi", "message_id": "1", "reply_ack": t[:5]}),
+        ("bulletin group", lambda t: {"type": "bulletin", "addressee": ("BLN1" + t)[:9], "text": "hi"}),
+        ("addressee", lambda t: {"type": "message", "addressee": t[:9], "text": "hi"}),
+        ("third-party inner source", lambda t: {"type": "third-party", "packet": {"source": t[:9], "destination": "APRS", "data": {"type": "status", "text": "hi"}}}),
+        ("third-party inner destination", lambda t: {"type": "third-party", "packet": {"source": "N0CALL", "destination": t[:9], "data": {"type": "status", "text": "hi"}}}),
+        ("mic-e comment beside an altitude", lambda t: {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "latitude": 51.5,
+                                                        "longitude": -0.5, "symbol": "/>", "speed_knots": 0, "altitude_feet": 0, "comment": t}),
+        ("mic-e comment beside telemetry and a dao", lambda t: {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "latitude": 51.5,
+                                                                "longitude": -0.5, "symbol": "/>", "speed_knots": 0, "telemetry": TELEMETRY,
+                                                                "dao": {"datum": "W", "precision": "base91"}, "comment": t}),
+        ("mic-e comment after a locator", lambda t: {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "latitude": 51.5,
+                                                     "longitude": -0.5, "symbol": "/>", "speed_knots": 0, "locator": "IO91SX", "comment": t}),
         ("test data", lambda t: {"type": "test", "data": t}),
     ]
     for fmt in ("ultimeter-packet", "ultimeter-logging", "peet-bros-hash", "peet-bros-star"):
@@ -223,23 +246,80 @@ def paths():
     return out
 
 
+# Values: Mic-E altitudes (both forms, only a /A=, neither), telemetry coefficients and footprints.
+MIC_E_ALTITUDES = [0, 1000, 1250, 100.5, -50000, 231932 / 0.3048, 1e6]
+COEFFICIENTS = [[0, 1e-7, -2.5], [1e20, -0.0, 0.5], [12345678901, 1, 0], [1e-300, 1e300, 3]]
+FOOTPRINTS = [(1e-7, -117.15, 200), (0, 0, 5), (-0.0, 0.5, 9999), (90, 180, 0), (-90, -180, 1), (34.02, -117.15, 200.5), (51.123456789, -0.987654321, 25)]
+# Fields held only in whole units or as codes, given a non-integer (README Read-back: value-out-of-range).
+NON_INTEGERS = [
+    {"phg": {"power": 4.4, "height": 1, "gain": 3, "directivity": 2}}, {"phg": {"power": 4, "height": 2.5, "gain": 3, "directivity": 2}},
+    {"dfs": {"strength": 1.2, "height": 3, "gain": 6, "directivity": 0}}, {"telemetry": {"sequence": 1.4, "analog": [1, 2]}},
+    {"telemetry": {"sequence": 1, "analog": [1.5, 2]}},
+    {"symbol": "\\l", "area": {"shape": "filled-ellipse", "color": "cyan", "lat_offset": 10.5, "lon_offset": 10}},
+    {"symbol": "/\\", "course_degrees": 88, "speed_knots": 36, "df_bearing": {"bearing_degrees": 270.5, "number": 7, "range": 2, "quality": 9}},
+    {"symbol": "/@", "storm": dict(STORM, sustained_wind_knots=150.5)},
+]
+# Values between the steps a form holds: written rounded, so not exact.
+INEXACT = [
+    {"latitude": 51.123456789, "longitude": -0.987654321}, {"course_degrees": 88.5, "speed_knots": 10.25}, {"altitude_feet": 100.4},
+    {"range_miles": 49.6}, {"frequency": {"mhz": 146.5205}}, {"compressed": True, "course_degrees": 101, "speed_knots": 12.3},
+    {"dao": {"datum": "W", "precision": "base91"}, "latitude": 51.1234567},
+]
+# Faults planted in third-party inner data at depth 1 and 2: every rule check applies there too.
+INNER_FAULTS = [{"course_degrees": 400, "speed_knots": 5}, {"phg": {"power": 10, "height": 1, "gain": 3, "directivity": 2}},
+                {"symbol": "x"}, {"comment": "a\x07b"}, {"ambiguity": 2, "dao": {"datum": "W", "precision": "base91"}}] + NON_INTEGERS
+
+
+def nested(data, depth):
+    for _ in range(depth):
+        data = {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APRS", "data": data}}
+    return data
+
+
 def data_catalogue():
+    """(data, exact) pairs."""
     for _, make in text_slots():
         for t in TEXTS:
             for text in placed(t):
-                yield make(text)
-    yield from weather_extras()
-    yield from user_defined()
-    yield from agrelo()
+                yield make(text), True
+    for alt in MIC_E_ALTITUDES:
+        for comment in (None, "x", "/A=001234 x", "x /A=001234", "/x", " x"):
+            for code in ("`", None):
+                d = {"type": "mic-e", "mic_e_message": "en-route", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "speed_knots": 0, "altitude_feet": alt}
+                if code:
+                    d["type_code"] = code
+                if comment:
+                    d["comment"] = comment
+                yield d, float(alt).is_integer()
+    for cs in COEFFICIENTS:
+        yield {"type": "telemetry-coefficients", "addressee": "N0CALL", "coefficients": cs}, True
+    for lat, lon, radius in FOOTPRINTS:
+        yield {"type": "query", "query_type": "APRS", "footprint": {"latitude": lat, "longitude": lon, "radius_miles": radius}}, float(radius).is_integer()
+    for extra in NON_INTEGERS:
+        yield dict(POSITION, **extra), True
+    for extra in INEXACT:
+        yield dict(POSITION, **extra), False
+    for depth in (1, 2):
+        for extra in INNER_FAULTS:
+            yield nested(dict(POSITION, **extra), depth), True
+    for d in weather_extras():
+        yield d, True
+    for d in user_defined():
+        yield d, True
+    for d in agrelo():
+        # an Agrelo bearing between whole degrees is rounded (README Encoding), so it is not exact
+        yield d, float(d["bearing_degrees"]).is_integer()
     for path in paths():
         yield {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APRS", "path": path,
-                                                 "data": {"type": "status", "text": "hi"}}}
+                                                 "data": {"type": "status", "text": "hi"}}}, True
     # empty where the data form leaves an empty value out (Read-back: empty and absent are one value)
-    yield {"type": "message", "addressee": "N0CALL", "text": "hi", "message_id": ""}
-    yield {"type": "message", "addressee": "N0CALL", "text": "hi", "message_id": "1", "reply_ack": ""}
-    yield {"type": "directed-query", "addressee": "N0CALL", "query_type": "APRSP", "target": ""}
+    yield {"type": "message", "addressee": "N0CALL", "text": "hi", "message_id": ""}, True
+    yield {"type": "message", "addressee": "N0CALL", "text": "hi", "message_id": "1", "reply_ack": ""}, True
+    yield {"type": "directed-query", "addressee": "N0CALL", "query_type": "APRSP", "target": ""}, True
+    yield {"type": "ack", "addressee": "N0CALL", "acked_id": ""}, True
+    yield dict(POSITION, messaging=False, compressed=False), True
     for fmt in ("ultimeter-packet", "ultimeter-logging", "peet-bros-hash", "peet-bros-star"):
-        yield {"type": "raw-weather", "format": fmt, "data": ""}
+        yield {"type": "raw-weather", "format": fmt, "data": ""}, True
 
 
 STATION = {"source": "N0CALL"}
@@ -287,6 +367,20 @@ def recipe_catalogue():
         for t in TEXTS:
             for text in placed(t):
                 yield {"station": STATION, "report": report, "args": make(text)}
+    for t in TEXTS:
+        for text in placed(t):
+            yield {"station": {"source": "N0CALL", "destination": text[:9]}, "report": "status", "args": {"text": "hi"}}
+            yield {"station": {"source": text[:9]}, "report": "status", "args": {"text": "hi"}}
+    for alt in ("altitude_feet", "altitude_m"):
+        for value in (0, 1000, 304.8, 100.5, -50000):
+            for comment in (None, "/A=001234 x", "x /A=001234"):
+                args = {"latitude": 51.5, "longitude": -0.5, "symbol": "/>", "mic_e_message": "en-route", alt: value}
+                if comment:
+                    args["comment"] = comment
+                yield {"station": STATION, "report": "mic-e", "args": args}
+    for value in ("", "1", "ABCDEF"):
+        yield {"station": STATION, "report": "message", "args": {"addressee": "N0CALL", "text": "hi", "message_id": value}}
+        yield {"station": STATION, "report": "ack", "args": {"addressee": "N0CALL", "message_id": value}}
 
 
 def random_text(rng):
@@ -319,9 +413,7 @@ def main():
                 station = {"source": "N0CALL", "path": path} if path else dict(STATION)
                 put({"station": station, "report": report, "args": make(random_text(rng))})
         else:
-            for d in data_catalogue():
-                # an Agrelo bearing between whole degrees is rounded (README Encoding), so it is not exact
-                exact = not (d["type"] == "agrelo-df" and d["bearing_degrees"] != int(d["bearing_degrees"]))
+            for d, exact in data_catalogue():
                 put({"data": d, "exact": exact})
             slots = text_slots()
             for _ in range(args.count):

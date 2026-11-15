@@ -38,6 +38,7 @@ invalid-nmea + text-reads-as-field: no report has both: invalid-nmea is a fault 
 # Codes the generator pairs with no other (each with the reason; a hand-written case may still carry one):
 not-encodable: undecoded data holds no other field, so it meets a second fault only inside a third-party packet, which Rust and Go cannot hold, so the generator makes no pairs with it; encode/nested-third-party-ending-in-undecoded-data pins the pair with invalid-third-party-header by hand
 invalid-address: needs a packet header, which an encode case does not give
+invalid-path: needs a packet header, which an encode case does not give
 ax25-cannot-carry: needs a packet header, which an encode case does not give
 tnc2-cannot-carry: needs a packet header, which an encode case does not give
 not-a-number: JSON cannot carry NaN or infinity (generate.py --faults gives it to the dump tools)

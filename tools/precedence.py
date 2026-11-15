@@ -32,7 +32,7 @@ EXCLUDED = os.path.join(HERE, "precedence-excluded.txt")
 # The README's "Refusal reasons" order (R1): the refusal names the first code that applies.
 ORDER = [
     "not-encodable",
-    "invalid-address", "invalid-third-party-header",
+    "invalid-address", "invalid-path", "invalid-third-party-header",
     "invalid-addressee", "invalid-name", "invalid-timestamp", "not-a-number", "value-out-of-range", "value-has-no-form",
     "invalid-code", "invalid-symbol", "invalid-character", "too-long", "padding-space", "malformed", "invalid-message-id",
     "invalid-nmea",
@@ -47,6 +47,7 @@ ORDER = [
 NO_CASE = {
     "not-encodable": "undecoded data holds no other field, so it meets a second fault only inside a third-party packet, which Rust and Go cannot hold, so the generator makes no pairs with it; encode/nested-third-party-ending-in-undecoded-data pins the pair with invalid-third-party-header by hand",
     "invalid-address": "needs a packet header, which an encode case does not give",
+    "invalid-path": "needs a packet header, which an encode case does not give",
     "ax25-cannot-carry": "needs a packet header, which an encode case does not give",
     "tnc2-cannot-carry": "needs a packet header, which an encode case does not give",
     "not-a-number": "JSON cannot carry NaN or infinity (generate.py --faults gives it to the dump tools)",

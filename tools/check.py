@@ -41,7 +41,6 @@ FALLBACK = "does-not-read-back"
 EXEMPT_REFUSALS = {
     FALLBACK,
     "not-a-number",  # JSON cannot carry NaN or infinity
-    "invalid-address",  # needs a packet header, which an encode case does not give (ax25- and tnc2-cannot-carry have build cases)
     "not-encodable",  # undecoded data: no form of it is held by all six libraries (rs not inside third-party, cs not at top level)
 }
 # Every refused case names its code, and every refusal id is named by a case except these, each of
@@ -149,7 +148,9 @@ def main():
             for key, value in (("refusal", case.get("expect", {}).get("refusal")),
                                ("reencode_refusal", case.get("reencode_refusal")),
                                ("pass_through.tnc2_refusal", pass_through.get("tnc2_refusal")),
-                               ("pass_through.ax25_refusal", pass_through.get("ax25_refusal"))):
+                               ("pass_through.ax25_refusal", pass_through.get("ax25_refusal")),
+                               ("pass_through_inner.tnc2_refusal", case.get("pass_through_inner", {}).get("tnc2_refusal")),
+                               ("pass_through_inner.ax25_refusal", case.get("pass_through_inner", {}).get("ax25_refusal"))):
                 if value is None:
                     continue
                 named_refusals.add(value)
