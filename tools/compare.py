@@ -13,7 +13,8 @@ For every input line, each part of the records (the lenient data, the strict dia
 bytes written, each key of the API view, ...) is compared across the implementations that have
 it, and where they differ the line goes in a bucket named by the data type, the part, and which
 implementations side together. Objects must have the same keys; numbers agree within 1e-9;
-diagnostics compare as multisets. A record whose result is `unsupported`, or that gives
+diagnostics compare as multisets, at every depth (a third-party packet's inner diagnostics, inside
+its data, too). A record whose result is `unsupported`, or that gives
 `implementation-limit` (a decode record whose lenient result names it, an encode or build record
 whose result is `implementation-limit`), is left out of the comparison of that line, and each
 implementation's count of both is printed beside the result, in the text and in --json, with
@@ -23,7 +24,7 @@ implementation's published capacities, e.g. aprs-c's limits.json: {"information-
 a record that claims a limit the input does not exceed, where the input's size for that limit can be
 computed (information-field bytes and path entries of a decoded line, capability items, extra
 weather fields, a recipe's path; each the largest over every third-party level), is a difference;
-those over the capacity are counted by limit as checked, and the rest by limit as not checked (all of them, if no --limits file was given). `python3 -m doctest tools/compare.py` tests the measures. For encode and build dumps it also checks each implementation on its
+those over the capacity are counted by limit as checked, and the rest by limit as not checked (all of them, if no --limits file was given). `python3 -m doctest tools/compare.py` tests the measures and the multisets. For encode and build dumps it also checks each implementation on its
 own: bytes written for exact data must decode to that data, cleanly; a built line must decode
 cleanly. `--input` is the input all the dumps read; with it, the report shows each bucket's
 example inputs. Exits 1 if any line differs. Standard library only.
@@ -52,8 +53,29 @@ def norm(v):
     return v
 
 
+def multisets(v):
+    """A value with every list of diagnostics, at any depth (a third-party packet's inner
+    `diagnostics` inside its data), sorted, so that they compare as multisets.
+
+    >>> a = {"type": "third-party", "packet": {"data": {"type": "status"}, "diagnostics": ["warning:a", "info:b"]}}
+    >>> b = {"type": "third-party", "packet": {"data": {"type": "status"}, "diagnostics": ["info:b", "warning:a"]}}
+    >>> c = {"type": "third-party", "packet": {"data": {"type": "status"}, "diagnostics": ["info:b", "info:b"]}}
+    >>> key(a) == key(b), key(a) == key(c)
+    (True, False)
+    >>> key({"packet": {"data": {"packet": {"diagnostics": ["x", "y"]}}}}) == key({"packet": {"data": {"packet": {"diagnostics": ["y", "x"]}}}})
+    True
+    """
+    if isinstance(v, dict):
+        return {k: (sorted(x, key=lambda d: json.dumps(d, sort_keys=True))
+                    if k in ("diagnostics", "header_error") and isinstance(x, list) else multisets(x))
+                for k, x in v.items()}
+    if isinstance(v, list):
+        return [multisets(x) for x in v]
+    return v
+
+
 def key(v):
-    return json.dumps(norm(v), sort_keys=True, ensure_ascii=False)
+    return json.dumps(norm(multisets(v)), sort_keys=True, ensure_ascii=False)
 
 
 def diagnostics_key(ds):

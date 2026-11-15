@@ -18,7 +18,9 @@ Needs the jsonschema package (pip install jsonschema). Checks, beyond the schema
 - every refused case names its refusal code (REFUSALS_REQUIRED);
 - (by the schema) a build case's report is one the README lists, with only the args that report takes,
   and each input form has its own expect form: decode keys, info for encode, tnc2 for build;
-- cases/precedence.json is what tools/precedence.py writes.
+- cases/precedence.json is what tools/precedence.py writes;
+- tools/compare.py's doctests pass (among them, diagnostics compare as multisets at every depth,
+  a third-party packet's inner diagnostics included, as the README's Comparing says).
 """
 
 import json
@@ -173,6 +175,10 @@ def main():
     made = subprocess.run([sys.executable, str(ROOT / "tools" / "precedence.py"), "--check"], capture_output=True, text=True)
     if made.returncode != 0:
         problems.append("cases/precedence.json: " + (made.stderr.strip() or "out of date"))
+
+    tested = subprocess.run([sys.executable, "-m", "doctest", str(ROOT / "tools" / "compare.py")], capture_output=True, text=True)
+    if tested.returncode != 0:
+        problems.append("tools/compare.py: doctests fail\n" + (tested.stdout + tested.stderr).strip())
 
     for p in problems:
         print(p)
