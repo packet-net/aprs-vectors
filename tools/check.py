@@ -12,7 +12,7 @@ Needs the jsonschema package (pip install jsonschema). Checks, beyond the schema
 - every tolerable code has a case showing both sides of it: a strict result that differs from
   the lenient one, where that code is the only tolerance the lenient decoding used and strict is not
   rejected by another code (the README's tolerance check);
-- every `refusal` (in expect) and `reencode_refusal` names an id in the `refusals` list of codes.json,
+- every `refusal` (in expect), `reencode_refusal` and `pass_through` refusal names an id in the `refusals` list of codes.json,
   and no case names the fallback `does-not-read-back`;
 - every refusal id except the exempt ones (EXEMPT_REFUSALS) is named by at least one case;
 - every refused case names its refusal code (REFUSALS_REQUIRED);
@@ -145,8 +145,11 @@ def main():
             if "canonical_info" in case and case.get("reencode") not in ("equivalent", "rounded"):
                 problem("canonical_info belongs with reencode 'equivalent' or 'rounded'")
 
+            pass_through = case.get("pass_through", {})
             for key, value in (("refusal", case.get("expect", {}).get("refusal")),
-                               ("reencode_refusal", case.get("reencode_refusal"))):
+                               ("reencode_refusal", case.get("reencode_refusal")),
+                               ("pass_through.tnc2_refusal", pass_through.get("tnc2_refusal")),
+                               ("pass_through.ax25_refusal", pass_through.get("ax25_refusal"))):
                 if value is None:
                     continue
                 named_refusals.add(value)

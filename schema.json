@@ -338,6 +338,26 @@
             "refused"
           ]
         },
+        "pass_through": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "tnc2": {
+              "type": "string"
+            },
+            "tnc2_refusal": {
+              "$ref": "#/$defs/code"
+            },
+            "ax25_hex": {
+              "type": "string",
+              "pattern": "^([0-9A-Fa-f]{2})*$"
+            },
+            "ax25_refusal": {
+              "$ref": "#/$defs/code"
+            }
+          }
+        },
         "canonical_info": {
           "type": "string"
         },
@@ -483,6 +503,33 @@
                     "ax25_hex",
                     "refused",
                     "refusal"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "pass_through"
+            ]
+          },
+          "then": {
+            "properties": {
+              "input": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "encode"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "build"
+                      ]
+                    }
                   ]
                 }
               }

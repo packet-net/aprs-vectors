@@ -158,10 +158,13 @@ def data_type(mode, recs, inp):
 
 
 def without_inner_info(data):
-    """Third-party data without its inner packet's diagnostics, which generated data cannot know
-    in advance (only info ones get this far)."""
+    """Third-party data without its inner packet's info diagnostics, which are not compared; its
+    warnings and errors are part of its data (README, Read-back) and stay."""
     if isinstance(data, dict) and isinstance(data.get("packet"), dict) and "diagnostics" in data["packet"]:
+        kept = [d for d in data["packet"]["diagnostics"] if not d.startswith("info:")]
         data = dict(data, packet={k: v for k, v in data["packet"].items() if k != "diagnostics"})
+        if kept:
+            data["packet"]["diagnostics"] = kept
     return data
 
 
@@ -193,7 +196,7 @@ def read_back(given, again):
     at every depth, with only the allowances that rule lists that exact data can meet (rounding has
     nothing to do): empty and absent are one value; a value the form must carry where the data leaves
     it out (the default compression type, a Mic-E speed of 0, the fields an NMEA sentence determines);
-    a third-party packet's inner info diagnostics are not compared. Returns the names of the fields
+    a third-party packet's inner info diagnostics are not compared, its warnings and errors are. Returns the names of the fields
     that differ, or [] when it matches.
 
     >>> read_back({"type": "message", "addressee": "A", "text": "hi", "message_id": ""}, {"type": "message", "addressee": "A", "text": "hi"})
@@ -202,6 +205,9 @@ def read_back(given, again):
     []
     >>> read_back({"type": "weather", "weather": {"extra": [{"letter": "#", "value": "123"}]}}, {"type": "weather", "weather": {"rain_raw": 123}})
     ['weather']
+    >>> tp = lambda *ds: {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "status", "text": "x"}, "diagnostics": list(ds)}}
+    >>> read_back(tp("warning:control-character-in-text"), tp("warning:control-character-in-text", "info:obsolete-format")), read_back(tp(), tp("warning:empty-destination"))
+    ([], ['packet'])
     """
     a = dropped_empty(without_inner_info(again)) or {}
     b = dropped_empty(without_inner_info(given)) or {}
@@ -371,10 +377,12 @@ def own_checks(mode, r, inp):
             bad = bad + again["header_error"]
         if bad:
             return "written bytes decode with " + ", ".join(sorted(set(bad)))
+        # a third-party packet's inner warnings and errors are part of its data (README Read-back)
         inner = ((again.get("data") or {}).get("packet") or {}).get("diagnostics", [])
-        inner_bad = [d for d in inner if not d.startswith("info:")]
-        if inner_bad:
-            return "written bytes decode with, in the inner packet, " + ", ".join(sorted(set(inner_bad)))
+        given = (((inp or {}).get("data") or {}).get("packet") or {}).get("diagnostics", [])
+        inner_bad = sorted(d for d in inner if not d.startswith("info:"))
+        if inner_bad != sorted(d for d in given if not d.startswith("info:")):
+            return "written bytes decode with, in the inner packet, " + (", ".join(sorted(set(inner_bad))) or "fewer diagnostics than given")
         if inp is not None and inp.get("exact"):
             keys = read_back(inp.get("data"), again.get("data"))
             if keys:
