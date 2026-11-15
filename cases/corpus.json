@@ -17760,7 +17760,7 @@
       },
       "strict": {"rejected_by": "non-utf8-text"},
       "reencode": "equivalent",
-      "canonical_info": "`{BZm@\u001F>/'\"4\"}|!+&P'i||3ö!w0i!"
+      "canonical_info": "`{BZm@\u001F>/'\"4\"}|3ö|!+&P'i|!w0i!"
     },
     {
       "id": "corpus/1233",
