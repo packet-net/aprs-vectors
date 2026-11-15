@@ -2836,6 +2836,24 @@
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "absent-text-is-empty-text"],
       "input": {"encode": {"type": "directed-query", "addressee": "N0CALL", "query_type": "APRSP", "target": ""}},
       "expect": {"info": ":N0CALL   :?APRSP"}
+    },
+    {
+      "id": "encode/weather-software-type-without-a-unit",
+      "description": "A software type and unit are one thing (a letter then a 2-4 character unit), so a software type given with no unit lacks a field it needs: missing-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is", "absent-text-is-empty-text"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"temperature_f": 70, "software": "x"}}},
+      "expect": {"refused": true, "refusal": "missing-field"}
+    },
+    {
+      "id": "encode/weather-unit-without-a-software-type",
+      "description": "A unit given with no software type lacks the letter it goes with: missing-field.",
+      "source": "read-back audit 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-weather-field-a-letter-is", "absent-text-is-empty-text"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/_", "weather": {"temperature_f": 70, "unit": "RSW"}}},
+      "expect": {"refused": true, "refusal": "missing-field"}
     }
   ]
 }
