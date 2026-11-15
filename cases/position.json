@@ -1450,13 +1450,23 @@
       "reencode": "identical"
     },
     {
-      "id": "position/dao-after-telemetry-before-text-with-bars",
-      "description": "A !DAO! after the telemetry and before text with bars: the telemetry is the last valid block and the !DAO! is read outside it.",
+      "id": "position/dao-shaped-block-after-a-block-is-the-telemetry",
+      "description": "Pairs of neighbouring bars slide, so in x|!!!!|!W12!y|a b| the pairs are !!!!, !W12!y and a b, and the last valid one, !W12!y, is the telemetry: a block's bytes are base-91 whatever they look like, so no !DAO! is read from it.",
       "source": "aprs-vectors#32 (R27) 2026-11-16",
       "authority": "interpretation",
       "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
       "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|!!!!|!W12!y|a b|"},
-      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.50001666666667, "longitude": -0.5000333333333333, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "telemetry": {"sequence": 0, "analog": [0]}, "comment": "xy|a b|"}},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 54, "analog": [1473, 88]}, "comment": "x|!!!!a b|"}},
+      "strict": "same"
+    },
+    {
+      "id": "position/dao-after-telemetry-before-text-with-bars",
+      "description": "A !DAO! (five bytes, so not a block) between the telemetry and text with bars: the telemetry is the last valid pair, !!!!, and the !DAO! is read outside it.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|!!!!|!W12!|a b|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.50001666666667, "longitude": -0.5000333333333333, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "telemetry": {"sequence": 0, "analog": [0]}, "comment": "x|a b|"}},
       "strict": "same"
     }
   ]

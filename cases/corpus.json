@@ -17755,7 +17755,7 @@
       "input": {"tnc2_hex": "4B4E35442D393E5239505834562C574135534F4E2D322C57494445322C57583549492D322A2C57494445322D312C7141522C57583549492D31313A607B425A6D401F3E2F272234227D7C212B265027697C21773069217C33F6"},
       "expect": {
         "header": {"source": "KN5D-9", "destination": "R9PX4V", "path": ["WA5SON-2*", "WIDE2*", "WX5II-2*", "WIDE2-1", "qAR", "WX5II-11"], "q_construct": {"construct": "qAR", "station": "WX5II-11"}},
-        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 29.141027472527472, "longitude": -95.64379853479853, "symbol": "/>", "course_degrees": 203, "speed_knots": 13, "altitude_feet": 36.08923884514435, "dao": {"datum": "W", "precision": "base91"}, "comment": "|!+&P'i||3ö"},
+        "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 29.141027472527472, "longitude": -95.64379853479853, "symbol": "/>", "course_degrees": 203, "speed_knots": 13, "altitude_feet": 36.08923884514435, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 10, "analog": [502, 618]}, "comment": "|3ö"},
         "diagnostics": ["warning:non-utf8-text"]
       },
       "strict": {"rejected_by": "non-utf8-text"},
