@@ -328,6 +328,15 @@
       "expect": {
         "tnc2": "M0LTE-7>P82U8L,WIDE1-1,WIDE2-1:`H^]l \u001ck/'144.390MHz /X"
       }
+    },
+    {
+      "id": "build/mic-e-comment-starting-with-a-slash-takes-a-space",
+      "description": "A Mic-E comment /{}WX is written after a space: after a / its //{} would read back as a Mic-E altitude, and straight on its / would be dropped as the delimiter.",
+      "source": "differential fuzzing 2026-11-15 (round 5 final run)",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"build": {"station": {"source": "W1AW"}, "report": "mic-e", "args": {"latitude": -35.49151, "longitude": -11.54059, "symbol": "/#", "course_degrees": 74, "speed_kmh": 165.9, "comment": "/{}WX", "mic_e_message": "returning"}}},
+      "expect": {"tnc2": "W1AW>S5294Y:`'<Hu f#/' /{}WX"}
     }
   ]
 }

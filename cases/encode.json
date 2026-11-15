@@ -2440,6 +2440,15 @@
       "expect": {
         "info": ")147.345+!5133.39N\\11220.22WmPHG4480/147.345MHz{5} C107"
       }
+    },
+    {
+      "id": "encode/mic-e-text-altitude-after-an-altitude-takes-a-slash",
+      "description": "Neutral data with 123 feet, which only a /A= holds exactly, and the comment A=-00016}: written straight after the /A=, 016} would read back as a later Mic-E altitude; after a / it is inside a whole /A=, which is text, so that is the form written.",
+      "source": "differential fuzzing 2026-11-15 (round 5 final run)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"encode": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 123, "comment": "A=-00016}"}},
+      "expect": {"info": "`(_fn\"Oj/`/A=000123/A=-00016}", "destination": "S32UVT"}
     }
   ]
 }
