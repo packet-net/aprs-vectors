@@ -10,7 +10,8 @@ Needs the jsonschema package (pip install jsonschema). Checks, beyond the schema
 - an interpretation case links at least one interpretation;
 - canonical_info appears exactly with an equivalent or rounded re-encoding;
 - every tolerable code has a case showing both sides of it: a strict result that differs from
-  the lenient one, where that code is the only tolerance the lenient decoding used;
+  the lenient one, where that code is the only tolerance the lenient decoding used and strict is not
+  rejected by another code (the README's tolerance check);
 - every `refusal` (in expect) and `reencode_refusal` names an id in the `refusals` list of codes.json,
   and no case names the fallback `does-not-read-back`;
 - every refusal id except the exempt ones (EXEMPT_REFUSALS) is named by at least one case;
@@ -158,7 +159,8 @@ def main():
                 for d in case.get("expect", {}).get("diagnostics", [])
                 if d.startswith("warning:") and d.partition(":")[2] in tolerable
             }
-            if isinstance(strict, dict) and len(tolerated) == 1:
+            # the README's tolerance check: one tolerable code, and strict not rejected by another
+            if isinstance(strict, dict) and len(tolerated) == 1 and strict.get("rejected_by", next(iter(tolerated))) in tolerated:
                 shown_both_sides |= tolerated
 
     for code in sorted(tolerable - shown_both_sides):

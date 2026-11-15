@@ -133,7 +133,7 @@ The rules, which make absence meaningful: a field that is not listed must not be
 - `reencode: "identical"` compares against the input's information field without any trailing CR or LF, which is a tolerated defect rather than part of the data.
 - `reencode: "equivalent"` means the bytes written are `canonical_info`, byte for byte, and decode, leniently, to the same data with no warnings or errors.
 - `reencode: "rounded"` means the bytes written are `canonical_info`, byte for byte; they decode cleanly, to the data with one value rounded, so the data is not compared.
-- A tolerance check (turning off only the one tolerance a case used) applies to cases whose lenient diagnostics name exactly one tolerable code; it must give the `strict` result.
+- A tolerance check (turning off only the one tolerance a case used) applies to cases whose lenient diagnostics name exactly one tolerable code, unless the case's `strict` is rejected by a different code; it must give the `strict` result. The exception is for a case where turning the one tolerance off changes how the rest of the packet is read and brings out another defect, which strict rejects but the check still tolerates, so the check's result is neither the lenient nor the strict one (`mic-e/telemetry-left-once-an-altitude-is-lifted-then-a-spaced-comment`).
 
 ### Rules the cases rely on
 
