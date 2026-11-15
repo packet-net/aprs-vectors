@@ -27,7 +27,13 @@ weather fields, a recipe's path; each the largest over every third-party level),
 those over the capacity are counted by limit as checked, and the rest by limit as not checked (all of them, if no --limits file was given). `python3 -m doctest tools/compare.py` tests the measures and the multisets. For encode and build dumps it also checks each implementation on its
 own: bytes written for exact data must decode to that data, cleanly; a built line must decode
 cleanly. `--input` is the input all the dumps read; with it, the report shows each bucket's
-example inputs. Exits 1 if any line differs. Standard library only.
+example inputs. Each record is also judged on its own (README, Read-back): an encode record's bytes, for
+exact data, must read back to the data given by the Read-back comparison ("written bytes decode to
+different data"); a build record's line, and its `ax25` frame when it writes one, must read back
+cleanly with the recipe's source, destination and path ("built line's header decodes to a different
+header"); a decode record must not re-encode `fails`, and the TNC2 line and AX.25 frame its API view
+writes must read back with the header decoded ("written tnc2 header decodes to a different header").
+Exits 1 if any line differs or any record has a problem of its own. Standard library only.
 """
 
 import argparse
@@ -129,6 +135,9 @@ def parts_of(mode, r):
         if r.get("result") == "built":
             p["tnc2"] = json.dumps(r.get("tnc2"))
             p.update(result_parts("again", r.get("again")))
+        if "ax25" in r:
+            # compared only among the dumps that write a frame
+            p["ax25"] = json.dumps([r["ax25"], r.get("ax25_refusal")])
     return p
 
 
@@ -154,6 +163,130 @@ def without_inner_info(data):
     if isinstance(data, dict) and isinstance(data.get("packet"), dict) and "diagnostics" in data["packet"]:
         data = dict(data, packet={k: v for k, v in data["packet"].items() if k != "diagnostics"})
     return data
+
+
+def dropped_empty(v, field=None):
+    """The data with every field given as an empty string or an empty list left out, as the data form
+    leaves them out (README, Read-back: empty and absent are one value), except `reply_ack`, where ""
+    is a value, and a header's `source` and `destination`. Items of a list are values, kept as they are.
+
+    >>> dropped_empty({"type": "message", "text": "hi", "message_id": "", "reply_ack": ""})
+    {'type': 'message', 'text': 'hi', 'reply_ack': ''}
+    >>> dropped_empty({"type": "telemetry-units", "units": ["V", ""], "addressee": "N0CALL"})
+    {'type': 'telemetry-units', 'units': ['V', ''], 'addressee': 'N0CALL'}
+    """
+    if isinstance(v, dict):
+        return {k: dropped_empty(x, k) for k, x in v.items()
+                if k in ("reply_ack", "source", "destination") or not (x is None or x == "" or x == [])}
+    if isinstance(v, list):
+        return [dropped_empty(x) for x in v]
+    return v
+
+
+DEFAULT_COMPRESSION = {"fix": "current", "source": "other", "origin": "software"}
+NMEA_FIELDS = ("has_checksum", "latitude", "longitude", "fix", "course_degrees", "speed_knots", "altitude_m", "time", "waypoint")
+
+
+def read_back(given, again):
+    """Whether data read back (`again`) matches the data given, for data whose every value is one its
+    format holds (exact), by the README's Read-back comparison: field by field in the neutral form,
+    at every depth, with only the allowances that rule lists that exact data can meet (rounding has
+    nothing to do): empty and absent are one value; a value the form must carry where the data leaves
+    it out (the default compression type, a Mic-E speed of 0, the fields an NMEA sentence determines);
+    a third-party packet's inner info diagnostics are not compared. Returns the names of the fields
+    that differ, or [] when it matches.
+
+    >>> read_back({"type": "message", "addressee": "A", "text": "hi", "message_id": ""}, {"type": "message", "addressee": "A", "text": "hi"})
+    []
+    >>> read_back({"type": "nmea", "sentence": "GPGLL,1"}, {"type": "nmea", "sentence": "GPGLL,1", "latitude": 1.5})
+    []
+    >>> read_back({"type": "weather", "weather": {"extra": [{"letter": "#", "value": "123"}]}}, {"type": "weather", "weather": {"rain_raw": 123}})
+    ['weather']
+    """
+    a = dropped_empty(without_inner_info(again)) or {}
+    b = dropped_empty(without_inner_info(given)) or {}
+    if b.get("type") == "third-party" and a.get("type") == "third-party":
+        pa, pb = a.get("packet") or {}, b.get("packet") or {}
+        inner = read_back(pb.get("data"), pa.get("data"))
+        a = dict(a, packet={k: v for k, v in pa.items() if k != "data"})
+        b = dict(b, packet={k: v for k, v in pb.items() if k != "data"})
+        if inner:
+            return ["packet.data." + k for k in inner]
+    if b.get("compressed") and "compression" not in b and a.get("compression") == DEFAULT_COMPRESSION:
+        a = {k: v for k, v in a.items() if k != "compression"}
+    if b.get("type") == "mic-e" and "speed_knots" not in b and a.get("speed_knots") == 0:
+        a = {k: v for k, v in a.items() if k != "speed_knots"}
+    if b.get("type") == "nmea":
+        a = {k: v for k, v in a.items() if k not in NMEA_FIELDS or k in b}
+    if key(a) == key(b):
+        return []
+    a, b = norm(a), norm(b)
+    return sorted(k for k in set(a) | set(b) if key(a.get(k)) != key(b.get(k)))
+
+
+def tnc2_header(line):
+    """The header of a TNC2 line (bytes), in the neutral header form: `*` on every used path entry
+    (marked, or before a marked one). None if the line has no header.
+
+    >>> tnc2_header(b"N0CALL>APZ001,WIDE1-1,N0CALL-1*,WIDE2-1:>hi")
+    {'source': 'N0CALL', 'destination': 'APZ001', 'path': ['WIDE1-1*', 'N0CALL-1*', 'WIDE2-1']}
+    """
+    head, colon, _ = line.partition(b":")
+    source, gt, rest = head.partition(b">")
+    if not colon or not gt:
+        return None
+    fields = rest.decode("latin-1").split(",")
+    entries = [(e[:-1], True) if e.endswith("*") else (e, False) for e in fields[1:]]
+    return _header(source.decode("latin-1"), fields[0], entries)
+
+
+def ax25_header(frame):
+    """The addresses of an AX.25 UI frame (bytes, without flags or FCS), in the neutral header form:
+    an entry is used when its H bit is set or it comes before one that is (README, Addresses and
+    path); an empty digipeater is left out. None if the frame has no complete address field.
+
+    >>> ax25_header(bytes.fromhex("82A0B4606062E09C608682989860AE92888A6240629C6086829898E303F03E6869"))
+    {'source': 'N0CALL', 'destination': 'APZ001', 'path': ['WIDE1-1*', 'N0CALL-1*']}
+    """
+    addresses = []
+    for i in range(0, len(frame) - 6, 7):
+        a = frame[i:i + 7]
+        call = bytes(b >> 1 for b in a[:6]).decode("latin-1").rstrip(" ")
+        ssid = (a[6] >> 1) & 0x0F
+        addresses.append((call + (f"-{ssid}" if ssid else ""), bool(a[6] & 0x80), call))
+        if a[6] & 1:
+            break
+    else:
+        return None
+    if len(addresses) < 2:
+        return None
+    entries = [(text, h) for text, h, call in addresses[2:] if call]
+    return _header(addresses[1][0], addresses[0][0], entries)
+
+
+def _header(source, destination, entries):
+    last = max((i for i, (_, marked) in enumerate(entries) if marked), default=-1)
+    h = {"source": source, "destination": destination}
+    if entries:
+        h["path"] = [text + ("*" if i <= last else "") for i, (text, _) in enumerate(entries)]
+    return h
+
+
+def header_differs(written, expected):
+    """The parts of a header read back that differ from the header expected: source, destination, path."""
+    if written is None:
+        return ["header"]
+    return [k for k in ("source", "destination", "path")
+            if k in expected and (written.get(k) or []) != (expected.get(k) or [])]
+
+
+def recipe_header(inp):
+    """The header a recipe asks for, in the neutral form (a Mic-E destination is computed, so left out)."""
+    st = inp.get("station") or {"source": "N0CALL"}
+    h = {"source": st.get("source", "N0CALL"), "path": st.get("path") or []}
+    if inp.get("report") != "mic-e":
+        h["destination"] = st.get("destination") or "APZ001"
+    return h
 
 
 LIMIT = "error:implementation-limit"
@@ -242,10 +375,10 @@ def own_checks(mode, r, inp):
         inner_bad = [d for d in inner if not d.startswith("info:")]
         if inner_bad:
             return "written bytes decode with, in the inner packet, " + ", ".join(sorted(set(inner_bad)))
-        if inp is not None and inp.get("exact") and key(without_inner_info(again.get("data"))) != key(without_inner_info(inp.get("data"))):
-            a, b = norm(again.get("data")) or {}, norm(inp.get("data")) or {}
-            keys = sorted(k for k in set(a) | set(b) if a.get(k) != b.get(k))
-            return "written bytes decode to different data: " + ", ".join(keys)
+        if inp is not None and inp.get("exact"):
+            keys = read_back(inp.get("data"), again.get("data"))
+            if keys:
+                return "written bytes decode to different data: " + ", ".join(keys)
     if mode == "build" and r.get("result") == "built":
         again = r.get("again") or {}
         bad = [d for d in again.get("diagnostics", []) if not d.startswith("info:")]
@@ -253,6 +386,35 @@ def own_checks(mode, r, inp):
             bad = bad + again["header_error"]
         if bad:
             return "built line decodes with " + ", ".join(sorted(set(bad)))
+        if inp is not None and "header" in again:
+            differs = header_differs(again["header"], recipe_header(inp))
+            if differs:
+                return "built line's header decodes to a different header: " + ", ".join(differs)
+    if mode == "build" and inp is not None and r.get("ax25") not in (None, "refused"):
+        try:
+            frame = bytes.fromhex(r["ax25"])
+        except ValueError:
+            return "built frame is not hex"
+        differs = header_differs(ax25_header(frame), recipe_header(inp))
+        if differs:
+            return "built frame's header decodes to a different header: " + ", ".join(differs)
+    if mode == "decode":
+        if r.get("reencode") == "fails":
+            return "re-encoded bytes do not read back as the same data (reencode fails: a fault, or a value the form rounds)"
+        header = (r.get("lenient") or {}).get("header")
+        api = r.get("api") or {}
+        if header:
+            expected = {"source": header.get("source"), "destination": header.get("destination"), "path": header.get("path") or []}
+            for form, parse in (("tnc2", tnc2_header), ("ax25", ax25_header)):
+                written = api.get(form)
+                if not isinstance(written, str) or written == "refused":
+                    continue
+                try:
+                    differs = header_differs(parse(bytes.fromhex(written)), expected)
+                except ValueError:
+                    continue
+                if differs:
+                    return f"written {form} header decodes to a different header: " + ", ".join(differs)
     return None
 
 
