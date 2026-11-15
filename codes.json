@@ -363,7 +363,7 @@
     },
     {
       "id": "invalid-message-id",
-      "meaning": "A message ID is over 5 characters or not letters and digits, or given empty to a builder (in neutral data an empty one is none: Read-back), or an ack or reject carries the wrong kind of ID."
+      "meaning": "A message ID is over 5 characters or not letters and digits, a builder's message ID is empty, an ack's or reject's ID is empty or absent (in neutral data any other empty ID is none: Read-back), or an ack or reject carries the wrong kind of ID."
     },
     {
       "id": "padding-space",
@@ -443,7 +443,7 @@
     },
     {
       "id": "information-field-too-long",
-      "meaning": "The information field as written is over 256 bytes (APRS12c ch. 3), and nothing else is wrong with the data: checked last, on the bytes written."
+      "meaning": "The information field as written is over 256 bytes (APRS12c ch. 3), and nothing else is wrong with the data: checked last of the data's checks, on the bytes written; only ax25-cannot-carry and tnc2-cannot-carry, at writing a form, come after it."
     }
   ]
 }
