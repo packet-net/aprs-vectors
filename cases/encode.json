@@ -3097,6 +3097,33 @@
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "numbers-given-without-their-text"],
       "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [-9223372036854775808, 0, 0, 0, 0], "bits": "00000000"}},
       "expect": {"info": "T#001,-9223372036854776000,000,000,000,000,00000000"}
+    },
+    {
+      "id": "encode/raw-rain-counter-between-whole-counts",
+      "description": "The raw rain counter is a weather value, a step field: 950.6 is rounded to 951, not refused.",
+      "source": "referee 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "weather", "timestamp": "10092345", "weather": {"rain_raw": 950.6}}},
+      "expect": {"info": "_10092345c...s...g...t...#951"}
+    },
+    {
+      "id": "encode/voice-offset-between-whole-kilohertz",
+      "description": "A voice frequency's offset is a whole-unit field: 600.4 kHz is value-out-of-range, not rounded.",
+      "source": "referee 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "frequency": {"mhz": 146.52, "offset_khz": 600.4}}},
+      "expect": {"refused": true, "refusal": "value-out-of-range"}
+    },
+    {
+      "id": "encode/voice-offset-not-a-multiple-of-10-khz",
+      "description": "An offset of 605 kHz is whole but not a multiple of the 10 kHz the field holds: value-has-no-form, not rounded to 610.",
+      "source": "referee 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "frequency": {"mhz": 146.52, "offset_khz": 605}}},
+      "expect": {"refused": true, "refusal": "value-has-no-form"}
     }
   ]
 }
