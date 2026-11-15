@@ -1368,6 +1368,19 @@
       "strict": "same",
       "reencode": "equivalent",
       "canonical_info": "!4903.50N/07201.75W-PHG33é30!W12!"
+    },
+    {
+      "id": "position/phg-after-the-symbol-takes-a-bar-before-telemetry",
+      "description": "A PHG straight after the symbol is the data extension, not comment: PHG1|14 has height code |, so only one | is left in the comment and there is no telemetry block.",
+      "source": "review of the final pass 2026-11-15 (round 5)",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-and-dao"],
+      "input": {"info": "!4903.50N/07201.75W>PHG1|146.520MHz!!|"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "phg": {"power": 1, "height": 76, "gain": 1, "directivity": 4}, "comment": "6.520MHz!!|"}
+      },
+      "strict": "same",
+      "reencode": "identical"
     }
   ]
 }
