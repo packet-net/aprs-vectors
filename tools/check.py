@@ -159,7 +159,7 @@ def main():
                 for d in case.get("expect", {}).get("diagnostics", [])
                 if d.startswith("warning:") and d.partition(":")[2] in tolerable
             }
-            # the README's tolerance check: one tolerable code, and strict not rejected by another
+            # shows both sides: one tolerable code, and strict a reading or rejected by that code
             if isinstance(strict, dict) and len(tolerated) == 1 and strict.get("rejected_by", next(iter(tolerated))) in tolerated:
                 shown_both_sides |= tolerated
 

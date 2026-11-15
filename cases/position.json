@@ -975,6 +975,21 @@
       "strict": {"rejected_by": "malformed-timestamp"},
       "reencode": "equivalent",
       "canonical_info": "=R30549z2831.07N/08142.92X_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-timestamp-before-a-lower-case-hemisphere",
+      "description": "A garbled timestamp before an uncompressed position with a lower-case hemisphere: leniently that position decodes, so it is read after the seven bytes; under strict options it does not, so the compressed reading straight after the DTI is taken, and the timestamp, met first, rejects the report.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position", "a-packet-is-read-in-order"],
+      "input": {"info": "@R30549z2831.07n/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=2831.07N/08142.92W_015/001g006t058"
     }
   ]
 }
