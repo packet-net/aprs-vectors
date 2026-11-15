@@ -39,8 +39,8 @@ ORDER = [
     "extension-conflict", "field-not-allowed", "symbol-mismatch", "missing-field", "value-given-twice",
     "text-reads-as-field",
     "does-not-read-back",
-    "ax25-cannot-carry", "tnc2-cannot-carry",
     "information-field-too-long",
+    "ax25-cannot-carry", "tnc2-cannot-carry",
 ]
 
 # Codes the generator makes no pairs with, each for one reason (a hand-written case may still carry one).

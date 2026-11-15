@@ -472,6 +472,24 @@
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets"],
       "input": {"build": {"station": {"source": "N0CALLXYZ"}, "report": "object", "args": {"name": "TOOLONGNAME", "latitude": 1, "longitude": 2, "symbol": "/>", "timestamp": {"utc": "2026-09-27T09:23:45Z", "format": "dhm"}}}, "write": "ax25"},
       "expect": {"refused": true, "refusal": "invalid-name"}
+    },
+    {
+      "id": "build/size-before-an-unwritable-path",
+      "description": "Sound status text whose information field is 257 bytes, from a path entry not marked used before a used one, built as a TNC2 line: the size is the data's last check, before any form is chosen, so information-field-too-long; tnc2-cannot-carry belongs to writing the line.",
+      "source": "refusal order 2026-11-15 (R25)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets", "an-information-field-is-at-most-256-bytes"],
+      "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "status", "args": {"text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}},
+      "expect": {"refused": true, "refusal": "information-field-too-long"}
+    },
+    {
+      "id": "build/size-before-an-unwritable-path-in-a-frame",
+      "description": "The same recipe written as an AX.25 frame: information-field-too-long, before ax25-cannot-carry.",
+      "source": "refusal order 2026-11-15 (R25)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets", "an-information-field-is-at-most-256-bytes"],
+      "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "status", "args": {"text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}, "write": "ax25"},
+      "expect": {"refused": true, "refusal": "information-field-too-long"}
     }
   ]
 }
