@@ -1633,6 +1633,98 @@
       "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "\"4e}146.520MHz T100 x"}},
       "reencode": "equivalent",
       "canonical_info": "`(_fn\"Oj/`\"4e}146.520MHz T100 x"
+    },
+    {
+      "id": "mic-e/altitude-before-a-later-mic-e-altitude-it-overlaps",
+      "description": "A whole /A= is looked for before a later Mic-E altitude, so in x/A=000100} the altitude is 100 feet and 100} is not a Mic-E altitude; the comment is x}, lenient and strict alike.",
+      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x/A=000100}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x}", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=000100x}"
+    },
+    {
+      "id": "mic-e/later-mic-e-altitude-clear-of-an-altitude",
+      "description": "With the /A= lifted first, the later Mic-E altitude is the first that stands whole in the text left: not 100}, which overlaps the /A=, but \"4e} after it, lifted with its warning; the /A= is the altitude.",
+      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x/A=000100}y\"4e}z"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x}yz", "mic_e_message": "returning", "type_code": "`"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x}y\"4e}z", "mic_e_message": "returning", "type_code": "`"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=000100x}yz"
+    },
+    {
+      "id": "mic-e/leading-mic-e-altitude-and-an-altitude",
+      "description": "A Mic-E altitude at the start of the status text is taken as before, and the /A= wins over it; with an altitude at the start no later one is looked for, so 100} is comment text. Written back, x} needs no space after the /A=, since 00x} is not looked for before it.",
+      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`\"4e}x/A=000100}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x}", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=000100x}"
+    },
+    {
+      "id": "mic-e/altitude-inside-telemetry-splits-it",
+      "description": "In Mic-E status text the /A= is looked for before a later Mic-E altitude, and so before base-91 telemetry, which comes after that altitude: a /A= inside |...| is the altitude and the telemetry is text, as a later Mic-E altitude inside it makes it.",
+      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it", "base-91-telemetry-and-dao"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x|!/A=000100|"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x|!|", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=000100x|!|"
+    },
+    {
+      "id": "mic-e/tone-after-an-altitude-after-a-frequency",
+      "description": "Status text 146.520MHz/A=000100 T100 x: the /A= between a frequency and its tone does not cut them off in Mic-E status text either.",
+      "source": "APRS12c ch. 6, ch. 18 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`146.520MHz/A=000100 T100 x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "x", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=000100146.520MHz T100 x"
+    },
+    {
+      "id": "mic-e/mic-e-altitude-between-a-frequency-and-its-tone-cuts-it-off",
+      "description": "A later Mic-E altitude between a frequency and its tone cuts them off, as anything but the /A= does: T100 is comment text. The one space after the frequency is judged on the text left, so it goes; strict leaves the altitude in the text.",
+      "source": "APRS12c ch. 10, ch. 18 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`146.520MHz\"4e} T100 x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "frequency": {"mhz": 146.52}, "comment": "T100 x", "mic_e_message": "returning", "type_code": "`"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "frequency": {"mhz": 146.52}, "comment": "\"4e} T100 x", "mic_e_message": "returning", "type_code": "`"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`\"4e}146.520MHzT100 x"
     }
   ]
 }

@@ -1050,6 +1050,21 @@
       "strict": "same",
       "reencode": "equivalent",
       "canonical_info": "!4903.50N/07201.75W_090/005g010t058xRSW!W12!"
+    },
+    {
+      "id": "weather/software-and-unit-before-telemetry-and-text-is-text",
+      "description": "The software type and unit must be the whole of the text left after the fields, and stand whole as sent: in t058xRSW|!!!!|abc the text left is xRSWabc, which is weather-comment text, not the software x, the unit RSW and the comment abc.",
+      "source": "APRS12c ch. 12, ch. 13 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W_090/005g010t058xRSW|!!!!|abc"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "telemetry": {"sequence": 0, "analog": [0]}, "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 58}, "comment": "xRSWabc"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     }
   ]
 }
