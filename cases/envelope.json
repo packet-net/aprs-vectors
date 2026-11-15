@@ -925,6 +925,30 @@
       "expect": {"header": {"source": "N0CALL", "destination": "APRS"}, "data": {"type": "third-party", "packet": {"source": "n0call", "destination": "APRS", "data": {"type": "status", "text": "hi"}}}},
       "strict": "same",
       "pass_through_inner": {"tnc2": "n0call>APRS:>hi", "ax25_refusal": "ax25-cannot-carry"}
+    },
+    {
+      "id": "envelope/pass-through-trailing-crlf",
+      "description": "A trailing CR LF is one run, taken off whole by a decoder with one trailing-line-break, and a pass-through writes it as received: it ends the line where it ends anyway.",
+      "source": "second reviews 2026-11-16 (R28)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"tnc2": "N0CALL>APZ001:>hi\r\n"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "status", "text": "hi"}, "diagnostics": ["warning:trailing-line-break"]},
+      "strict": {"rejected_by": "trailing-line-break"},
+      "reencode": "identical",
+      "pass_through": {"tnc2": "N0CALL>APZ001:>hi\r\n", "ax25_hex": "82A0B4606062E09C60868298986103F03E68690D0A"}
+    },
+    {
+      "id": "envelope/pass-through-trailing-run-of-line-breaks",
+      "description": "A trailing run of two CR LF pairs: one trailing-line-break, and carried as received by a pass-through.",
+      "source": "second reviews 2026-11-16 (R28)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote"],
+      "input": {"tnc2": "N0CALL>APZ001:>hi\r\n\r\n"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "status", "text": "hi"}, "diagnostics": ["warning:trailing-line-break"]},
+      "strict": {"rejected_by": "trailing-line-break"},
+      "reencode": "identical",
+      "pass_through": {"tnc2": "N0CALL>APZ001:>hi\r\n\r\n", "ax25_hex": "82A0B4606062E09C60868298986103F03E68690D0A0D0A"}
     }
   ]
 }

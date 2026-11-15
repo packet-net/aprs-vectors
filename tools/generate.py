@@ -279,7 +279,11 @@ class DataGen:
 
     def data(self, depth: int = 0) -> tuple[dict, bool]:
         rng = self.rng
-        types = [t for t in self.WEIGHTS if t in self.pool.by_type and (depth == 0 or t not in ("third-party", "mic-e"))]
+        # a third-party packet holds another to two levels (so faults and non-finite values reach depth 2);
+        # Mic-E needs its destination, which an inner packet's data does not carry
+        types = [t for t in self.WEIGHTS if t in self.pool.by_type
+                 and (depth == 0 or (t != "mic-e" and (t != "third-party" or depth < 2)))]
+        self._depth = depth
         t = rng.choices(types, weights=[self.WEIGHTS[x] for x in types])[0]
         d = copy.deepcopy(rng.choice(self.pool.by_type[t]))
         exact = True
@@ -674,7 +678,8 @@ class DataGen:
         packet.pop("diagnostics", None)
         exact = True
         if rng.random() < 0.6:
-            inner, exact = self.data(depth=1)
+            depth = getattr(self, "_depth", 0)
+            inner, exact = self.data(depth=depth + 1)
             packet["data"] = inner
         if rng.random() < 0.2:
             packet["source"] = self._call()
@@ -863,12 +868,13 @@ class DataGen:
                 name = "inner:" + inner[0]
             names.append(name)
         if self.nonfinite and rng.random() < self.nonfinite:
-            numeric = [k for k in self.EDGES if (k[8:] in d.get("weather", {}) if k.startswith("weather.") else k in d)]
+            # any number at any depth: written fields, fields a sentence determines (NMEA), and a
+            # third-party packet's inner data one and two levels down (README Read-back: not-a-number wherever it is)
+            numeric = list(_numbers(d))
             if numeric:
-                key = rng.choice(numeric)
-                obj, leaf = (d["weather"], key[8:]) if key.startswith("weather.") else (d, key)
+                obj, leaf, where = rng.choice(numeric)
                 obj[leaf] = rng.choice([math.nan, math.inf, -math.inf])
-                names.append("non-finite:" + key)
+                names.append("non-finite:" + where)
         return names
 
     # --- values between steps
@@ -892,6 +898,24 @@ class DataGen:
         step = 1 / 380926 if d.get("compressed") and key in ("latitude", "longitude") else steps.get(key, 1)
         obj[key] = obj[key] + step * rng.choice([0.25, 0.4, 0.5, 0.6, 0.75, -0.3])
         return True
+
+
+def _numbers(d, where=""):
+    """(container, key, path) for every number in the data, at every depth, booleans aside."""
+    if isinstance(d, dict):
+        for k, v in d.items():
+            path = f"{where}.{k}" if where else k
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                yield d, k, path
+            elif isinstance(v, (dict, list)):
+                yield from _numbers(v, path)
+    elif isinstance(d, list):
+        for i, v in enumerate(d):
+            path = f"{where}[{i}]"
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                yield d, i, path
+            elif isinstance(v, (dict, list)):
+                yield from _numbers(v, path)
 
 
 # ------------------------------------------------------------------ recipes
