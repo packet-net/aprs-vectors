@@ -3034,6 +3034,69 @@
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes"],
       "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "speed_knots": 0, "altitude_feet": 1000, "comment": "/A=001234 x"}},
       "expect": {"info": "`v:\u001cl \u001c>/`/A=001000//A=001234 x", "destination": "UQ3PPP"}
+    },
+    {
+      "id": "encode/third-party-inner-destination-holding-a-comma",
+      "description": "An inner destination A,B is no address: written, it would read back as the destination A and a path entry B: invalid-third-party-header.",
+      "source": "hostile values 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "third-party-header-addresses"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "A,B", "data": {"type": "status", "text": "hi"}}}},
+      "expect": {"refused": true, "refusal": "invalid-third-party-header"}
+    },
+    {
+      "id": "encode/third-party-inner-path-entry-holding-a-comma",
+      "description": "An inner path entry A,B is no address: it would read back as two entries: invalid-third-party-header.",
+      "source": "hostile values 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "third-party-header-addresses"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APRS", "path": ["A,B"], "data": {"type": "status", "text": "hi"}}}},
+      "expect": {"refused": true, "refusal": "invalid-third-party-header"}
+    },
+    {
+      "id": "encode/third-party-inner-source-holding-a-greater-than",
+      "description": "An inner source A>B would end at the >: a third-party source is printable ASCII other than > and :, invalid-third-party-header.",
+      "source": "hostile values 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "third-party-header-addresses"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "A>B", "destination": "APRS", "data": {"type": "status", "text": "hi"}}}},
+      "expect": {"refused": true, "refusal": "invalid-third-party-header"}
+    },
+    {
+      "id": "encode/third-party-inner-destination-holding-a-comma-two-deep",
+      "description": "An inner destination A,B two third-party levels down: invalid-third-party-header at every depth.",
+      "source": "hostile values 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "third-party-header-addresses"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APRS", "data": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "A,B", "data": {"type": "status", "text": "hi"}}}}}},
+      "expect": {"refused": true, "refusal": "invalid-third-party-header"}
+    },
+    {
+      "id": "encode/third-party-inner-source-holding-a-comma",
+      "description": "A comma is printable ASCII other than > and :, so an inner source A,B is written and reads back whole: the source ends at the >.",
+      "source": "hostile values 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "third-party-header-addresses"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "A,B", "destination": "APRS", "data": {"type": "status", "text": "hi"}}}},
+      "expect": {"info": "}A,B>APRS:>hi"}
+    },
+    {
+      "id": "encode/frequency-offset-at-the-least-32-bit-integer",
+      "description": "A voice frequency offset of -2147483648 kHz is outside what the field holds (up to 9.99 MHz either way): value-out-of-range, met before whether it is a whole number of 10 kHz steps.",
+      "source": "hostile values 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "frequency": {"mhz": 146.52, "offset_khz": -2147483648}}},
+      "expect": {"refused": true, "refusal": "value-out-of-range"}
+    },
+    {
+      "id": "encode/telemetry-value-at-the-least-64-bit-integer",
+      "description": "An analog value of -9223372036854775808 (-2^63, a number JSON and a double hold exactly) is written as the shortest decimal that reads back as the same number, with no exponent: -9223372036854776000.",
+      "source": "hostile values 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "numbers-given-without-their-text"],
+      "input": {"encode": {"type": "telemetry", "sequence": "001", "analog": [-9223372036854775808, 0, 0, 0, 0], "bits": "00000000"}},
+      "expect": {"info": "T#001,-9223372036854776000,000,000,000,000,00000000"}
     }
   ]
 }

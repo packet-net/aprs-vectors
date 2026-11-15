@@ -29,6 +29,9 @@ seed:
 - non-integers in fields held only in whole units or as codes (PHG and DFS digits, comment telemetry,
   area offsets, a DF bearing, storm fields), values between steps ("exact": false), and faults
   planted in third-party inner data one and two levels deep;
+- separators (`,` `>` `:` `*`, a space, a NUL) in a third-party inner source, destination and path
+  entry one and two levels deep and in a recipe's station, and extreme finite integers (32- and
+  64-bit limits, 2^53) in every integer field;
 - weather extra fields of every printable letter with values that read as other fields, as too
   short a run, or as a software type and unit;
 - with --recipes, header paths of every shape a station may give, entries used before, after and
@@ -276,8 +279,50 @@ def nested(data, depth):
     return data
 
 
+# Separators a header must not hold where an address goes (README, Addresses and path).
+SEPARATED = ["A,B", "A>B", "A:B", "A*B", "A B", "A,", ",B", "*", ">", ":", "A\x00B"]
+# Extreme finite integers: type limits of the libraries' own number types.
+EXTREMES = [-2147483648, 2147483647, 4294967295, -9223372036854775808, 9223372036854775807, 2 ** 53, -(2 ** 53)]
+
+
+def extremes():
+    for v in EXTREMES:
+        yield dict(POSITION, frequency={"mhz": 146.52, "offset_khz": v})
+        yield dict(POSITION, frequency={"mhz": 146.52, "tone": "ctcss", "tone_value": v})
+        yield dict(POSITION, telemetry={"sequence": v, "analog": [1]})
+        yield dict(POSITION, telemetry={"sequence": 1, "analog": [v]})
+        yield dict(POSITION, range_miles=v)
+        yield dict(POSITION, altitude_feet=v)
+        yield dict(POSITION, course_degrees=v, speed_knots=v)
+        yield dict(POSITION, phg={"power": v, "height": 1, "gain": 3, "directivity": 2})
+        yield {"type": "agrelo-df", "bearing_degrees": v, "quality": 5}
+        yield {"type": "agrelo-df", "bearing_degrees": 90, "quality": v}
+        yield {"type": "telemetry", "sequence": "001", "analog": [v, 0, 0, 0, 0], "bits": "00000000"}
+        yield {"type": "query", "query_type": "APRS", "footprint": {"latitude": 0, "longitude": 0, "radius_miles": v}}
+        yield {"type": "weather", "timestamp": "10092345", "weather": {"temperature_f": v, "rain_raw": v}}
+
+
+def separated():
+    for sep in SEPARATED:
+        for depth in (1, 2):
+            for field in ("source", "destination"):
+                d = nested({"type": "status", "text": "hi"}, depth)
+                inner = d
+                while inner["packet"]["data"]["type"] == "third-party":
+                    inner = inner["packet"]["data"]
+                inner["packet"][field] = sep
+                yield d
+            d = nested({"type": "status", "text": "hi"}, depth)
+            d["packet"]["path"] = [sep, "WIDE2-1"]
+            yield d
+
+
 def data_catalogue():
     """(data, exact) pairs."""
+    for d in extremes():
+        yield d, True
+    for d in separated():
+        yield d, True
     for _, make in text_slots():
         for t in TEXTS:
             for text in placed(t):
@@ -371,6 +416,10 @@ def recipe_catalogue():
         for text in placed(t):
             yield {"station": {"source": "N0CALL", "destination": text[:9]}, "report": "status", "args": {"text": "hi"}}
             yield {"station": {"source": text[:9]}, "report": "status", "args": {"text": "hi"}}
+    for sep in SEPARATED:
+        yield {"station": {"source": sep}, "report": "status", "args": {"text": "hi"}}
+        yield {"station": {"source": "N0CALL", "destination": sep}, "report": "status", "args": {"text": "hi"}}
+        yield {"station": {"source": "N0CALL", "path": [sep, "WIDE2-1"]}, "report": "status", "args": {"text": "hi"}}
     for alt in ("altitude_feet", "altitude_m"):
         for value in (0, 1000, 304.8, 100.5, -50000):
             for comment in (None, "/A=001234 x", "x /A=001234"):
