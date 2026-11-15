@@ -1636,7 +1636,7 @@
     },
     {
       "id": "mic-e/altitude-before-a-later-mic-e-altitude-it-overlaps",
-      "description": "A whole /A= is looked for before a later Mic-E altitude, so in x/A=000100} the altitude is 100 feet and 100} is not a Mic-E altitude; the comment is x}, lenient and strict alike.",
+      "description": "The search for a later Mic-E altitude never uses the bytes of a whole /A=, so in x/A=000100} the altitude is 100 feet and 100} is not a Mic-E altitude; the comment is x}, lenient and strict alike.",
       "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
       "authority": "interpretation",
       "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
@@ -1651,7 +1651,7 @@
     },
     {
       "id": "mic-e/later-mic-e-altitude-clear-of-an-altitude",
-      "description": "With the /A= lifted first, the later Mic-E altitude is the first that stands whole in the text left: not 100}, which overlaps the /A=, but \"4e} after it, lifted with its warning; the /A= is the altitude.",
+      "description": "The later Mic-E altitude is the first run that uses no byte of a whole /A=: not 100}, which overlaps the /A=, but \"4e} after it, lifted with its warning; the /A= is the altitude.",
       "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
       "authority": "interpretation",
       "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
@@ -1667,7 +1667,7 @@
     },
     {
       "id": "mic-e/leading-mic-e-altitude-and-an-altitude",
-      "description": "A Mic-E altitude at the start of the status text is taken as before, and the /A= wins over it; with an altitude at the start no later one is looked for, so 100} is comment text. Written back, x} needs no space after the /A=, since 00x} is not looked for before it.",
+      "description": "A Mic-E altitude at the start of the status text is taken as before, and the /A= wins over it; with an altitude at the start no later one is looked for, so 100} is comment text. Written back, x} needs no space after the /A=, since 00x} overlaps it and is not a Mic-E altitude.",
       "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
       "authority": "interpretation",
       "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
@@ -1681,19 +1681,34 @@
       "canonical_info": "`(_fn\"Oj/`/A=000100x}"
     },
     {
-      "id": "mic-e/altitude-inside-telemetry-splits-it",
-      "description": "In Mic-E status text the /A= is looked for before a later Mic-E altitude, and so before base-91 telemetry, which comes after that altitude: a /A= inside |...| is the altitude and the telemetry is text, as a later Mic-E altitude inside it makes it.",
-      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "id": "mic-e/altitude-inside-telemetry-is-telemetry",
+      "description": "Telemetry is located before a /A= in Mic-E status text as in every report: |!/A=000100| is a valid base-91 block, so the /A= is its bytes and there is no altitude.",
+      "source": "APRS12c ch. 6, ch. 10, ch. 13 (round 5 final pass, 2026-11-15)",
       "authority": "interpretation",
       "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it", "base-91-telemetry-and-dao"],
       "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x|!/A=000100|"},
       "expect": {
         "header": {"source": "N0CALL", "destination": "S32UVT"},
-        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x|!|", "mic_e_message": "returning", "type_code": "`"}
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 14, "analog": [2940, 1380, 1381, 1380]}, "comment": "x", "mic_e_message": "returning", "type_code": "`"}
       },
       "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/later-mic-e-altitude-overlapping-a-five-digit-altitude-is-taken",
+      "description": "/A=00100 has five digits, so it is not a whole /A= but text, and 100} after it is a later Mic-E altitude: only the bytes of a whole /A= are kept out of the search.",
+      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x/A=00100}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 406417.32283464563, "comment": "x/A=00", "mic_e_message": "returning", "type_code": "`"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "x/A=00100}", "mic_e_message": "returning", "type_code": "`"}},
       "reencode": "equivalent",
-      "canonical_info": "`(_fn\"Oj/`/A=000100x|!|"
+      "canonical_info": "`(_fn\"Oj/`100}x/A=00"
     },
     {
       "id": "mic-e/tone-after-an-altitude-after-a-frequency",
