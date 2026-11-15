@@ -990,6 +990,160 @@
       "strict": {"rejected_by": "malformed-timestamp"},
       "reencode": "equivalent",
       "canonical_info": "=2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/phg-split-by-telemetry-is-text",
+      "description": "PH and G3330 either side of base-91 telemetry are not a PHG: an element is read only where its bytes stand whole as sent, so the comment is the text left, PHG3330 x, which written back would read as a PHG.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>PH|!!!!|G3330 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "PHG3330 x"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/rng-split-by-a-dao-is-text",
+      "description": "RN and G0050 either side of a !DAO! are not an RNG; the comment is the text left.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>RN!W12!G0050 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "comment": "RNG0050 x"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/dfs-split-by-telemetry-is-text",
+      "description": "DF and S2360 either side of base-91 telemetry are not a DFS; the comment is the text left.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>DF|!!!!|S2360"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "DFS2360"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/altitude-split-by-a-dao-is-text",
+      "description": "/A=00 and 0123 either side of a !DAO! are not a /A= altitude; the comment is the text left, which written back would read as one.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>x/A=00!W12!0123"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "comment": "x/A=000123"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/frequency-split-by-an-altitude-is-text",
+      "description": "A /A= inside a frequency's digits splits it: there is no frequency, and the fragments are comment text.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.5/A=00010020MHz T100"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "comment": "146.520MHz T100"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/tone-split-by-an-altitude-is-text",
+      "description": "A /A= inside a tone field splits it: the frequency is read, the tone is not, and the fragments are comment text.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T1/A=00010000 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz/A=000100T100 x"
+    },
+    {
+      "id": "position/tone-after-an-altitude-after-a-frequency",
+      "description": "A /A= between a frequency and its tone does not cut them off (APRS12c ch. 6: the altitude may appear anywhere in the comment), so the tone is the frequency's.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz/A=000100 T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100/A=000100 x"
+    },
+    {
+      "id": "position/offset-after-an-altitude-between-two-fields",
+      "description": "A /A= between two of a frequency's fields does not cut the second off.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T100/A=000100 -060 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100, "offset_khz": -600}, "comment": "x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100 -060/A=000100 x"
+    },
+    {
+      "id": "position/frequency-after-a-phg-and-an-altitude",
+      "description": "A /A= before a frequency does not move it from the start of the comment: the frequency after a PHG and a /A= is read.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W#PHG2360/A=000100146.520MHz T100"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "altitude_feet": 100, "phg": {"power": 2, "height": 3, "gain": 6, "directivity": 0}, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W#PHG2360/146.520MHz T100/A=000100"
+    },
+    {
+      "id": "position/tone-after-a-dao-after-a-frequency-is-text",
+      "description": "A !DAO! between a frequency and its tone cuts them off: only a /A= may stand there, so the tone is comment text.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz!W12! T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHzT100 x!W12!"
+    },
+    {
+      "id": "position/tone-after-telemetry-after-a-frequency-is-text",
+      "description": "Base-91 telemetry between a frequency and its tone cuts them off, so the tone is comment text.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz|!!!!| T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHzT100 x|!!!!|"
     }
   ]
 }

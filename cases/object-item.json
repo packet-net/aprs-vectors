@@ -487,6 +487,20 @@
       },
       "strict": "same",
       "reencode": "identical"
+    },
+    {
+      "id": "object/signpost-split-by-a-dao-is-text",
+      "description": "{5 and 5} either side of a !DAO! are not a signpost; the comment is the text left, which written back would read as one.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": ";SIGN     *092345z4903.50N\\07201.75Wm{5!W12!5}"},
+      "expect": {
+        "data": {"type": "object", "latitude": 49.05835, "longitude": -72.0292, "symbol": "\\m", "dao": {"datum": "W", "precision": "thousandths"}, "comment": "{55}", "name": "SIGN", "timestamp": "092345z"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
     }
   ]
 }
