@@ -32,13 +32,14 @@ EXCLUDED = os.path.join(HERE, "precedence-excluded.txt")
 # The README's "Refusal reasons" order (R1): the refusal names the first code that applies.
 ORDER = [
     "not-encodable",
-    "invalid-address", "ax25-cannot-carry", "tnc2-cannot-carry", "invalid-third-party-header",
+    "invalid-address", "invalid-third-party-header",
     "invalid-addressee", "invalid-name", "invalid-timestamp", "not-a-number", "value-out-of-range", "value-has-no-form",
     "invalid-code", "invalid-symbol", "invalid-character", "too-long", "padding-space", "malformed", "invalid-message-id",
     "invalid-nmea",
     "extension-conflict", "field-not-allowed", "symbol-mismatch", "missing-field", "value-given-twice",
     "text-reads-as-field",
     "does-not-read-back",
+    "ax25-cannot-carry", "tnc2-cannot-carry",
     "information-field-too-long",
 ]
 

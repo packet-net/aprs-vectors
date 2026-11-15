@@ -402,13 +402,13 @@
       "expect": {"refused": true, "refusal": "invalid-address"}
     },
     {
-      "id": "build/unwritable-path-before-a-data-fault",
-      "description": "A path entry not marked used before a used one and an object name of 11 characters, built as a TNC2 line: the header comes first, tnc2-cannot-carry, however the library splits building from writing.",
+      "id": "build/data-fault-before-an-unwritable-path",
+      "description": "An object name of 11 characters and a path entry not marked used before a used one, built as a TNC2 line: data is judged before a form is chosen, so invalid-name; tnc2-cannot-carry belongs to writing the line.",
       "source": "read-back follow-up 2026-11-15",
       "authority": "interpretation",
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets"],
       "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "object", "args": {"name": "TOOLONGNAME", "latitude": 1, "longitude": 2, "symbol": "/>", "timestamp": {"utc": "2026-09-27T09:23:45Z", "format": "dhm"}}}},
-      "expect": {"refused": true, "refusal": "tnc2-cannot-carry"}
+      "expect": {"refused": true, "refusal": "invalid-name"}
     },
     {
       "id": "build/call-of-nine-characters-in-a-line",
@@ -454,6 +454,24 @@
       "interpretations": ["an-encoder-reads-back-what-it-wrote", "a-mic-e-altitude-goes-in-the-mic-e-altitude-bytes", "a-a-altitude-wins-over-a-mic-e-or-compressed-one"],
       "input": {"build": {"station": {"source": "N0CALL"}, "report": "mic-e", "args": {"latitude": 51.5, "longitude": -0.5, "symbol": "/>", "mic_e_message": "en-route", "messaging": true, "comment": "/A=001234 x", "altitude_m": 304.8}}},
       "expect": {"tnc2": "N0CALL>UQ3PPP:`v:\u001cl \u001c>/`/A=001000//A=001234 x"}
+    },
+    {
+      "id": "build/data-fault-before-an-unwritable-path-in-a-frame",
+      "description": "The same recipe written as an AX.25 frame: invalid-name, before ax25-cannot-carry, which belongs to writing the frame.",
+      "source": "refusal order 2026-11-15 (R25)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"build": {"station": {"source": "N0CALL", "path": ["WIDE1-1", "N0CALL-1*"]}, "report": "object", "args": {"name": "TOOLONGNAME", "latitude": 1, "longitude": 2, "symbol": "/>", "timestamp": {"utc": "2026-09-27T09:23:45Z", "format": "dhm"}}}, "write": "ax25"},
+      "expect": {"refused": true, "refusal": "invalid-name"}
+    },
+    {
+      "id": "build/data-fault-before-a-call-a-frame-cannot-carry",
+      "description": "An object name of 11 characters from a source of nine characters, written as an AX.25 frame: invalid-name, before ax25-cannot-carry.",
+      "source": "refusal order 2026-11-15 (R25)",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "which-refusal-a-record-with-two-faults-gets"],
+      "input": {"build": {"station": {"source": "N0CALLXYZ"}, "report": "object", "args": {"name": "TOOLONGNAME", "latitude": 1, "longitude": 2, "symbol": "/>", "timestamp": {"utc": "2026-09-27T09:23:45Z", "format": "dhm"}}}, "write": "ax25"},
+      "expect": {"refused": true, "refusal": "invalid-name"}
     }
   ]
 }
