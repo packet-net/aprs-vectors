@@ -24,7 +24,7 @@ implementation's published capacities, e.g. aprs-c's limits.json: {"information-
 a record that claims a limit the input does not exceed, where the input's size for that limit can be
 computed (information-field bytes and path entries of a decoded line, capability items, extra
 weather fields, a recipe's path; each the largest over every third-party level), is a difference;
-those over the capacity are counted by limit as checked, and the rest by limit as not checked (all of them, if no --limits file was given). `python3 -m doctest tools/compare.py` tests the measures and the multisets. For encode and build dumps it also checks each implementation on its
+those over the capacity are counted by limit as checked, and the rest by limit as not checked (all of them, if no --limits file was given). `python3 -m doctest tools/compare.py` tests the measures and the multisets. A decode record whose `reencode` is `fails` is a problem only where another dump does not say `fails` for that line, or when one dump was given; where every dump fails alike (a value the form rounds, or a shared fault) it is counted in a note that is not a problem and does not affect the exit status. For encode and build dumps it also checks each implementation on its
 own: bytes written for exact data must decode to that data, cleanly; a built line must decode
 cleanly. `--input` is the input all the dumps read; with it, the report shows each bucket's
 example inputs. Each record is also judged on its own (README, Read-back): an encode record's bytes, for
@@ -448,6 +448,9 @@ def left_out(mode, r):
     return result if result in ("unsupported", "implementation-limit") else None
 
 
+REENCODE_FAILS = "re-encoded bytes do not read back as the same data (reencode fails: a fault, or a value the form rounds)"
+
+
 def own_checks(mode, r, inp, line=None):
     """What is wrong with one implementation's record on its own, or None."""
     if mode == "encode" and r.get("result") == "written":
@@ -489,7 +492,7 @@ def own_checks(mode, r, inp, line=None):
             return "built frame's header decodes to a different header: " + ", ".join(differs)
     if mode == "decode":
         if r.get("reencode") == "fails":
-            return "re-encoded bytes do not read back as the same data (reencode fails: a fault, or a value the form rounds)"
+            return REENCODE_FAILS
         lenient = r.get("lenient") or {}
         header = lenient.get("header")
         api = r.get("api") or {}
@@ -568,6 +571,7 @@ def main():
     examples = defaultdict(list)
     own = Counter()
     own_examples = defaultdict(list)
+    alike_lines, alike_last, alike_examples = 0, None, []
     unsupported = Counter()
     skipped = {name: Counter() for name in names}
     mode = None
@@ -624,6 +628,14 @@ def main():
             if why[i]:
                 continue
             problem = own_checks(mode, r, inp, line)
+            if problem == REENCODE_FAILS and len(live) > 1 and all((recs[j] or {}).get("reencode") == "fails" for j in live):
+                # a decode record has no `rounded` marker: when every dump fails alike it is a value the form rounds, or a shared fault
+                if alike_last != n:
+                    alike_last = n
+                    alike_lines += 1
+                    if len(alike_examples) < 3:
+                        alike_examples.append((n, show_input(mode, line)))
+                continue
             if problem:
                 k = (names[i], kind, problem)
                 own[k] += 1
@@ -672,6 +684,10 @@ def main():
             print(f"\n{count:,}  {name} [{kind}] {problem[:200]}")
             for n, shown in own_examples[(name, kind, problem)]:
                 print(f"    line {n}: {shown[:240]}")
+    if alike_lines:
+        print(f"\nnote: {alike_lines:,} lines where every implementation's re-encode fails alike (a value the form rounds, or a fault all share); not counted as problems")
+        for n, shown in alike_examples:
+            print(f"    line {n}: {shown[:240]}")
     if args.json:
         with open(args.json, "w", encoding="utf-8") as f:
             json.dump({
