@@ -871,6 +871,14 @@ class DataGen:
             # any number at any depth: written fields, fields a sentence determines (NMEA), and a
             # third-party packet's inner data one and two levels down (README Read-back: not-a-number wherever it is)
             numeric = list(_numbers(d))
+            # also beyond a small capacity (a sixth analog value, a sixteenth coefficient) and in a field the
+            # report has no place for (telemetry, altitude or a frequency on a weather report): not-a-number first
+            planted = None
+            if rng.random() < 0.3:
+                planted = _plant_out_of_place(rng, d)
+            if planted:
+                names.append("non-finite:" + planted)
+                numeric = []
             if numeric:
                 obj, leaf, where = rng.choice(numeric)
                 obj[leaf] = rng.choice([math.nan, math.inf, -math.inf])
@@ -898,6 +906,31 @@ class DataGen:
         step = 1 / 380926 if d.get("compressed") and key in ("latitude", "longitude") else steps.get(key, 1)
         obj[key] = obj[key] + step * rng.choice([0.25, 0.4, 0.5, 0.6, 0.75, -0.3])
         return True
+
+
+def _plant_out_of_place(rng, d):
+    """Puts a non-finite number where a capacity or a missing place would hide it; returns where, or None."""
+    nan = rng.choice([math.nan, math.inf, -math.inf])
+    target = d
+    while target.get("type") == "third-party" and isinstance(target.get("packet", {}).get("data"), dict) and rng.random() < 0.7:
+        target = target["packet"]["data"]
+    t = target.get("type")
+    if t == "telemetry" and isinstance(target.get("analog"), list):
+        target["analog"] = list(target["analog"]) + [1] * max(0, 5 - len(target["analog"])) + [nan]
+        return "analog[beyond 5]"
+    if t == "telemetry-coefficients":
+        target["coefficients"] = [1] * 15 + [nan]
+        return "coefficients[15]"
+    if "weather" in target and t in ("position", "object", "item"):
+        choice = rng.choice(["telemetry", "altitude", "frequency"])
+        if choice == "telemetry":
+            target["telemetry"] = {"sequence": 1, "analog": [nan]}
+        elif choice == "altitude":
+            target["altitude_feet"] = nan
+        else:
+            target["frequency"] = {"mhz": nan}
+        return "no-place:" + choice
+    return None
 
 
 def _numbers(d, where=""):
