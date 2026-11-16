@@ -1,0 +1,28 @@
+aprs-rs: instructions from the round 5 triage (runs s20101, s20202, s20303 at vectors 1490ec9)
+
+1. Dump tool: undecoded inner data wins over an inner header fault (not-encodable first)
+
+Your encode dump tool refuses third-party data whose inner packet has no destination (or another inner header fault) with invalid-third-party-header before it looks deeper, even when undecoded data ("unrecognized") sits further down within four levels. The Refusal reasons order puts not-encodable first, and the case encode/nested-third-party-ending-in-undecoded-data pins it ("not-encodable, first in the order"). The README's Comparing-implementations rule says a tool that cannot hold undecoded inner data reports "that result's code if it is earlier in the Refusal reasons order than the input's own code, and the input's own code otherwise": invalid-third-party-header is not earlier than not-encodable, so report not-encodable.
+
+Only within the four levels: data nested five deep is invalid-third-party-header and the encoder never reaches what is below (README Third-party; you already do this right).
+
+Reproducer (encode mode, one line):
+{"n":16552,"data":{"type":"third-party","packet":{"source":"AB","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"unrecognized","reason":"malformed"},"diagnostics":["error:invalid-third-party"]}}}}}},"exact":true}
+Today: refused invalid-third-party-header via tool ("the third-party packet has no destination").
+Expected: {"result":"refused","refusal":"not-encodable"}
+
+Second reproducer:
+{"n":66266,"data":{"type":"third-party","packet":{"source":"M0LTE","data":{"type":"third-party","packet":{"source":"PY2SER-R","destination":"AVRS","path":["RCPIP*","PY2AW-10*"],"data":{"type":"unrecognized","reason":"malformed"}}},"path":["TC+IP*"]}},"exact":false}
+Expected: refused not-encodable.
+
+2. Pending ruling F3 (inner Mic-E destination check against an inner header fault)
+
+If the proposed ruling is accepted (the inner destination comparison is the read-back's finding and comes after every rule check), this record must give invalid-third-party-header, not not-encodable:
+{"n":58011,"data":{"type":"third-party","packet":{"source":"N0CALL","destination":"S32U6T","data":{"type":"mic-e","mic_e_message":"returning","latitude":-90.0,"longitude":-12.129,"symbol":"/","course_degrees":251,"speed_knots":20},"path":["TC+IP*"]}},"exact":false}
+Today: not-encodable ("computes Y0000P"). Expected under the proposal: refused invalid-third-party-header. Wait for the ruling before changing this. Note you are inconsistent today: with the same bad path and a computable other destination (s20101 line 7532, longitude 180.0) you give invalid-third-party-header.
+
+3. Pending ruling F2 (non-finite number in a field the report has no place for)
+
+Nothing to change if the proposal is accepted (you give not-a-number there already).
+
+Nothing else to change.

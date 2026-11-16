@@ -1,0 +1,37 @@
+aprs-ts: instructions from the round 5 triage (runs s20101, s20202, s20303 at vectors 1490ec9)
+
+1. Pass-through writers refuse held packets that read back exactly as held (must fix)
+
+packetToTnc2 / packetToAx25 (and the inner-packet writers) call checkReadsAsHeld -> readsAsHeld -> sameData (src/encode/readback.ts), which is compareData with the encoder's rounding allowance. For a compressed report it rounds the held value to the cs step even when the value was read from comment text that holds it in whole units: an RNG0034 in the comment (34 miles compared with 34.49), or wind written after a compressed position (358 degrees compared with 0, 103 with 104, 5 mph with 5.105). So data compared with itself fails, and you refuse not-encodable (also replacing ax25-cannot-carry where the path holds a q-construct). This is about 470 fuzz lines per seed (positions, objects, items), and every one of them fails compareData(held, held).
+
+Rule (README Read-back): "A field's reading depends on its header only through a Mic-E report's destination ... nothing else in the data form reads the header", and only "a field paired with a header under which it reads as other data is refused as not-encodable". The same bytes under the same non-Mic-E destination read as exactly the held data. The allowance rounds "to the step of the form written", and the form written carries these values in whole units.
+
+Fix: when the held data was decoded from the bytes being written, compare the read data with the held data exactly (neutral form, inner info diagnostics left out), with no rounding. If readsAsHeld is also used for packets the program built from data, round only to the step of the field the value is actually carried in, never by the report's compression alone.
+
+Reproducer 1 (decode mode, TNC2 line):
+N0CALL>APZ001:!/5L!!<*e7>  CRNG0034
+hex: 4e3043414c4c3e41505a3030313a212f354c21213c2a65373e202043524e4730303334
+Today: tnc2 refused not-encodable, ax25 refused not-encodable.
+Expected: tnc2 "N0CALL>APZ001:!/5L!!<*e7>  CRNG0034" (as received), ax25 82a0b4606062e09c60868298986103f0212f354c21213c2a65373e202043524e4730303334
+
+Reproducer 2:
+N0CALL>APZ001:!/0L!!<*e7_ !G358/005g010t070
+Expected: tnc2 as received, ax25 82a0b4606062e09c60868298986103f0212f304c21213c2a65375f2021473335382f3030356730313074303730
+
+Reproducer 3 (real packet, q-construct in the path):
+KD8ZLZ-13>APDW18,WIDE2-1,qAR,N8HKU-5:!/91p09Apr_ C 103/000g002t068r000p000P000h48b10268L153
+Expected: tnc2 as received; ax25 refused ax25-cannot-carry (qAR is lower case), not not-encodable.
+
+2. Pending ruling A2: the inner packet of a five-deep nest
+
+For a packet with five or more "}" levels, the decoder reads four and the fifth level is unrecognized with error:invalid-third-party. An inner packet taken out and read on its own decodes one level deeper, so its data differs from the held data at the bottom, and you refuse every inner level not-encodable. The other five write each inner packet as received. The rules do not settle this; the proposed ruling is "write as received" (the held field is compared down to the level the held data reached). If it is accepted:
+
+Reproducer (decode mode):
+N0CALL>APZ001:}A>B:}A>B:}A>B:}A>B:}A>B:>hi
+Expected API view: outer tnc2 as received (you do this already); inner tnc2 "A>B:}A>B:}A>B:}A>B:}A>B:>hi", inner ax25 844040404040e08240404040406103f07d413e423a7d413e423a7d413e423a7d413e423a3e6869; next level "A>B:}A>B:}A>B:}A>B:>hi"; then "A>B:}A>B:}A>B:>hi"; then "A>B:}A>B:>hi". No refusals.
+If the ruling goes the other way, the code should be does-not-read-back, not not-encodable. Wait for the ruling.
+
+3. Pending rulings F2 and F3 (faults set)
+
+Nothing to change if the proposals are accepted: you already give not-a-number for a non-finite number in a field the report has no place for (F2), and invalid-third-party-header for an inner header fault beside an inner Mic-E destination mismatch (F3). If F3 is ruled the other way ("not-encodable first whenever the data computes a destination"), this record must become not-encodable:
+{"n":58011,"data":{"type":"third-party","packet":{"source":"N0CALL","destination":"S32U6T","data":{"type":"mic-e","mic_e_message":"returning","latitude":-90.0,"longitude":-12.129,"symbol":"/","course_degrees":251,"speed_knots":20},"path":["TC+IP*"]}},"exact":false}

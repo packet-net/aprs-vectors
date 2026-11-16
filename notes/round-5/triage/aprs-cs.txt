@@ -1,0 +1,50 @@
+aprs-cs: instructions from the round 5 triage (runs s20101, s20202, s20303 at vectors 1490ec9)
+
+1. An inner third-party header fault comes before any deeper data fault (must fix; about 10 faults lines per seed, 1 data line)
+
+When the first inner packet's header is invalid (a path such as ["TCPIP","G4ABC*"] with an unmarked entry before a used one, ["TC+IP*"], or no destination) and the data one level further down has a fault of its own, you report the deeper data's code (invalid-character, invalid-timestamp, invalid-message-id, invalid-addressee, symbol-mismatch, field-not-allowed, text-reads-as-field, information-field-too-long, not-a-number). The other five give invalid-third-party-header.
+
+Rule: README Refusal reasons, "the refusal names the first code that applies in this order: not-encodable; invalid-address, invalid-path, invalid-third-party-header; invalid-addressee, ...", and "A header given that no form can be (... a bad third-party header) comes first"; Read-back, "Every rule check applies to a third-party packet's inner data, at every depth, exactly as to top-level data". The order runs over the whole record, every depth together.
+
+Fix: check every inner header at every depth (within the four levels) before any data check at any depth; only not-encodable for undecoded inner data comes before them.
+
+Reproducer (encode mode):
+{"n":91387,"data":{"type":"third-party","packet":{"source":"AB","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"telemetry","sequence":"005","analog":[199,0,255,73,123],"bits":"01101001","comment":" hi\u0001"}}}}}},"exact":true}
+Today: refused invalid-character. Expected: {"result":"refused","refusal":"invalid-third-party-header"}
+
+Second reproducer:
+{"n":3664,"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"VK2XYZ","destination":"S32U6T","data":{"type":"telemetry-names","addressee":"PP5CFL-2","names":["","146.52 MHzLo","","@LoRa iGate",":","{5}","xxxxxxxxxxxx","","Radio Club"," R25m$QTH"]}}},"path":["TCPIP","G4ABC*"]}},"exact":false}
+Today: invalid-character. Expected: invalid-third-party-header.
+
+2. Dump tool: undecoded data beyond the fourth level is never reached (must fix; 1 data line, 2 faults lines)
+
+For data nested five third-party levels deep whose fifth level holds unrecognized data, your tool gives not-encodable ("an unrecognized inner packet has nothing to encode", via tool). The other five give invalid-third-party-header.
+
+Rule: README, "an encoder refuses data nested deeper as invalid-third-party-header ... neither a decoder nor an encoder recurses past the fifth level"; interpretations, "It counts the levels as it goes and stops at the fifth, so it never recurses further than a decoder does". The undecoded data is never reached, so the stand-in rule for inputs the tool cannot hold does not apply to it.
+
+Fix: count the levels first; past four, report invalid-third-party-header without looking at what is below.
+
+Reproducer (encode mode):
+{"n":43145,"data":{"type":"third-party","packet":{"source":"N1CALL","destination":"APZ001","path":["WIDE2-1","qAR","N2CALL"],"data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"third-party","packet":{"source":"A","destination":"B","data":{"type":"unrecognized","reason":"malformed"},"diagnostics":["error:invalid-third-party"]}}}}}},"path":["WIDE1-1*","WIDE2-1"]}}}},"exact":true}
+Today: refused not-encodable via tool. Expected: refused invalid-third-party-header.
+
+3. A Mic-E comment that no form can write is text-reads-as-field, not does-not-read-back (must fix; 1 rbdata line)
+
+Reproducer (encode mode):
+{"n":100992,"data":{"type":"mic-e","mic_e_message":"en-route","latitude":51.5,"longitude":-0.5,"symbol":"/>","speed_knots":10,"comment":">5}"},"exact":true}
+Straight on, ">" reads as a type code (comment "5}"); after "/", "/>5}" reads as a Mic-E altitude; after a space, the space reads as a type code. Today: refused does-not-read-back ("would read back as different data (type_code)"), the finding of the last form tried. Expected: {"result":"refused","refusal":"text-reads-as-field"}
+
+Rule: README Read-back, "The refusal is the code of the named rule whose fault the read-back caught, where one does, text-reads-as-field when free text reads back changed, and does-not-read-back otherwise"; Refusal reasons, "free text that reads back changed is text-reads-as-field ... and anything else is does-not-read-back". The comment is the only thing that cannot be written. Fix: when every form fails, name the code from the first form tried (the comment as given), not the last.
+
+4. Pending ruling F2: a non-finite number in a field the report has no place for
+
+On a weather report you give not-a-number for a NaN in base-91 telemetry, but for a NaN altitude_feet (uncompressed weather) or voice frequency you skip the field's checks and give the other faults' code (field-not-allowed, extension-conflict, value-out-of-range, invalid-code, invalid-symbol, value-has-no-form). You change under either ruling, since today you do both. The proposal: not-a-number wherever the number is. If it is accepted:
+
+Reproducer (encode mode):
+{"n":5824,"data":{"type":"position","latitude":-62.69733333333333,"longitude":109.89566666666667,"symbol":"/_","weather":{"wind_direction_degrees":220,"wind_speed_mph":4,"wind_gust_mph":5,"temperature_f":77,"humidity_percent":50},"altitude_feet":NaN,"comment":"\n"},"exact":false}
+Today: field-not-allowed. Expected under the proposal: not-a-number.
+If it is ruled the other way (no checks in a field with no place), then this one must change instead:
+{"n":2414,"data":{"type":"position","timestamp":"090541/","messaging":true,"latitude":49.05833333333333,"longitude":-72.02916666666667,"symbol":"/_","weather":{"wind_direction_degrees":360,"wind_speed_mph":232,"rain_24h_in":1.96,"rain_midnight_in":1.01,"snow_24h_in":0.62,"extra":[{"letter":"v","value":"-01"}]},"telemetry":{"sequence":8281,"analog":[NaN]},"ambiguity":1,"dao":{"datum":"W","precision":"thousandths"}},"exact":false}
+(today not-a-number; then field-not-allowed). Wait for the ruling.
+
+5. Pending ruling F3: nothing to change if the proposal is accepted (you give invalid-third-party-header for an inner header fault beside an inner Mic-E destination mismatch). If it is ruled "not-encodable first whenever the data computes a destination", s20202 faults line 58011 must become not-encodable.

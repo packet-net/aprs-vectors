@@ -1,0 +1,34 @@
+aprs-c: instructions from the round 5 triage (runs s20101, s20202, s20303 at vectors 1490ec9)
+
+1. A non-finite number must be not-a-number before every later code (must fix)
+
+About 130 faults lines per seed. You give a later code where the other five give not-a-number, in two ways:
+- the count is checked before the values: 16 EQNS coefficients with a NaN among them gives too-long;
+- a non-finite value in a list item beyond what the C field holds (a sixth analog value in a telemetry report, comment telemetry, Mic-E telemetry, inner data) is never seen, so the comment's invalid-character, the count's too-long, a latitude's value-out-of-range, a symbol's invalid-symbol, a DAO's invalid-code and so on win.
+
+Rule: README Refusal reasons order "... invalid-timestamp, not-a-number, value-out-of-range, value-has-no-form, invalid-code, invalid-symbol, invalid-character, too-long, ..."; Read-back "a non-finite number is not-a-number wherever it is, never compared as absent"; Comparing implementations: NaN or infinity is a code "its value alone decides" for an input the implementation cannot hold, and the dump tool reports it.
+
+Fix: before any other data check, look at every number given, at every depth and in every list item including items past the C capacity, and refuse not-a-number if one is NaN or infinite. Where the library cannot hold the surplus item, the dump tool must see it and report not-a-number ("via": "tool" is fine).
+
+Reproducer 1 (encode mode):
+{"n":662,"data":{"type":"telemetry-coefficients","addressee":"ABCDEFGHI","coefficients":[1.0,1.0,1.0,1.0,-Infinity,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]},"exact":false}
+Today: refused too-long. Expected: {"result":"refused","refusal":"not-a-number"}
+
+Reproducer 2:
+{"n":813,"data":{"type":"telemetry","sequence":"A1","analog":[1,2,3,4,5,-Infinity],"bits":"10000000","comment":"a\rb"},"exact":false}
+Today: refused invalid-character. Expected: refused not-a-number.
+
+Reproducer 3 (Mic-E, sixth comment telemetry value):
+Take any Mic-E data with "telemetry":{"sequence":1,"analog":[1,2,3,4,5,NaN]} plus a second fault such as an out-of-range latitude; expected not-a-number. Real records: s20101 faults lines 4861, 25177, 38721 (generate.py --faults --nonfinite 0.3 --count 100000 --seed 20101).
+
+2. Pending ruling F3: inner Mic-E destination against an inner header fault (dump tool)
+
+Your encode dump tool gives not-encodable ("inner packet: Mic-E data reads as other data under a destination it does not compute") for third-party data whose inner Mic-E data computes a destination other than the inner destination given, even when the inner path is invalid. The other five give invalid-third-party-header (aprs-rs and aprs-go agree with you on one record). The rules do not settle which comes first. The proposed ruling: the destination comparison is the read-back's finding, after every rule check, so an inner header fault (or any field fault) wins. If it is accepted:
+
+Reproducer (encode mode):
+{"n":7532,"data":{"type":"third-party","packet":{"source":"N0CALL","destination":"S32U6T","data":{"type":"mic-e","mic_e_message":"returning","latitude":33.42733333333334,"longitude":180.0,"symbol":"/j","course_degrees":1,"speed_knots":0},"path":["TC+IP*"]}},"exact":false}
+Today: refused not-encodable via tool. Expected under the proposal: refused invalid-third-party-header.
+Second: {"n":58011,"data":{"type":"third-party","packet":{"source":"N0CALL","destination":"S32U6T","data":{"type":"mic-e","mic_e_message":"returning","latitude":-90.0,"longitude":-12.129,"symbol":"/","course_degrees":251,"speed_knots":20},"path":["TC+IP*"]}},"exact":false} -> invalid-third-party-header.
+Wait for the ruling before changing this.
+
+3. Pending ruling F2: nothing to change if the proposal is accepted (you give not-a-number for a non-finite number in a field a weather report has no place for).

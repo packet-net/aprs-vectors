@@ -1,0 +1,28 @@
+aprs-py: instructions from the round 5 triage (runs s20101, s20202, s20303 at vectors 1490ec9)
+
+1. Pending ruling F2: a non-finite number in a field the report has no place for (about 90 faults lines per seed)
+
+On a weather report (weather data given, weather: {} on "_" included) you skip every check of a field the report has no place for, so a NaN or infinity in base-91 telemetry (sequence, a value, bits), in altitude_feet on an uncompressed weather report or in a voice frequency is never seen, and the record's other faults decide (value-out-of-range from a latitude, extension-conflict, field-not-allowed, invalid-code, invalid-symbol, value-has-no-form). aprs-rs, aprs-ts, aprs-c and aprs-go give not-a-number; aprs-cs does too for telemetry. The rule text pulls both ways ("a non-finite number is not-a-number wherever it is" against "a field with no place gets none of its checks"), so this is up for ruling. The proposal: not-a-number wherever the number is, a field with no place included (NaN's code is decided by its value alone). If it is accepted:
+
+Fix: before any other data check, look at every number given, at every depth, and refuse not-a-number for NaN or infinity, whether or not the report has a place for the field.
+
+Reproducer 1 (encode mode):
+{"n":2414,"data":{"type":"position","timestamp":"090541/","messaging":true,"latitude":49.05833333333333,"longitude":-72.02916666666667,"symbol":"/_","weather":{"wind_direction_degrees":360,"wind_speed_mph":232,"rain_24h_in":1.96,"rain_midnight_in":1.01,"snow_24h_in":0.62,"extra":[{"letter":"v","value":"-01"}]},"telemetry":{"sequence":8281,"analog":[NaN]},"ambiguity":1,"dao":{"datum":"W","precision":"thousandths"}},"exact":false}
+Today: refused field-not-allowed. Expected under the proposal: refused not-a-number.
+
+Reproducer 2:
+{"n":5824,"data":{"type":"position","latitude":-62.69733333333333,"longitude":109.89566666666667,"symbol":"/_","weather":{"wind_direction_degrees":220,"wind_speed_mph":4,"wind_gust_mph":5,"temperature_f":77,"humidity_percent":50},"altitude_feet":NaN,"comment":"\n"},"exact":false}
+Today: refused field-not-allowed. Expected under the proposal: refused not-a-number.
+
+Wait for the ruling before changing this.
+
+2. Inner Mic-E with a NaN longitude gives not-encodable (must fix under either reading of F3)
+
+{"n":94076,"data":{"type":"third-party","packet":{"source":"N0CALL","destination":"S32U6T","data":{"type":"mic-e","mic_e_message":"returning","latitude":33.42733333333334,"longitude":NaN,"symbol":"/j","course_degrees":88,"speed_knots":36,"phg":{"power":5,"height":1,"gain":3,"directivity":2},"comment":"PHG5132"},"path":["A*","B*"]}},"exact":false}
+Today: refused not-encodable. Expected: refused not-a-number (the other five).
+Why: the inner destination is compared with the one the data computes (README Read-back, R29), and a NaN longitude computes no destination (its offset and W/E bits do not exist), so the comparison cannot find a mismatch; the NaN is not-a-number ("a non-finite number is not-a-number wherever it is"). Under the proposed F3 ruling the comparison also comes after every rule check, which gives the same answer.
+
+3. Pending ruling F3 otherwise: nothing to change if the proposal is accepted (you give invalid-third-party-header for an inner header fault beside a Mic-E destination mismatch). If it is ruled "not-encodable first whenever the data computes a destination", this record must become not-encodable:
+{"n":58011,"data":{"type":"third-party","packet":{"source":"N0CALL","destination":"S32U6T","data":{"type":"mic-e","mic_e_message":"returning","latitude":-90.0,"longitude":-12.129,"symbol":"/","course_degrees":251,"speed_knots":20},"path":["TC+IP*"]}},"exact":false}
+
+Nothing else to change.

@@ -1,0 +1,4 @@
+1. CHANGELOG Unreleased: remove internal labels ("vectors R26", "vectors R27" and any other R-number); rewrite the 27 paragraphs of pass-by-pass history ("Fix:", "Behaviour change:") into the final behaviour stated once, grouped (decoder, encoder and read-back, writers, builders, API, speed against 1.2.0); the pin line gives the short hash.
+2. A depth-2 inner packet whose destination was changed is refused text-reads-as-field; it is not-encodable.
+3. src/encode/index.ts:211: pass-through compares only when Mic-E is involved: see COMMON.txt.
+4. A bigint (or any non-number) in a numeric field gives malformed; make it not-a-number.

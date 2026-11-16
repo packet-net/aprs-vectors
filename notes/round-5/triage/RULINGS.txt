@@ -1,0 +1,5 @@
+Coordinator rulings on the referee's three NEEDS RULING items (final; follow these where your triage file says NEEDS RULING):
+A2. The inner packet of a third-party nest five or more deep, written on its own: written as received (deeper levels sit inside an information field and are written as received). aprs-ts changes.
+F2. A non-finite number is not-a-number wherever it is, including in a field the report type has no place for (telemetry, altitude or frequency on a weather report): not-a-number comes first. aprs-py and aprs-cs change.
+F3. An inner Mic-E destination that does not match the data is found by the read-back, so it comes after every rule check: an inner header fault or any data rule fault beside it wins. aprs-c changes, and aprs-rs and aprs-go on the record the referee names.
+Also: aprs-py's not-encodable for a NaN longitude (seed 20303 faults line 94076) is wrong: not-a-number.

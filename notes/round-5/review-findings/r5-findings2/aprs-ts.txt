@@ -1,0 +1,5 @@
+Second-review findings for aprs-ts (verdict: merge; all first findings confirmed fixed; no wrong bytes in about 200 hostile inputs plus a numeric sweep). Small items to fix:
+1. Ambiguity 0 given explicitly is refused with the fallback does-not-read-back ("ambiguity would be lost") for position, Mic-E, object data and the builder .ambiguity(0). Follow the vectors rule at the new pin (the coordinator will name the pin): 0 is no ambiguity.
+2. offsetKhz: 600.5 gives the message "offset 60.05 is not a whole number" (src/encode/position.ts:293): say the value as given.
+3. CHANGELOG describes the strict Mic-E missing-locator-space behaviour twice and "PHG or RNG after a locator ... is late" twice: once each.
+4. A field that belongs to a sibling report type given through the typed API (an item's timestamp, a bulletin's reply-ack, an ack's text) is silently dropped: check what encodeInformation does with such an object and refuse it field-not-allowed as the neutral rule does, if the object can carry it at run time; add tests.

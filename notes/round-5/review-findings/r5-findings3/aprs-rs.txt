@@ -1,0 +1,2 @@
+1. to_tnc2 and to_ax25 compare the held field with the held data only when Mic-E is involved (packet.rs:380, readback.rs:417). Repro: decode `N0CALL>APZ001:>hello`, set information = b">evil" (or change data to text "changed", or edit an inner packet's data inside a held `}` packet): written. See COMMON.txt.
+2. Stale docs: README:9, CHANGELOG:13 and packet.rs:331 still say "one at the very end is carried" (it is a trailing run); README:9 says "the Display and Debug conversions" generically (say what exists); CHANGELOG:15 ends in a dangling "is refused;".

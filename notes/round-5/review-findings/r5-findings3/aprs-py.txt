@@ -1,0 +1,5 @@
+1 (serious, wrong bytes). src/pdn_aprs/_readback.py:203: the read-back copies the decoded destination over the given one at every depth, and the destination check in encode._third_party runs only at depth 1. Repro: decode `N0CALL>APRS:}Y>APRS:}X>S32U6T:` + the Mic-E field "`(_fn\"Oj/]hi=" ; replace the depth-2 inner packet's destination with APRS, S32U6Q or S32U6T-2; build_packet("N0CALL", data) writes `N0CALL>APZ001:}Y>APRS:}X>S32U6T:...`. Must be not-encodable at every depth; never copy a decoded value over a given one in the comparison.
+2. packet.py:36: pass-through only re-reads a field that starts with a Mic-E data type: see COMMON.txt.
+3. No test proves the up-front non-finite walk on its own (reverting only the walk fails nothing): add one that does (a case the comparison and refusal handler do not catch, or assert the walk is what names the code).
+4. CHANGELOG.md:32-39: the refused-before list and speed line sit in the middle of the Changed bullets; tidy the layout.
+5. True in a numeric field gives does-not-read-back: make it not-a-number like other non-numbers (bool is not a number here).
