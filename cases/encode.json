@@ -900,6 +900,30 @@
       }
     },
     {
+      "id": "encode/refuses-a-negative-humidity",
+      "description": "A humidity of -5 percent rounds to -5, outside the field (1 to 100).",
+      "source": "APRS12c ch. 12 (round 5 review)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": -5}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-out-of-range"
+      }
+    },
+    {
+      "id": "encode/refuses-a-negative-humidity-that-rounds-to-0",
+      "description": "A humidity of -0.4 percent rounds to 0, which has no form (h00 is 100 percent).",
+      "source": "APRS12c ch. 12 (round 5 review)",
+      "authority": "interpretation",
+      "interpretations": ["values-between-steps-are-rounded"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77, "humidity_percent": -0.4}}},
+      "expect": {
+        "refused": true,
+        "refusal": "value-has-no-form"
+      }
+    },
+    {
       "id": "encode/refuses-a-course-and-speed-with-a-phg",
       "description": "Only one data extension follows the symbol; a PHG after a course/speed could only go later in the comment, where it reads back with data-extension-in-comment.",
       "source": "APRS12c ch. 7, UAP 5.15 (differential fuzzing 2026-11-10)",

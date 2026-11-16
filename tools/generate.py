@@ -734,7 +734,7 @@ class DataGen:
         "weather.wind_speed_mph": [0, -0.3, -0.03, -0.5, 999, 999.5],
         "weather.wind_gust_mph": [0, -0.5, 999, 999.4, 999.5],
         "weather.temperature_f": [-99, -99.4, -99.5, 999, 999.4, 999.5],
-        "weather.humidity_percent": [0, 0.4, 0.5, 1, 100, 100.4, 100.5],
+        "weather.humidity_percent": [0, 0.4, 0.5, -0.4, -5, 1, 100, 100.4, 100.5],
         "weather.pressure_mbar": [0, 9999.9, 9999.94, 9999.95, -0.05],
         "weather.rain_1h_in": [0, 9.99, 9.994, 9.995, -0.005],
         "weather.luminosity_w_m2": [0, 999, 1000, 1999, 1999.4, 1999.5],
@@ -1059,7 +1059,7 @@ class RecipeGen:
         "latitude": [90.0, 90.00001, -90.00001],
         "longitude": [180.0, 180.00001, -180.00001],
         "wind_direction_degrees": [360.4, 360.5, -0.5],
-        "humidity_percent": [0.4, 0.5, 100.4, 100.5],
+        "humidity_percent": [0.4, 0.5, -0.4, -5, 100.4, 100.5],
         "temperature_c": [-73.1, 537.3],
         "wind_gust_mph": [999.4, 999.5],
     }
