@@ -1104,6 +1104,26 @@
       "strict": "same",
       "reencode": "identical",
       "pass_through_inner": {"tnc2": "A>B:}A>B:}A>B:}A>B:}A>B:>hi", "ax25_hex": "844040404040E08240404040406103F07D413E423A7D413E423A7D413E423A7D413E423A3E6869"}
+    },
+    {
+      "id": "envelope/two-empty-path-entries",
+      "description": "Two empty path entries: an empty entry is a defect of that entry, given once for each.",
+      "source": "six-way final run 2026-11-16 (R31)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>APRS,A,,B,,C:>hi"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APRS", "path": ["A", "B", "C"]}, "data": {"type": "status", "text": "hi"}, "diagnostics": ["warning:empty-path-entry", "warning:empty-path-entry"]},
+      "strict": {"rejected_by": "empty-path-entry", "header": true}
+    },
+    {
+      "id": "envelope/two-empty-inner-path-entries",
+      "description": "The same in a third-party inner header: once for each empty entry, on the inner packet, and strict rejects the packet as invalid-third-party.",
+      "source": "six-way final run 2026-11-16 (R31)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order", "third-party-header-addresses"],
+      "input": {"tnc2": "N0CALL>APRS:}N0CALL>APRS,A,,B,,C:>hi"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APRS"}, "data": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APRS", "path": ["A", "B", "C"], "data": {"type": "status", "text": "hi"}, "diagnostics": ["warning:empty-path-entry", "warning:empty-path-entry"]}}},
+      "strict": {"rejected_by": "invalid-third-party"}
     }
   ]
 }

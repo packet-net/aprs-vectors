@@ -1843,6 +1843,16 @@
       "input": {"tnc2": "N83MZ>T2TQ5U,WA1PLE-4*:`c.l+@&'/'\"G:} KJ6TMS|!:&0'p| fw |1.2|"},
       "expect": {"header": {"source": "N83MZ", "destination": "T2TQ5U", "path": ["WA1PLE-4*"]}, "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 42.6925, "longitude": -71.31333333333333, "symbol": "/'", "course_degrees": 210, "speed_knots": 153, "altitude_feet": 5787.401574803149, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "KJ6TMS fw |1.2|"}},
       "strict": "same"
+    },
+    {
+      "id": "mic-e/strict-stops-at-a-missing-locator-space-before-a-dao-on-ambiguity",
+      "description": "Strict reads the later altitude as text, so the !DAO! !w3U! would stand whole on an ambiguous position; but the locator's missing space is met first, where the locator is read, and strict stops there: one error, not dao-with-ambiguity too.",
+      "source": "differential fuzzing 2026-11-16 (R31)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order"],
+      "input": {"tnc2": "KJ5IMV-2>RYTWLZ,WIDE1-1,WIDE2-1,qAR,KJ5IMV:'{P\u001c\u001c\u001c\u001cj/]IO91/G!w3U!}Pi/\"4G}Graywolf/181.14.13"},
+      "expect": {"header": {"source": "KJ5IMV-2", "destination": "RYTWLZ", "path": ["WIDE1-1", "WIDE2-1", "qAR", "KJ5IMV"], "q_construct": {"construct": "qAR", "station": "KJ5IMV"}}, "data": {"type": "mic-e", "mic_e_message": "off-duty", "old_data": true, "type_code": "]", "locator": "IO91", "latitude": 29.791666666666668, "longitude": -95.875, "ambiguity": 2, "symbol": "/j", "speed_knots": 0, "altitude_feet": 471751.96850393695, "comment": "!wPi/\"4G}Graywolf/181.14.13"}, "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]},
+      "strict": {"data": {"type": "unrecognized", "reason": "malformed"}, "diagnostics": ["error:missing-space-after-locator"]}
     }
   ]
 }

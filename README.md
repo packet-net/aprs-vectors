@@ -104,7 +104,7 @@ For a decode case:
 | Key | Meaning |
 |---|---|
 | `data` | The decoded data (form below). |
-| `diagnostics` | Every diagnostic, as `"severity:code"`. Compare as a multiset (order does not matter, repeats do). A decoder that does not report `info` diagnostics can ignore those. Absent means none. |
+| `diagnostics` | Every diagnostic, as `"severity:code"`. Compare as a multiset (order does not matter, repeats do). A defect of one field or entry is given once for each (an empty path entry once per empty entry, a lower-case hemisphere letter once per coordinate), and a judgement of a whole once for it (the control characters or the encoding of a text, several used markers in a path), in an outer and a third-party inner header alike (`envelope/two-empty-path-entries`, `envelope/two-empty-inner-path-entries`). A decoder that does not report `info` diagnostics can ignore those. Absent means none. |
 | `header` | The header, when the case is about it: `source`, `destination`, `path`, `q_construct`. |
 | `header_error` | Instead of `data`: the header is unusable and nothing is decoded; the diagnostics that say why. |
 | `device` | The sending device from the [aprs-deviceid](https://github.com/aprsorg/aprs-deviceid) database: `vendor`, `model`. Depends on the database version. |
@@ -134,7 +134,7 @@ The rules, which make absence meaningful: a field that is not listed must not be
 
 ### Checking a case
 
-- `strict: {"rejected_by": code}` means the decoder still returns a packet, with `data` `{"type": "unrecognized", "reason": "malformed"}` and `error:code` among its diagnostics. With `"header": true`, the header is rejected instead, and `error:code` is among the header's diagnostics. Other diagnostics may be there too.
+- `strict: {"rejected_by": code}` means the decoder still returns a packet, with `data` `{"type": "unrecognized", "reason": "malformed"}` and `error:code` among its diagnostics. With `"header": true`, the header is rejected instead, and `error:code` is among the header's diagnostics. Other diagnostics may be there too, but only ones met before it: a strict decoder stops at the defect it rejects by and reads nothing after it, so no later defect's error is listed (in Mic-E status text a locator's missing space is met where the locator is read, before a `!DAO!` and its ambiguity check, `mic-e/strict-stops-at-a-missing-locator-space-before-a-dao-on-ambiguity`).
 - `reencode: "identical"` compares against the input's information field without any trailing CR or LF, which is a tolerated defect rather than part of the data.
 - `reencode: "equivalent"` means the bytes written are `canonical_info`, byte for byte, and decode, leniently, to the same data with no warnings or errors.
 - `reencode: "rounded"` means the bytes written are `canonical_info`, byte for byte; they decode cleanly, to the data with one value rounded, so the data is not compared.
