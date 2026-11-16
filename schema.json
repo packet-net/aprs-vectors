@@ -171,6 +171,13 @@
             "build": {
               "$ref": "#/$defs/build"
             },
+            "write": {
+              "enum": [
+                "tnc2",
+                "ax25"
+              ],
+              "description": "With build: write the packet built as a TNC2 line (the default) or an AX.25 frame."
+            },
             "source": {
               "type": "string"
             },
@@ -220,7 +227,12 @@
                 "build"
               ]
             }
-          ]
+          ],
+          "dependentRequired": {
+            "write": [
+              "build"
+            ]
+          }
         },
         "expect": {
           "type": "object",
@@ -255,6 +267,10 @@
             },
             "tnc2": {
               "type": "string"
+            },
+            "ax25_hex": {
+              "type": "string",
+              "pattern": "^([0-9A-Fa-f]{2})*$"
             },
             "destination": {
               "type": "string"
@@ -322,6 +338,90 @@
             "refused"
           ]
         },
+        "pass_through": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "tnc2": {
+              "type": "string"
+            },
+            "tnc2_refusal": {
+              "$ref": "#/$defs/code"
+            },
+            "ax25_hex": {
+              "type": "string",
+              "pattern": "^([0-9A-Fa-f]{2})*$"
+            },
+            "ax25_refusal": {
+              "$ref": "#/$defs/code"
+            },
+            "header": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source",
+                "destination"
+              ],
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pass_through_inner": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "tnc2": {
+              "type": "string"
+            },
+            "tnc2_refusal": {
+              "$ref": "#/$defs/code"
+            },
+            "ax25_hex": {
+              "type": "string",
+              "pattern": "^([0-9A-Fa-f]{2})*$"
+            },
+            "ax25_refusal": {
+              "$ref": "#/$defs/code"
+            },
+            "header": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "source",
+                "destination"
+              ],
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "canonical_info": {
           "type": "string"
         },
@@ -378,7 +478,17 @@
               "input": {
                 "required": [
                   "build"
-                ]
+                ],
+                "not": {
+                  "properties": {
+                    "write": {
+                      "const": "ax25"
+                    }
+                  },
+                  "required": [
+                    "write"
+                  ]
+                }
               }
             }
           },
@@ -427,6 +537,90 @@
                     "header",
                     "header_error",
                     "device"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "input": {
+                "required": [
+                  "build",
+                  "write"
+                ],
+                "properties": {
+                  "write": {
+                    "const": "ax25"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "expect": {
+                "propertyNames": {
+                  "enum": [
+                    "ax25_hex",
+                    "refused",
+                    "refusal"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "pass_through"
+            ]
+          },
+          "then": {
+            "properties": {
+              "input": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "encode"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "build"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "pass_through_inner"
+            ]
+          },
+          "then": {
+            "properties": {
+              "input": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "encode"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "build"
+                      ]
+                    }
                   ]
                 }
               }

@@ -98,6 +98,51 @@
       "strict": "same",
       "reencode": "equivalent",
       "canonical_info": ";       B *252055z4309.81ND02221.41EaRNG0186/A=00009870cm Voice (D-Star) 438.40000MHz -7.6000MHz"
+    },
+    {
+      "id": "corpus-finding/aprsdroid-tone-and-offset-after-an-altitude",
+      "description": "APRSdroid writes the altitude straight after the frequency and the user's tone and offset after it: the /A= does not cut them off, so they are the frequency's.",
+      "source": "APRS-IS 2026-10-01",
+      "authority": "observed",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "K7PIA-9>APDR16,WIDE1-1,WIDE2-1,qAR,VCAPK:=4701.42N/12254.21W>240/059/146.820MHz/A=-00016 T103 -060 73!"},
+      "expect": {
+        "header": {"source": "K7PIA-9", "destination": "APDR16", "path": ["WIDE1-1", "WIDE2-1", "qAR", "VCAPK"], "q_construct": {"construct": "qAR", "station": "VCAPK"}},
+        "data": {"type": "position", "latitude": 47.02366666666667, "longitude": -122.9035, "symbol": "/>", "course_degrees": 240, "speed_knots": 59, "altitude_feet": -16, "frequency": {"mhz": 146.82, "tone": "tone", "tone_value": 103, "offset_khz": -600}, "comment": "73!", "messaging": true}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "=4701.42N/12254.21W>240/059/146.820MHz T103 -060/A=-00016 73!"
+    },
+    {
+      "id": "corpus-finding/aprsdroid-tone-after-an-altitude",
+      "description": "APRSdroid: a tone after the /A= that follows the frequency is the frequency's.",
+      "source": "APRS-IS 2026-10-02",
+      "authority": "observed",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "K3WHO-5>APDR16,TCPIP*,qAC,T2CHILE:=3751.60N/07849.82W>146.360MHz/A=000632 T131"},
+      "expect": {
+        "header": {"source": "K3WHO-5", "destination": "APDR16", "path": ["TCPIP*", "qAC", "T2CHILE"], "q_construct": {"construct": "qAC", "station": "T2CHILE"}},
+        "data": {"type": "position", "latitude": 37.86, "longitude": -78.83033333333333, "symbol": "/>", "altitude_feet": 632, "frequency": {"mhz": 146.36, "tone": "tone", "tone_value": 131}, "messaging": true}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "=3751.60N/07849.82W>146.360MHz T131/A=000632"
+    },
+    {
+      "id": "corpus-finding/aprsdroid-offset-in-the-wrong-unit-after-an-altitude",
+      "description": "APRSdroid: -600 after the /A= that follows the frequency is the frequency's offset field, read in tens of kHz as the spec gives it (-6000 kHz), whatever the sender meant; T 103.5 is not a tone field.",
+      "source": "APRS-IS 2026-10-01",
+      "authority": "observed",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "VA3CRL-10>APDR16,TCPIP*,qAC,T2KA:=4341.93N/07926.67W\\146.985MHz/A=000472 -600 T 103.5 VA3VWX-L E"},
+      "expect": {
+        "header": {"source": "VA3CRL-10", "destination": "APDR16", "path": ["TCPIP*", "qAC", "T2KA"], "q_construct": {"construct": "qAC", "station": "T2KA"}},
+        "data": {"type": "position", "latitude": 43.69883333333333, "longitude": -79.4445, "symbol": "/\\", "altitude_feet": 472, "frequency": {"mhz": 146.985, "offset_khz": -6000}, "comment": "T 103.5 VA3VWX-L E", "messaging": true}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "=4341.93N/07926.67W\\146.985MHz -600/A=000472 T 103.5 VA3VWX-L E"
     }
   ]
 }

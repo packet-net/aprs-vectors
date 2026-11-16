@@ -279,7 +279,11 @@ class DataGen:
 
     def data(self, depth: int = 0) -> tuple[dict, bool]:
         rng = self.rng
-        types = [t for t in self.WEIGHTS if t in self.pool.by_type and (depth == 0 or t not in ("third-party", "mic-e"))]
+        # a third-party packet holds another to two levels (so faults and non-finite values reach depth 2);
+        # Mic-E needs its destination, which an inner packet's data does not carry
+        types = [t for t in self.WEIGHTS if t in self.pool.by_type
+                 and (depth == 0 or (t != "mic-e" and (t != "third-party" or depth < 2)))]
+        self._depth = depth
         t = rng.choices(types, weights=[self.WEIGHTS[x] for x in types])[0]
         d = copy.deepcopy(rng.choice(self.pool.by_type[t]))
         exact = True
@@ -674,7 +678,8 @@ class DataGen:
         packet.pop("diagnostics", None)
         exact = True
         if rng.random() < 0.6:
-            inner, exact = self.data(depth=1)
+            depth = getattr(self, "_depth", 0)
+            inner, exact = self.data(depth=depth + 1)
             packet["data"] = inner
         if rng.random() < 0.2:
             packet["source"] = self._call()
@@ -729,7 +734,7 @@ class DataGen:
         "weather.wind_speed_mph": [0, -0.3, -0.03, -0.5, 999, 999.5],
         "weather.wind_gust_mph": [0, -0.5, 999, 999.4, 999.5],
         "weather.temperature_f": [-99, -99.4, -99.5, 999, 999.4, 999.5],
-        "weather.humidity_percent": [0, 0.4, 0.5, 1, 100, 100.4, 100.5],
+        "weather.humidity_percent": [0, 0.4, 0.5, -0.4, -5, 1, 100, 100.4, 100.5],
         "weather.pressure_mbar": [0, 9999.9, 9999.94, 9999.95, -0.05],
         "weather.rain_1h_in": [0, 9.99, 9.994, 9.995, -0.005],
         "weather.luminosity_w_m2": [0, 999, 1000, 1999, 1999.4, 1999.5],
@@ -863,12 +868,21 @@ class DataGen:
                 name = "inner:" + inner[0]
             names.append(name)
         if self.nonfinite and rng.random() < self.nonfinite:
-            numeric = [k for k in self.EDGES if (k[8:] in d.get("weather", {}) if k.startswith("weather.") else k in d)]
+            # any number at any depth: written fields, fields a sentence determines (NMEA), and a
+            # third-party packet's inner data one and two levels down (README Read-back: not-a-number wherever it is)
+            numeric = list(_numbers(d))
+            # also beyond a small capacity (a sixth analog value, a sixteenth coefficient) and in a field the
+            # report has no place for (telemetry, altitude or a frequency on a weather report): not-a-number first
+            planted = None
+            if rng.random() < 0.3:
+                planted = _plant_out_of_place(rng, d)
+            if planted:
+                names.append("non-finite:" + planted)
+                numeric = []
             if numeric:
-                key = rng.choice(numeric)
-                obj, leaf = (d["weather"], key[8:]) if key.startswith("weather.") else (d, key)
+                obj, leaf, where = rng.choice(numeric)
                 obj[leaf] = rng.choice([math.nan, math.inf, -math.inf])
-                names.append("non-finite:" + key)
+                names.append("non-finite:" + where)
         return names
 
     # --- values between steps
@@ -892,6 +906,49 @@ class DataGen:
         step = 1 / 380926 if d.get("compressed") and key in ("latitude", "longitude") else steps.get(key, 1)
         obj[key] = obj[key] + step * rng.choice([0.25, 0.4, 0.5, 0.6, 0.75, -0.3])
         return True
+
+
+def _plant_out_of_place(rng, d):
+    """Puts a non-finite number where a capacity or a missing place would hide it; returns where, or None."""
+    nan = rng.choice([math.nan, math.inf, -math.inf])
+    target = d
+    while target.get("type") == "third-party" and isinstance(target.get("packet", {}).get("data"), dict) and rng.random() < 0.7:
+        target = target["packet"]["data"]
+    t = target.get("type")
+    if t == "telemetry" and isinstance(target.get("analog"), list):
+        target["analog"] = list(target["analog"]) + [1] * max(0, 5 - len(target["analog"])) + [nan]
+        return "analog[beyond 5]"
+    if t == "telemetry-coefficients":
+        target["coefficients"] = [1] * 15 + [nan]
+        return "coefficients[15]"
+    if "weather" in target and t in ("position", "object", "item"):
+        choice = rng.choice(["telemetry", "altitude", "frequency"])
+        if choice == "telemetry":
+            target["telemetry"] = {"sequence": 1, "analog": [nan]}
+        elif choice == "altitude":
+            target["altitude_feet"] = nan
+        else:
+            target["frequency"] = {"mhz": nan}
+        return "no-place:" + choice
+    return None
+
+
+def _numbers(d, where=""):
+    """(container, key, path) for every number in the data, at every depth, booleans aside."""
+    if isinstance(d, dict):
+        for k, v in d.items():
+            path = f"{where}.{k}" if where else k
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                yield d, k, path
+            elif isinstance(v, (dict, list)):
+                yield from _numbers(v, path)
+    elif isinstance(d, list):
+        for i, v in enumerate(d):
+            path = f"{where}[{i}]"
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                yield d, i, path
+            elif isinstance(v, (dict, list)):
+                yield from _numbers(v, path)
 
 
 # ------------------------------------------------------------------ recipes
@@ -1002,7 +1059,7 @@ class RecipeGen:
         "latitude": [90.0, 90.00001, -90.00001],
         "longitude": [180.0, 180.00001, -180.00001],
         "wind_direction_degrees": [360.4, 360.5, -0.5],
-        "humidity_percent": [0.4, 0.5, 100.4, 100.5],
+        "humidity_percent": [0.4, 0.5, -0.4, -5, 100.4, 100.5],
         "temperature_c": [-73.1, 537.3],
         "wind_gust_mph": [999.4, 999.5],
     }

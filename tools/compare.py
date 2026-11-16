@@ -13,7 +13,8 @@ For every input line, each part of the records (the lenient data, the strict dia
 bytes written, each key of the API view, ...) is compared across the implementations that have
 it, and where they differ the line goes in a bucket named by the data type, the part, and which
 implementations side together. Objects must have the same keys; numbers agree within 1e-9;
-diagnostics compare as multisets. A record whose result is `unsupported`, or that gives
+diagnostics compare as multisets, at every depth (a third-party packet's inner diagnostics, inside
+its data, too). A record whose result is `unsupported`, or that gives
 `implementation-limit` (a decode record whose lenient result names it, an encode or build record
 whose result is `implementation-limit`), is left out of the comparison of that line, and each
 implementation's count of both is printed beside the result, in the text and in --json, with
@@ -23,10 +24,16 @@ implementation's published capacities, e.g. aprs-c's limits.json: {"information-
 a record that claims a limit the input does not exceed, where the input's size for that limit can be
 computed (information-field bytes and path entries of a decoded line, capability items, extra
 weather fields, a recipe's path; each the largest over every third-party level), is a difference;
-those over the capacity are counted by limit as checked, and the rest by limit as not checked (all of them, if no --limits file was given). `python3 -m doctest tools/compare.py` tests the measures. For encode and build dumps it also checks each implementation on its
+those over the capacity are counted by limit as checked, and the rest by limit as not checked (all of them, if no --limits file was given). `python3 -m doctest tools/compare.py` tests the measures and the multisets. A decode record whose `reencode` is `fails` is a problem only where another dump does not say `fails` for that line, or when one dump was given; where every dump fails alike (a value the form rounds, or a shared fault) it is counted in a note that is not a problem and does not affect the exit status. For encode and build dumps it also checks each implementation on its
 own: bytes written for exact data must decode to that data, cleanly; a built line must decode
 cleanly. `--input` is the input all the dumps read; with it, the report shows each bucket's
-example inputs. Exits 1 if any line differs. Standard library only.
+example inputs. Each record is also judged on its own (README, Read-back): an encode record's bytes, for
+exact data, must read back to the data given by the Read-back comparison ("written bytes decode to
+different data"); a build record's line, and its `ax25` frame when it writes one, must read back
+cleanly with the recipe's source, destination and path ("built line's header decodes to a different
+header"); a decode record must not re-encode `fails`, and the TNC2 line and AX.25 frame its API view
+writes must read back with the header decoded ("written tnc2 header decodes to a different header").
+Exits 1 if any line differs or any record has a problem of its own. Standard library only.
 """
 
 import argparse
@@ -37,14 +44,27 @@ from collections import Counter, defaultdict
 
 
 def norm(v):
-    """A value with numbers cut to 9 significant digits, so that equal-within-1e-9 compares equal."""
+    """A value with numbers cut to 9 significant digits, so that equal-within-1e-9 compares equal;
+    a whole number below 2**53 (an integer, or a float holding one exactly) is kept whole, so integers compare exactly.
+
+    >>> norm(1234567891), norm(1234567891.0) == norm(1234567891), norm(1234567892) == norm(1234567891)
+    (1234567891, True, False)
+    """
     if isinstance(v, bool) or v is None or isinstance(v, str):
         return v
-    if isinstance(v, (int, float)):
+    if isinstance(v, int) and abs(v) < 2 ** 53:
+        return v
+    if isinstance(v, int):
+        v = float(v)
+    if isinstance(v, float):
         if v != v:
             return "nan"
+        if v in (float("inf"), float("-inf")):
+            return str(v)
+        if v.is_integer() and abs(v) < 2 ** 53:
+            return int(v)
         r = float(f"{v:.9g}")
-        return int(r) if r == int(r) and abs(r) < 1e15 else r
+        return int(r) if r.is_integer() and abs(r) < 1e15 else r
     if isinstance(v, dict):
         return {k: norm(x) for k, x in v.items()}
     if isinstance(v, list):
@@ -52,8 +72,29 @@ def norm(v):
     return v
 
 
+def multisets(v):
+    """A value with every list of diagnostics, at any depth (a third-party packet's inner
+    `diagnostics` inside its data), sorted, so that they compare as multisets.
+
+    >>> a = {"type": "third-party", "packet": {"data": {"type": "status"}, "diagnostics": ["warning:a", "info:b"]}}
+    >>> b = {"type": "third-party", "packet": {"data": {"type": "status"}, "diagnostics": ["info:b", "warning:a"]}}
+    >>> c = {"type": "third-party", "packet": {"data": {"type": "status"}, "diagnostics": ["info:b", "info:b"]}}
+    >>> key(a) == key(b), key(a) == key(c)
+    (True, False)
+    >>> key({"packet": {"data": {"packet": {"diagnostics": ["x", "y"]}}}}) == key({"packet": {"data": {"packet": {"diagnostics": ["y", "x"]}}}})
+    True
+    """
+    if isinstance(v, dict):
+        return {k: (sorted(x, key=lambda d: json.dumps(d, sort_keys=True))
+                    if k in ("diagnostics", "header_error") and isinstance(x, list) else multisets(x))
+                for k, x in v.items()}
+    if isinstance(v, list):
+        return [multisets(x) for x in v]
+    return v
+
+
 def key(v):
-    return json.dumps(norm(v), sort_keys=True, ensure_ascii=False)
+    return json.dumps(norm(multisets(v)), sort_keys=True, ensure_ascii=False)
 
 
 def diagnostics_key(ds):
@@ -107,6 +148,9 @@ def parts_of(mode, r):
         if r.get("result") == "built":
             p["tnc2"] = json.dumps(r.get("tnc2"))
             p.update(result_parts("again", r.get("again")))
+        if "ax25" in r:
+            # compared only among the dumps that write a frame
+            p["ax25"] = json.dumps([r["ax25"], r.get("ax25_refusal")])
     return p
 
 
@@ -127,11 +171,208 @@ def data_type(mode, recs, inp):
 
 
 def without_inner_info(data):
-    """Third-party data without its inner packet's diagnostics, which generated data cannot know
-    in advance (only info ones get this far)."""
+    """Third-party data without its inner packet's info diagnostics, which are not compared; its
+    warnings and errors are part of its data (README, Read-back) and stay."""
     if isinstance(data, dict) and isinstance(data.get("packet"), dict) and "diagnostics" in data["packet"]:
+        kept = [d for d in data["packet"]["diagnostics"] if not d.startswith("info:")]
         data = dict(data, packet={k: v for k, v in data["packet"].items() if k != "diagnostics"})
+        if kept:
+            data["packet"]["diagnostics"] = kept
     return data
+
+
+def dropped_empty(v, field=None):
+    """The data with every field given as an empty string or an empty list left out, as the data form
+    leaves them out, and every null or false (README, Read-back: empty and absent are one value), except `reply_ack`, where ""
+    is a value, and a header's `source` and `destination`. Items of a list are values, kept as they are.
+
+    >>> dropped_empty({"type": "message", "text": "hi", "message_id": "", "reply_ack": ""})
+    {'type': 'message', 'text': 'hi', 'reply_ack': ''}
+    >>> dropped_empty({"type": "telemetry-units", "units": ["V", ""], "addressee": "N0CALL"})
+    {'type': 'telemetry-units', 'units': ['V', ''], 'addressee': 'N0CALL'}
+    """
+    if isinstance(v, dict):
+        return {k: dropped_empty(x, k) for k, x in v.items()
+                if k in ("reply_ack", "source", "destination") or not (x is None or x is False or x == "" or x == [])}
+    if isinstance(v, list):
+        return [dropped_empty(x) for x in v]
+    return v
+
+
+DEFAULT_COMPRESSION = {"fix": "current", "source": "other", "origin": "software"}
+NMEA_FIELDS = ("has_checksum", "latitude", "longitude", "fix", "course_degrees", "speed_knots", "altitude_m", "time", "waypoint")
+
+
+def read_back(given, again):
+    """Whether data read back (`again`) matches the data given, for data whose every value is one its
+    format holds (exact), by the README's Read-back comparison (data with a value between steps,
+    "exact": false, is only checked to decode cleanly: the rounding allowance is not implemented here): field by field in the neutral form,
+    at every depth, with only the allowances that rule lists that exact data can meet (rounding has
+    nothing to do): empty and absent are one value; a value the form must carry where the data leaves
+    it out (the default compression type, a Mic-E speed of 0, the fields an NMEA sentence determines);
+    a third-party packet's inner info diagnostics are not compared, its warnings and errors are. Returns the names of the fields
+    that differ, or [] when it matches.
+
+    >>> read_back({"type": "message", "addressee": "A", "text": "hi", "message_id": ""}, {"type": "message", "addressee": "A", "text": "hi"})
+    []
+    >>> read_back({"type": "nmea", "sentence": "GPGLL,1"}, {"type": "nmea", "sentence": "GPGLL,1", "latitude": 1.5})
+    []
+    >>> read_back({"type": "weather", "weather": {"extra": [{"letter": "#", "value": "123"}]}}, {"type": "weather", "weather": {"rain_raw": 123}})
+    ['weather']
+    >>> tp = lambda *ds: {"type": "third-party", "packet": {"source": "A", "destination": "B", "data": {"type": "status", "text": "x"}, "diagnostics": list(ds)}}
+    >>> read_back(tp("warning:control-character-in-text"), tp("warning:control-character-in-text", "info:obsolete-format")), read_back(tp(), tp("warning:empty-destination"))
+    ([], ['packet'])
+    """
+    a = dropped_empty(without_inner_info(again)) or {}
+    b = dropped_empty(without_inner_info(given)) or {}
+    if b.get("type") == "third-party" and a.get("type") == "third-party":
+        pa, pb = a.get("packet") or {}, b.get("packet") or {}
+        inner = read_back(pb.get("data"), pa.get("data"))
+        a = dict(a, packet={k: v for k, v in pa.items() if k != "data"})
+        b = dict(b, packet={k: v for k, v in pb.items() if k != "data"})
+        if inner:
+            return ["packet.data." + k for k in inner]
+    if b.get("compressed") and "compression" not in b and a.get("compression") == DEFAULT_COMPRESSION:
+        a = {k: v for k, v in a.items() if k != "compression"}
+    if b.get("type") == "mic-e" and "speed_knots" not in b and a.get("speed_knots") == 0:
+        a = {k: v for k, v in a.items() if k != "speed_knots"}
+    if b.get("type") == "nmea":
+        a = {k: v for k, v in a.items() if k not in NMEA_FIELDS or k in b}
+    if key(a) == key(b):
+        return []
+    a, b = norm(a), norm(b)
+    return sorted(k for k in set(a) | set(b) if key(a.get(k)) != key(b.get(k)))
+
+
+def tnc2_header(line):
+    """The header of a TNC2 line (bytes), in the neutral header form: `*` on every used path entry
+    (marked, or before a marked one). None if the line has no header.
+
+    >>> tnc2_header(b"N0CALL>APZ001,WIDE1-1,N0CALL-1*,WIDE2-1:>hi")
+    {'source': 'N0CALL', 'destination': 'APZ001', 'path': ['WIDE1-1*', 'N0CALL-1*', 'WIDE2-1']}
+    """
+    head, colon, _ = line.partition(b":")
+    source, gt, rest = head.partition(b">")
+    if not colon or not gt:
+        return None
+    fields = rest.decode("latin-1").split(",")
+    entries = [(e[:-1], True) if e.endswith("*") else (e, False) for e in fields[1:]]
+    return _header(source.decode("latin-1"), fields[0], entries)
+
+
+def ax25_header(frame):
+    """The addresses of an AX.25 UI frame (bytes, without flags or FCS), in the neutral header form:
+    an entry is used when its H bit is set or it comes before one that is (README, Addresses and
+    path); an empty digipeater is left out. None if the frame has no complete address field.
+
+    >>> ax25_header(bytes.fromhex("82A0B4606062E09C608682989860AE92888A6240629C6086829898E303F03E6869"))
+    {'source': 'N0CALL', 'destination': 'APZ001', 'path': ['WIDE1-1*', 'N0CALL-1*']}
+    """
+    addresses = []
+    for i in range(0, len(frame) - 6, 7):
+        a = frame[i:i + 7]
+        call = bytes(b >> 1 for b in a[:6]).decode("latin-1").rstrip(" ")
+        ssid = (a[6] >> 1) & 0x0F
+        addresses.append((call + (f"-{ssid}" if ssid else ""), bool(a[6] & 0x80), call))
+        if a[6] & 1:
+            break
+    else:
+        return None
+    if len(addresses) < 2:
+        return None
+    entries = [(text, h) for text, h, call in addresses[2:] if call]
+    return _header(addresses[1][0], addresses[0][0], entries)
+
+
+def _header(source, destination, entries):
+    last = max((i for i, (_, marked) in enumerate(entries) if marked), default=-1)
+    h = {"source": source, "destination": destination}
+    if entries:
+        h["path"] = [text + ("*" if i <= last else "") for i, (text, _) in enumerate(entries)]
+    return h
+
+
+def written_header_codes(form, raw):
+    """The header diagnostics a written TNC2 line or AX.25 frame reads back with, as far as the
+    header alone shows them: several `*` marks, an empty destination or path entry (a line); an
+    empty or lower-case call, which no frame may hold (a frame).
+
+    >>> written_header_codes("tnc2", b"N0CALL>APZ001,A*,B*:>x"), written_header_codes("ax25", bytes.fromhex("404040404040E09C60868298986103F03E78"))
+    (['multiple-used-markers'], ['an address AX.25 forbids'])
+    """
+    codes = []
+    if form == "tnc2":
+        head = raw.partition(b":")[0]
+        _, _, rest = head.partition(b">")
+        fields = rest.split(b",")
+        if head.count(b"*") > 1:
+            codes.append("multiple-used-markers")
+        if fields[0] == b"":
+            codes.append("empty-destination")
+        if any(f in (b"", b"*") for f in fields[1:]):
+            codes.append("empty-path-entry")
+        return codes
+    for i in range(0, len(raw) - 6, 7):
+        a = raw[i:i + 7]
+        call = bytes(b >> 1 for b in a[:6]).rstrip(b" ")
+        if not call or any(not (48 <= c <= 57 or 65 <= c <= 90) for c in call):
+            return ["an address AX.25 forbids"]
+        if a[6] & 1:
+            break
+    return codes
+
+
+def written_info(form, raw):
+    """The information field of a written TNC2 line or AX.25 frame, or None."""
+    if form == "tnc2":
+        head, colon, info = raw.partition(b":")
+        return info if colon else None
+    for i in range(0, len(raw) - 6, 7):
+        if raw[i + 6] & 1:
+            rest = raw[i + 7:]
+            return rest[2:] if rest[:2] == b"\x03\xf0" else None
+    return None
+
+
+# The infos a read-back may carry (README, Read-back), by what the data asks for.
+def allowed_infos(data):
+    """The `info:` diagnostics the bytes written for this data may read back with, or None when
+    there is no data to judge by.
+
+    >>> sorted(allowed_infos({"type": "mic-e", "comment": "x"}))
+    ['info:mic-e-missing-device-type']
+    """
+    if not isinstance(data, dict):
+        return None
+    t = data.get("type")
+    ok = set()
+    if t in ("weather", "raw-weather", "nmea", "maidenhead-beacon"):
+        ok.add("info:obsolete-format")
+    if t == "mic-e":
+        if data.get("legacy_telemetry"):
+            ok.add("info:obsolete-format")
+        if not data.get("type_code"):
+            ok.add("info:mic-e-missing-device-type")
+    if t == "message":
+        ok |= {"info:invalid-query", "info:invalid-telemetry-metadata"}
+    return ok
+
+
+def header_differs(written, expected):
+    """The parts of a header read back that differ from the header expected: source, destination, path."""
+    if written is None:
+        return ["header"]
+    return [k for k in ("source", "destination", "path")
+            if k in expected and (written.get(k) or []) != (expected.get(k) or [])]
+
+
+def recipe_header(inp):
+    """The header a recipe asks for, in the neutral form (a Mic-E destination is computed, so left out)."""
+    st = inp.get("station") or {"source": "N0CALL"}
+    h = {"source": st.get("source", "N0CALL"), "path": st.get("path") or []}
+    if inp.get("report") != "mic-e":
+        h["destination"] = st.get("destination") or "APZ001"
+    return h
 
 
 LIMIT = "error:implementation-limit"
@@ -207,23 +448,29 @@ def left_out(mode, r):
     return result if result in ("unsupported", "implementation-limit") else None
 
 
-def own_checks(mode, r, inp):
+REENCODE_FAILS = "re-encoded bytes do not read back as the same data (reencode fails: a fault, or a value the form rounds)"
+
+
+def own_checks(mode, r, inp, line=None):
     """What is wrong with one implementation's record on its own, or None."""
     if mode == "encode" and r.get("result") == "written":
         again = r.get("again") or {}
-        bad = [d for d in again.get("diagnostics", []) if not d.startswith("info:")]
+        allowed = allowed_infos(inp.get("data") if inp else None)
+        bad = [d for d in again.get("diagnostics", []) if not d.startswith("info:") or (allowed is not None and d not in allowed)]
         if "header_error" in again:
             bad = bad + again["header_error"]
         if bad:
             return "written bytes decode with " + ", ".join(sorted(set(bad)))
+        # a third-party packet's inner warnings and errors are part of its data (README Read-back)
         inner = ((again.get("data") or {}).get("packet") or {}).get("diagnostics", [])
-        inner_bad = [d for d in inner if not d.startswith("info:")]
-        if inner_bad:
-            return "written bytes decode with, in the inner packet, " + ", ".join(sorted(set(inner_bad)))
-        if inp is not None and inp.get("exact") and key(without_inner_info(again.get("data"))) != key(without_inner_info(inp.get("data"))):
-            a, b = norm(again.get("data")) or {}, norm(inp.get("data")) or {}
-            keys = sorted(k for k in set(a) | set(b) if a.get(k) != b.get(k))
-            return "written bytes decode to different data: " + ", ".join(keys)
+        given = (((inp or {}).get("data") or {}).get("packet") or {}).get("diagnostics", [])
+        inner_bad = sorted(d for d in inner if not d.startswith("info:"))
+        if inner_bad != sorted(d for d in given if not d.startswith("info:")):
+            return "written bytes decode with, in the inner packet, " + (", ".join(sorted(set(inner_bad))) or "fewer diagnostics than given")
+        if inp is not None and inp.get("exact"):
+            keys = read_back(inp.get("data"), again.get("data"))
+            if keys:
+                return "written bytes decode to different data: " + ", ".join(keys)
     if mode == "build" and r.get("result") == "built":
         again = r.get("again") or {}
         bad = [d for d in again.get("diagnostics", []) if not d.startswith("info:")]
@@ -231,6 +478,53 @@ def own_checks(mode, r, inp):
             bad = bad + again["header_error"]
         if bad:
             return "built line decodes with " + ", ".join(sorted(set(bad)))
+        if inp is not None and "header" in again:
+            differs = header_differs(again["header"], recipe_header(inp))
+            if differs:
+                return "built line's header decodes to a different header: " + ", ".join(differs)
+    if mode == "build" and inp is not None and r.get("ax25") not in (None, "refused"):
+        try:
+            frame = bytes.fromhex(r["ax25"])
+        except ValueError:
+            return "built frame is not hex"
+        differs = header_differs(ax25_header(frame), recipe_header(inp))
+        if differs:
+            return "built frame's header decodes to a different header: " + ", ".join(differs)
+    if mode == "decode":
+        if r.get("reencode") == "fails":
+            return REENCODE_FAILS
+        lenient = r.get("lenient") or {}
+        header = lenient.get("header")
+        api = r.get("api") or {}
+        if header:
+            expected = {"source": header.get("source"), "destination": header.get("destination"), "path": header.get("path") or []}
+            held = {d.partition(":")[2] for d in lenient.get("diagnostics", [])}
+            received = None
+            if inp is None and line is not None:
+                try:
+                    received = bytes.fromhex(line.strip()).partition(b":")[2]
+                except ValueError:
+                    received = None
+            for form, parse in (("tnc2", tnc2_header), ("ax25", ax25_header)):
+                written = api.get(form)
+                if not isinstance(written, str) or written == "refused":
+                    continue
+                try:
+                    raw = bytes.fromhex(written)
+                except ValueError:
+                    continue
+                differs = header_differs(parse(raw), expected)
+                if differs:
+                    return f"written {form} header decodes to a different header: " + ", ".join(differs)
+                new = [c for c in written_header_codes(form, raw) if c not in held]
+                if new:
+                    return f"written {form} header reads back with " + ", ".join(new)
+                info = written_info(form, raw)
+                if received is not None and info is not None and info not in (received, received.rstrip(b"\r\n")):
+                    return f"written {form} information field is not the one received"
+                inside = info.rstrip(b"\r\n") if info is not None else None
+                if form == "tnc2" and inside is not None and (b"\r" in inside or b"\n" in inside):
+                    return "written tnc2 line holds a CR or LF in its information field (tnc2-cannot-carry)"
     return None
 
 
@@ -277,6 +571,7 @@ def main():
     examples = defaultdict(list)
     own = Counter()
     own_examples = defaultdict(list)
+    alike_lines, alike_last, alike_examples = 0, None, []
     unsupported = Counter()
     skipped = {name: Counter() for name in names}
     mode = None
@@ -332,7 +627,15 @@ def main():
                 unsupported[(names[i], r.get("reason", "?"))] += 1
             if why[i]:
                 continue
-            problem = own_checks(mode, r, inp)
+            problem = own_checks(mode, r, inp, line)
+            if problem == REENCODE_FAILS and len(live) > 1 and all((recs[j] or {}).get("reencode") == "fails" for j in live):
+                # a decode record has no `rounded` marker: when every dump fails alike it is a value the form rounds, or a shared fault
+                if alike_last != n:
+                    alike_last = n
+                    alike_lines += 1
+                    if len(alike_examples) < 3:
+                        alike_examples.append((n, show_input(mode, line)))
+                continue
             if problem:
                 k = (names[i], kind, problem)
                 own[k] += 1
@@ -381,6 +684,10 @@ def main():
             print(f"\n{count:,}  {name} [{kind}] {problem[:200]}")
             for n, shown in own_examples[(name, kind, problem)]:
                 print(f"    line {n}: {shown[:240]}")
+    if alike_lines:
+        print(f"\nnote: {alike_lines:,} lines where every implementation's re-encode fails alike (a value the form rounds, or a fault all share); not counted as problems")
+        for n, shown in alike_examples:
+            print(f"    line {n}: {shown[:240]}")
     if args.json:
         with open(args.json, "w", encoding="utf-8") as f:
             json.dump({

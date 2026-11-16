@@ -855,6 +855,619 @@
       "strict": {"rejected_by": "control-character-in-text"},
       "reencode": "refused",
       "reencode_refusal": "invalid-character"
+    },
+    {
+      "id": "position/garbled-timestamp-before-an-uncompressed-position",
+      "description": "Seven bytes ending in z, the first a letter where a digit belongs, then an uncompressed position: the timestamp is garbled and the position is read after it, although R30549z2831.0 would read as a compressed position straight after the DTI.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549z2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-timestamp-before-an-uncompressed-position-without-messaging",
+      "description": "The same with the DTI /: the position after the seven bytes, and the report re-encodes with !.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "/R30549z2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "!2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-local-timestamp-before-an-uncompressed-position",
+      "description": "Seven bytes ending in / (local time), the first a letter, then an uncompressed position: read after the seven bytes.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549/2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-hms-timestamp-before-an-uncompressed-position",
+      "description": "Seven bytes ending in h (hours, minutes, seconds), the first a letter, then an uncompressed position: read after the seven bytes.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549h2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/compressed-without-timestamp-seventh-byte-z",
+      "description": "A compressed position straight after the DTI whose seventh byte is z, with no uncompressed position after the seven bytes: it stays the compressed position, with malformed-timestamp for the missing timestamp as before.",
+      "source": "APRS12c ch. 6, ch. 9",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@/5L!!<ze7>7P["},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 49.5, "longitude": -69.27174306820747, "symbol": "/>", "compressed": true, "compression": {"fix": "current", "source": "rmc", "origin": "software"}, "course_degrees": 88, "speed_knots": 36.23201216883807},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=/5L!!<ze7>7P["
+    },
+    {
+      "id": "position/garbled-timestamp-before-a-compressed-position",
+      "description": "Seven bytes ending in z, then a compressed position, where the bytes straight after the DTI also read as one: a compressed position is weak evidence, so the reading straight after the DTI stands.",
+      "source": "APRS12c ch. 6, ch. 9",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549z/5L!!<*e7>7P["},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 54.06038968198548, "longitude": -81.1671190729958, "symbol": "RL", "compressed": true, "compression": {"fix": "old", "source": "rmc", "origin": "reserved3"}, "course_degrees": 360, "speed_knots": 0, "comment": "*e7>7P["},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=R30549z/5L!!<*e7>7P["
+    },
+    {
+      "id": "position/seven-bytes-not-ending-in-a-time-indicator-before-an-uncompressed-position",
+      "description": "Seven bytes ending in x, not z, / or h, then an uncompressed position: they do not look like a timestamp, so the compressed position straight after the DTI is read, as before.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549x2831.07N/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 54.06038968198548, "longitude": -81.25262649438474, "symbol": "R3", "compressed": true, "compression": {"fix": "old", "source": "gll", "origin": "digipeater-conversion"}, "course_degrees": 64, "speed_knots": 1.719623726164499, "comment": "7N/08142.92W_015/001g006t058"},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=R30549x2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-timestamp-before-a-position-that-does-not-decode",
+      "description": "Seven bytes ending in z, then what would be an uncompressed position but for its longitude hemisphere X: no uncompressed position follows, so the compressed position straight after the DTI is read, as before.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position"],
+      "input": {"info": "@R30549z2831.07N/08142.92X_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 54.06038968198548, "longitude": -81.1656699726456, "symbol": "R3", "compressed": true, "compression": {"fix": "old", "source": "gll", "origin": "digipeater-conversion"}, "course_degrees": 64, "speed_knots": 1.719623726164499, "comment": "7N/08142.92X_015/001g006t058"},
+        "diagnostics": ["warning:malformed-timestamp"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=R30549z2831.07N/08142.92X_015/001g006t058"
+    },
+    {
+      "id": "position/garbled-timestamp-before-a-lower-case-hemisphere",
+      "description": "A garbled timestamp before an uncompressed position with a lower-case hemisphere: leniently that position decodes, so it is read after the seven bytes; under strict options it does not, so the compressed reading straight after the DTI is taken, and the timestamp, met first, rejects the report.",
+      "source": "APRS12c ch. 6, ch. 8 (APRS-IS 2026-11-14)",
+      "authority": "interpretation",
+      "interpretations": ["a-garbled-timestamp-before-an-uncompressed-position", "a-packet-is-read-in-order"],
+      "input": {"info": "@R30549z2831.07n/08142.92W_015/001g006t058"},
+      "expect": {
+        "data": {"type": "position", "messaging": true, "latitude": 28.517833333333332, "longitude": -81.71533333333333, "symbol": "/_", "weather": {"wind_direction_degrees": 15, "wind_speed_mph": 1, "wind_gust_mph": 6, "temperature_f": 58}},
+        "diagnostics": ["warning:malformed-timestamp", "warning:lowercase-hemisphere"]
+      },
+      "strict": {"rejected_by": "malformed-timestamp"},
+      "reencode": "equivalent",
+      "canonical_info": "=2831.07N/08142.92W_015/001g006t058"
+    },
+    {
+      "id": "position/phg-split-by-telemetry-is-text",
+      "description": "PH and G3330 either side of base-91 telemetry are not a PHG: an element is read only where its bytes stand whole as sent, so the comment is the text left, PHG3330 x, which written back would read as a PHG.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>PH|!!!!|G3330 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "PHG3330 x"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/rng-split-by-a-dao-is-text",
+      "description": "RN and G0050 either side of a !DAO! are not an RNG; the comment is the text left.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>RN!W12!G0050 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "comment": "RNG0050 x"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/dfs-split-by-telemetry-is-text",
+      "description": "DF and S2360 either side of base-91 telemetry are not a DFS; the comment is the text left.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>DF|!!!!|S2360"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "DFS2360"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/altitude-split-by-a-dao-is-text",
+      "description": "/A=00 and 0123 either side of a !DAO! are not a /A= altitude; the comment is the text left, which written back would read as one.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>x/A=00!W12!0123"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "comment": "x/A=000123"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/frequency-split-by-an-altitude-is-text",
+      "description": "A /A= inside a frequency's digits splits it: there is no frequency, and the fragments are comment text.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.5/A=00010020MHz T100"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "comment": "146.520MHz T100"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "position/tone-split-by-an-altitude-is-text",
+      "description": "A /A= inside a tone field splits it: the frequency is read, the tone is not, and the fragments are comment text.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T1/A=00010000 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz/A=000100T100 x"
+    },
+    {
+      "id": "position/tone-after-an-altitude-after-a-frequency",
+      "description": "A /A= between a frequency and its tone does not cut them off (APRS12c ch. 6: the altitude may appear anywhere in the comment), so the tone is the frequency's.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz/A=000100 T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100/A=000100 x"
+    },
+    {
+      "id": "position/offset-after-an-altitude-between-two-fields",
+      "description": "A /A= between two of a frequency's fields does not cut the second off.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T100/A=000100 -060 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100, "offset_khz": -600}, "comment": "x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100 -060/A=000100 x"
+    },
+    {
+      "id": "position/frequency-after-a-phg-and-an-altitude",
+      "description": "A /A= before a frequency does not move it from the start of the comment: the frequency after a PHG and a /A= is read.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W#PHG2360/A=000100146.520MHz T100"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "altitude_feet": 100, "phg": {"power": 2, "height": 3, "gain": 6, "directivity": 0}, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W#PHG2360/146.520MHz T100/A=000100"
+    },
+    {
+      "id": "position/tone-after-a-dao-after-a-frequency-is-text",
+      "description": "A !DAO! between a frequency and its tone cuts them off: only a /A= may stand there, so the tone is comment text.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz!W12! T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHzT100 x!W12!"
+    },
+    {
+      "id": "position/tone-after-telemetry-after-a-frequency-is-text",
+      "description": "Base-91 telemetry between a frequency and its tone cuts them off, so the tone is comment text.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz|!!!!| T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHzT100 x|!!!!|"
+    },
+    {
+      "id": "position/tone-after-a-space-and-a-dao-is-text",
+      "description": "A !DAO! between a frequency's space and its tone cuts them off: a field's space and value stand together as sent, and only a /A= may stand before the space, so T100 is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz !W12!T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHzT100 x!W12!"
+    },
+    {
+      "id": "position/tone-after-a-space-and-telemetry-is-text",
+      "description": "Base-91 telemetry between a frequency's space and its tone cuts them off, so T100 is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz |!!!!|T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHzT100 x|!!!!|"
+    },
+    {
+      "id": "position/offset-after-a-space-and-a-dao-is-text",
+      "description": "A !DAO! between an offset's space and its value cuts the offset off the tone before it, so -060 is comment text, written back after a space and a /.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T100 !W12!-060 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "-060 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100 /-060 x!W12!"
+    },
+    {
+      "id": "position/tone-after-an-altitude-with-its-space-before-the-altitude-is-text",
+      "description": "A field's space and value stand together as sent: with the space before the /A= and T100 straight after it, the /A= stands inside the field ( T100) and splits it, so T100 is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz /A=000100T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz/A=000100T100 x"
+    },
+    {
+      "id": "position/offset-after-an-altitude-with-its-space-before-the-altitude-is-text",
+      "description": "The tone is complete at the space; the offset's value follows a /A= whose space came before it, so -060 is comment text, written back straight after the /A=.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "where-a-voice-frequency-goes"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T100 /A=000100-060 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "-060 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100/A=000100-060 x"
+    },
+    {
+      "id": "position/spaces-either-side-of-an-altitude-after-a-frequency",
+      "description": "A space before and after a /A= put two bytes between the frequency and the tone, so the tone does not follow the frequency and is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz /A=000100 T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52}, "comment": "T100 x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz/A=000100T100 x"
+    },
+    {
+      "id": "position/frequency-after-a-slash-and-telemetry",
+      "description": "The comment's one leading / and the start of the text are judged on the text left, so a frequency after a / and lifted telemetry is at the start.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W>/|!!!!|146.520MHz T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>146.520MHz T100 x|!!!!|"
+    },
+    {
+      "id": "position/text-reading-as-an-offset-after-a-tone-and-an-altitude",
+      "description": "Text that would read as an offset, after a tone and a /A=, is written straight after the /A=: it reads back as itself with no delimiter, so none is written and the report re-encodes identical.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "where-a-voice-frequency-goes"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz T100/A=000100-060 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "-060 x"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/leading-space-before-telemetry",
+      "description": "The comment's leading space is judged on the text left, so a space, telemetry and x give the comment x.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W> |!!!!|x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>x|!!!!|"
+    },
+    {
+      "id": "position/phg-rate-split-by-a-dao-is-text",
+      "description": "PHG2360 stands whole and is a PHG; its rate byte and / are split by a !DAO!, so they are not a PHGR and are comment text, written back after a / so they are not read as one.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W#PHG23605!W12!/x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/#", "phg": {"power": 2, "height": 3, "gain": 6, "directivity": 0}, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "5/x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W#PHG2360/5/x!W12!"
+    },
+    {
+      "id": "position/phg-rate-after-an-altitude-is-text",
+      "description": "A /A= between a PHG and a rate byte and / splits the PHGR: the PHG is read and 5/x is comment text.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W#PHG2360/A=0001005/x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/#", "altitude_feet": 100, "phg": {"power": 2, "height": 3, "gain": 6, "directivity": 0}, "comment": "5/x"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/second-altitude-is-text",
+      "description": "Only the first /A= that stands whole is the altitude; a second is comment text, and its / is dropped as the comment's leading delimiter.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W>/A=000100/A=000200"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "comment": "A=000200"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>/A=000100A=000200"
+    },
+    {
+      "id": "position/whole-altitude-after-one-split-by-a-dao",
+      "description": "A /A= split by a !DAO! is not one, so the first whole /A= later in the text is the altitude and the split one is comment text, written after the altitude.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"info": "!4903.50N/07201.75W>x/A=0001!W12!00 /A=000200 y"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/>", "altitude_feet": 200, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "x/A=000100  y"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>/A=000200x/A=000100  y!W12!"
+    },
+    {
+      "id": "position/second-altitude-after-a-space-is-text",
+      "description": "A second /A= after a space is comment text; the space is the dropped delimiter, so the comment starts with / and is written back after a /.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "!4903.50N/07201.75W>/A=000100 /A=000200"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "altitude_feet": 100, "comment": "/A=000200"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>/A=000100//A=000200"
+    },
+    {
+      "id": "position/tone-after-a-space-and-a-late-range-is-text",
+      "description": "A late RNG lifted between a frequency's space and its tone cuts them off, so T100 is comment text, written back straight after the frequency; strict leaves the RNG in the text, where it is no field either.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "a-late-data-extension-is-the-first-well-formed-one"],
+      "input": {"info": "!4903.50N/07201.75W>146.520MHz RNG0050T100 x"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "range_miles": 50, "frequency": {"mhz": 146.52}, "comment": "T100 x"},
+        "diagnostics": ["warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "frequency": {"mhz": 146.52}, "comment": "RNG0050T100 x"}},
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W>RNG0050/146.520MHzT100 x"
+    },
+    {
+      "id": "position/utf-8-character-split-by-a-dao-joins-in-the-comment",
+      "description": "The comment is the bytes left, in order, decoded as text once, after lifting: the two bytes of a UTF-8 character either side of a !DAO! are one character in the comment, since text is not an element. PHG33 and 30 either side of the DAO are not a PHG.",
+      "source": "APRS12c ch. 5 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2_hex": "4e3043414c4c3e41505a3030313a21343930332e35304e2f30373230312e3735572d5048473333c32157313221a93330"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05835, "longitude": -72.0292, "symbol": "/-", "dao": {"datum": "W", "precision": "thousandths"}, "comment": "PHG33é30"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!4903.50N/07201.75W-PHG33é30!W12!"
+    },
+    {
+      "id": "position/phg-after-the-symbol-takes-a-bar-before-telemetry",
+      "description": "A PHG straight after the symbol is the data extension, not comment: PHG1|14 has height code |, so only one | is left in the comment and there is no telemetry block.",
+      "source": "review of the final pass 2026-11-15 (round 5)",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-and-dao"],
+      "input": {"info": "!4903.50N/07201.75W>PHG1|146.520MHz!!|"},
+      "expect": {
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/>", "phg": {"power": 1, "height": 76, "gain": 1, "directivity": 4}, "comment": "6.520MHz!!|"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/telemetry-before-text-with-bars",
+      "description": "YC0TBU-4's beacon: base-91 telemetry followed by free text holding bars is the last valid block, and no !DAO! is read from its bytes (the old rule took !a!'! as a DAO and moved the longitude).",
+      "source": "aprs-vectors#32, APRS-IS 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "YC0TBU-4>APE32L,TCPIP*,qAC,T2HAKATA:!0617.38S/10647.62E,PHG1130/A=000163|!a!'!#|| IGate PCBUnit 2 LoRa |144.190| BW10.4 SF8 CR5"},
+      "expect": {"header": {"source": "YC0TBU-4", "destination": "APE32L", "path": ["TCPIP*", "qAC", "T2HAKATA"], "q_construct": {"construct": "qAC", "station": "T2HAKATA"}}, "data": {"type": "position", "latitude": -6.289666666666666, "longitude": 106.79366666666667, "symbol": "/,", "altitude_feet": 163, "phg": {"power": 1, "height": 1, "gain": 3, "directivity": 0}, "telemetry": {"sequence": 64, "analog": [6, 2]}, "comment": "| IGate PCBUnit 2 LoRa |144.190| BW10.4 SF8 CR5"}},
+      "strict": "same"
+    },
+    {
+      "id": "position/two-valid-telemetry-blocks-the-last-wins",
+      "description": "Two valid blocks: the last is the telemetry, and the first is comment text; written back, the comment goes before the telemetry, where its block stays text.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|!!!!|y|!\"!#|z"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 1, "analog": [2]}, "comment": "x|!!!!|yz"}},
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!5130.00N/00030.00W>x|!!!!|yz|!\"!#|"
+    },
+    {
+      "id": "position/valid-block-then-bars-around-text",
+      "description": "A valid block, then bars around text holding a space: the bars are text and the block is the telemetry.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|!!!!|y z|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "xy z|"}},
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "!5130.00N/00030.00W>xy z||!!!!|"
+    },
+    {
+      "id": "position/bars-around-text-then-a-valid-block",
+      "description": "Bars around text, then a valid block sharing the bar between them: the block is the telemetry.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|y z|!!!!|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "x|y z"}},
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/empty-bars-are-text",
+      "description": "Two bars with nothing between them enclose no block: text, with no diagnostic.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x||y"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "comment": "x||y"}},
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/empty-bars-before-a-valid-block",
+      "description": "Empty bars before a valid block: the block, using the second bar, is the telemetry, and the first bar is text.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x||!!!!|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 0, "analog": [0]}, "comment": "x|"}},
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "position/dao-shaped-block-after-a-block-is-the-telemetry",
+      "description": "Pairs of neighbouring bars slide, so in x|!!!!|!W12!y|a b| the pairs are !!!!, !W12!y and a b, and the last valid one, !W12!y, is the telemetry: a block's bytes are base-91 whatever they look like, so no !DAO! is read from it.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|!!!!|!W12!y|a b|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "telemetry": {"sequence": 54, "analog": [1473, 88]}, "comment": "x|!!!!a b|"}},
+      "strict": "same"
+    },
+    {
+      "id": "position/dao-after-telemetry-before-text-with-bars",
+      "description": "A !DAO! (five bytes, so not a block) between the telemetry and text with bars: the telemetry is the last valid pair, !!!!, and the !DAO! is read outside it.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N0CALL>APZ001:!5130.00N/00030.00W>x|!!!!|!W12!|a b|"},
+      "expect": {"header": {"source": "N0CALL", "destination": "APZ001"}, "data": {"type": "position", "latitude": 51.50001666666667, "longitude": -0.5000333333333333, "symbol": "/>", "dao": {"datum": "W", "precision": "thousandths"}, "telemetry": {"sequence": 0, "analog": [0]}, "comment": "x|a b|"}},
+      "strict": "same"
     }
   ]
 }

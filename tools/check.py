@@ -10,14 +10,18 @@ Needs the jsonschema package (pip install jsonschema). Checks, beyond the schema
 - an interpretation case links at least one interpretation;
 - canonical_info appears exactly with an equivalent or rounded re-encoding;
 - every tolerable code has a case showing both sides of it: a strict result that differs from
-  the lenient one, where that code is the only tolerance the lenient decoding used;
-- every `refusal` (in expect) and `reencode_refusal` names an id in the `refusals` list of codes.json,
+  the lenient one, where that code is the only tolerance the lenient decoding used and strict is not
+  rejected by another code (the README's tolerance check);
+- every `refusal` (in expect), `reencode_refusal` and `pass_through` refusal names an id in the `refusals` list of codes.json,
   and no case names the fallback `does-not-read-back`;
 - every refusal id except the exempt ones (EXEMPT_REFUSALS) is named by at least one case;
 - every refused case names its refusal code (REFUSALS_REQUIRED);
 - (by the schema) a build case's report is one the README lists, with only the args that report takes,
-  and each input form has its own expect form: decode keys, info for encode, tnc2 for build;
-- cases/precedence.json is what tools/precedence.py writes.
+  and each input form has its own expect form: decode keys, info for encode, tnc2 for build, ax25_hex for
+  build with "write": "ax25";
+- cases/precedence.json is what tools/precedence.py writes;
+- tools/compare.py's doctests pass (among them, diagnostics compare as multisets at every depth,
+  a third-party packet's inner diagnostics included, as the README's Comparing says).
 """
 
 import json
@@ -37,9 +41,6 @@ FALLBACK = "does-not-read-back"
 EXEMPT_REFUSALS = {
     FALLBACK,
     "not-a-number",  # JSON cannot carry NaN or infinity
-    "invalid-address",  # needs a packet header, which an encode case does not give
-    "ax25-cannot-carry",  # needs a packet header
-    "tnc2-cannot-carry",  # needs a packet header
     "not-encodable",  # undecoded data: no form of it is held by all six libraries (rs not inside third-party, cs not at top level)
 }
 # Every refused case names its code, and every refusal id is named by a case except these, each of
@@ -143,8 +144,13 @@ def main():
             if "canonical_info" in case and case.get("reencode") not in ("equivalent", "rounded"):
                 problem("canonical_info belongs with reencode 'equivalent' or 'rounded'")
 
+            pass_through = case.get("pass_through", {})
             for key, value in (("refusal", case.get("expect", {}).get("refusal")),
-                               ("reencode_refusal", case.get("reencode_refusal"))):
+                               ("reencode_refusal", case.get("reencode_refusal")),
+                               ("pass_through.tnc2_refusal", pass_through.get("tnc2_refusal")),
+                               ("pass_through.ax25_refusal", pass_through.get("ax25_refusal")),
+                               ("pass_through_inner.tnc2_refusal", case.get("pass_through_inner", {}).get("tnc2_refusal")),
+                               ("pass_through_inner.ax25_refusal", case.get("pass_through_inner", {}).get("ax25_refusal"))):
                 if value is None:
                     continue
                 named_refusals.add(value)
@@ -158,7 +164,8 @@ def main():
                 for d in case.get("expect", {}).get("diagnostics", [])
                 if d.startswith("warning:") and d.partition(":")[2] in tolerable
             }
-            if isinstance(strict, dict) and len(tolerated) == 1:
+            # shows both sides: one tolerable code, and strict a reading or rejected by that code
+            if isinstance(strict, dict) and len(tolerated) == 1 and strict.get("rejected_by", next(iter(tolerated))) in tolerated:
                 shown_both_sides |= tolerated
 
     for code in sorted(tolerable - shown_both_sides):
@@ -171,6 +178,10 @@ def main():
     made = subprocess.run([sys.executable, str(ROOT / "tools" / "precedence.py"), "--check"], capture_output=True, text=True)
     if made.returncode != 0:
         problems.append("cases/precedence.json: " + (made.stderr.strip() or "out of date"))
+
+    tested = subprocess.run([sys.executable, "-m", "doctest", str(ROOT / "tools" / "compare.py")], capture_output=True, text=True)
+    if tested.returncode != 0:
+        problems.append("tools/compare.py: doctests fail\n" + (tested.stdout + tested.stderr).strip())
 
     for p in problems:
         print(p)

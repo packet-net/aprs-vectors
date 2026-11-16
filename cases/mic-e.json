@@ -803,13 +803,13 @@
       "description": "A later Mic-E altitude is looked for in the status text before the !DAO! is lifted: !7e} is the altitude, and the !w*@ before it, sharing its !, is not a DAO. Lifting the DAO first would join the V before it and 7e} after it into an altitude that is not in the bytes.",
       "source": "differential fuzzing 2026-11-10",
       "authority": "interpretation",
-      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "interpretations": ["where-a-mic-e-locator-is-read", "lifting-an-element-never-joins-the-text-either-side-of-it"],
       "input": {"info": "`lX\u001fn\"C>/]\"13.7V!w*@!7e}=", "destination": "SWQR1T"},
       "expect": {
-        "data": {"type": "mic-e", "mic_e_message": "off-duty", "type_code": "]", "device_suffix": "=", "latitude": 37.202333333333335, "longitude": -80.0005, "symbol": "/>", "course_degrees": 239, "speed_knots": 20, "altitude_feet": -26017.060367454065, "comment": "\"13.7V!w*@"},
+        "data": {"type": "mic-e", "latitude": 37.202333333333335, "longitude": -80.0005, "symbol": "/>", "course_degrees": 239, "speed_knots": 20, "altitude_feet": -26017.060367454065, "comment": "\"13.7V!w*@", "mic_e_message": "off-duty", "type_code": "]", "device_suffix": "="},
         "diagnostics": ["warning:mic-e-altitude-not-first"]
       },
-      "strict": {"rejected_by": "mic-e-altitude-not-first"},
+      "strict": {"data": {"type": "mic-e", "latitude": 37.20234981684982, "longitude": -80.00055677655678, "symbol": "/>", "course_degrees": 239, "speed_knots": 20, "dao": {"datum": "W", "precision": "base91"}, "comment": "\"13.7V7e}", "mic_e_message": "off-duty", "type_code": "]", "device_suffix": "="}},
       "reencode": "equivalent",
       "canonical_info": "`lX\u001fn\"C>/]!7e}\"13.7V!w*@="
     },
@@ -830,16 +830,16 @@
     },
     {
       "id": "mic-e/strict-rejects-an-altitude-joined-across-telemetry-and-a-dao",
-      "description": "Strict decoding reads the later altitude II!} as text and lifts the telemetry |!wII| and the DAO !wII!; what is left, \";X}3, holds an altitude across the places they were taken from, so a strict decoder rejects the report.",
+      "description": "Strict reads the later altitude as text and lifts the telemetry and the !DAO!; nothing is read across the places they came from, so no altitude is formed and strict reads the report (the id predates round 5, when strict rejected it).",
       "source": "differential fuzzing 2026-11-10",
       "authority": "interpretation",
-      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "interpretations": ["where-a-mic-e-locator-is-read", "lifting-an-element-never-joins-the-text-either-side-of-it"],
       "input": {"info": "`0)18X9h0654.57S/10742fl!3>/'\";X|!wII|!wII!}3", "destination": "U5TVQS"},
       "expect": {
-        "data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 55.76883333333333, "longitude": -120.22016666666667, "symbol": "0h", "course_degrees": 29, "speed_knots": 286, "altitude_feet": 1065879.2650918635, "telemetry": {"sequence": 86, "analog": [3680]}, "comment": "654.57S/10742fl!3>/'\";X!w3"},
+        "data": {"type": "mic-e", "latitude": 55.76883333333333, "longitude": -120.22016666666667, "symbol": "0h", "course_degrees": 29, "speed_knots": 286, "altitude_feet": 1065879.2650918635, "telemetry": {"sequence": 86, "analog": [3680]}, "comment": "654.57S/10742fl!3>/'\";X!w3", "mic_e_message": "in-service"},
         "diagnostics": ["info:mic-e-missing-device-type", "warning:mic-e-altitude-not-first"]
       },
-      "strict": {"rejected_by": "mic-e-altitude-not-first"},
+      "strict": {"data": {"type": "mic-e", "latitude": 55.76890659340659, "longitude": -120.22023992673994, "symbol": "0h", "course_degrees": 29, "speed_knots": 286, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 86, "analog": [3680]}, "comment": "654.57S/10742fl!3>/'\";X}3", "mic_e_message": "in-service"}, "diagnostics": ["info:mic-e-missing-device-type"]},
       "reencode": "equivalent",
       "canonical_info": "`0)18\\9h0II!}654.57S/10742fl!3>/'\";X!w3|!wII|"
     },
@@ -874,33 +874,33 @@
     },
     {
       "id": "mic-e/strict-rejects-an-altitude-joined-across-the-dao",
-      "description": "Strict decoding reads the later altitude II!} as text and lifts the last DAO !wII!; what is left, !wII!}3, holds II!} across the DAO's place, so a strict decoder rejects the report.",
+      "description": "Strict reads the later altitude as text and lifts the !DAO!; nothing is read across its place, so no altitude is formed and strict reads the report (the id predates round 5, when strict rejected it).",
       "source": "differential fuzzing 2026-11-10",
       "authority": "interpretation",
-      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "interpretations": ["where-a-mic-e-locator-is-read", "lifting-an-element-never-joins-the-text-either-side-of-it"],
       "input": {"info": "`0)1839h0654.57S/10742fl!X>/'\";X|!wII!!wII!}3", "destination": "U5TVQS"},
       "expect": {
-        "data": {"type": "mic-e", "mic_e_message": "in-service", "latitude": 55.76890659340659, "longitude": -120.22023992673994, "symbol": "0h", "course_degrees": 329, "speed_knots": 282, "altitude_feet": 1065879.2650918635, "dao": {"datum": "W", "precision": "base91"}, "comment": "654.57S/10742fl!X>/'\";X|!w3"},
+        "data": {"type": "mic-e", "latitude": 55.76890659340659, "longitude": -120.22023992673994, "symbol": "0h", "course_degrees": 329, "speed_knots": 282, "altitude_feet": 1065879.2650918635, "dao": {"datum": "W", "precision": "base91"}, "comment": "654.57S/10742fl!X>/'\";X|!w3", "mic_e_message": "in-service"},
         "diagnostics": ["info:mic-e-missing-device-type", "warning:mic-e-altitude-not-first"]
       },
-      "strict": {"rejected_by": "mic-e-altitude-not-first"},
+      "strict": {"data": {"type": "mic-e", "latitude": 55.76890659340659, "longitude": -120.22023992673994, "symbol": "0h", "course_degrees": 329, "speed_knots": 282, "dao": {"datum": "W", "precision": "base91"}, "comment": "654.57S/10742fl!X>/'\";X|!wII!}3", "mic_e_message": "in-service"}, "diagnostics": ["info:mic-e-missing-device-type"]},
       "reencode": "equivalent",
       "canonical_info": "`0)1879h0II!}654.57S/10742fl!X>/'\";X|!w3!wII!"
     },
     {
       "id": "mic-e/an-rng-reached-only-by-lifting-an-altitude-is-late",
-      "description": "The RNG comes straight after the type code only once the later altitude \"4m} is lifted; in the status text as sent it follows the altitude, so it is a late data extension.",
+      "description": "RNG001 and the 1 after the later altitude \"4m} are not an RNG: an element is read only where its bytes stand whole as sent, so the comment is the text left, which written back would read as one (the id predates round 5, when it was read as RNG0011).",
       "source": "differential fuzzing 2026-11-10",
       "authority": "interpretation",
-      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "interpretations": ["where-a-mic-e-locator-is-read", "lifting-an-element-never-joins-the-text-either-side-of-it"],
       "input": {"info": "`0M`lg>>/`RNG001\"4m}145.500MHz JANEK_1", "destination": "UR0X73"},
       "expect": {
-        "data": {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "device_suffix": "_1", "latitude": 52.1455, "longitude": 20.828, "symbol": "/>", "course_degrees": 134, "speed_knots": 7, "altitude_feet": 282.1522309711286, "range_miles": 11, "comment": "45.500MHz JANEK"},
-        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:data-extension-in-comment"]
+        "data": {"type": "mic-e", "latitude": 52.1455, "longitude": 20.828, "symbol": "/>", "course_degrees": 134, "speed_knots": 7, "altitude_feet": 282.1522309711286, "comment": "RNG001145.500MHz JANEK", "mic_e_message": "en-route", "type_code": "`", "device_suffix": "_1"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
       },
-      "strict": {"data": {"type": "mic-e", "mic_e_message": "en-route", "type_code": "`", "device_suffix": "_1", "latitude": 52.1455, "longitude": 20.828, "symbol": "/>", "course_degrees": 134, "speed_knots": 7, "comment": "RNG001\"4m}145.500MHz JANEK"}, "diagnostics": []},
-      "reencode": "equivalent",
-      "canonical_info": "`0M`lg>>/`\"4m}RNG001145.500MHz JANEK_1"
+      "strict": {"data": {"type": "mic-e", "latitude": 52.1455, "longitude": 20.828, "symbol": "/>", "course_degrees": 134, "speed_knots": 7, "comment": "RNG001\"4m}145.500MHz JANEK", "mic_e_message": "en-route", "type_code": "`", "device_suffix": "_1"}},
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
     },
     {
       "id": "mic-e/an-altitude-from-a-later-a-is-written-back-as-a",
@@ -1126,6 +1126,733 @@
       "strict": "same",
       "reencode": "equivalent",
       "canonical_info": "`(_fn\"Oj/`IO91/G DG2MM|!:&0'p|"
+    },
+    {
+      "id": "mic-e/telemetry-split-by-an-altitude-is-text",
+      "description": "A later Mic-E altitude between the bars is lifted, and what is left between them is not base-91 telemetry: it was not one run as sent. The text after the locator then starts with |, so missing-space-after-locator; strict, which leaves the altitude as text, rejects by that too.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G|!:&0hl!Y[/>\"4e}='p| DG2MM"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "comment": "|!:&0hl!Y[/>='p| DG2MM", "mic_e_message": "returning", "type_code": "`", "locator": "IO91"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "mic-e/locator-space-judged-after-a-later-altitude",
+      "description": "A later Mic-E altitude straight after the locator is lifted, and the locator's space is judged on what is left, which starts with the space: no missing-space-after-locator. Strict leaves the altitude as text and rejects the missing space.",
+      "source": "review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/Gabc} hello"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 1725606.9553805774, "comment": "hello"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`abc}IO91/G hello"
+    },
+    {
+      "id": "mic-e/locator-space-judged-after-an-altitude-and-telemetry",
+      "description": "A later altitude, the space, then base-91 telemetry: with both lifted the locator is followed by its space and nothing else, so no missing-space-after-locator and no comment.",
+      "source": "review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G\"4e} |!:&0'p|"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.90551181102362, "telemetry": {"sequence": 25, "analog": [470, 625]}},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`\"4e}IO91/G|!:&0'p|"
+    },
+    {
+      "id": "mic-e/locator-space-judged-after-a-dao-and-an-altitude",
+      "description": "A !DAO! then a later altitude straight after the locator, then a spaced comment: with both lifted the locator has its space.",
+      "source": "review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G!W12!\"4e} x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42735, "longitude": -112.12903333333334, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.90551181102362, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "x"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`\"4e}IO91/G x!W12!"
+    },
+    {
+      "id": "mic-e/locator-space-with-a-dao-only-joined-across-an-altitude",
+      "description": "!W1 and 2! either side of a lifted altitude are not a !DAO! (taking an element out never joins one), so nothing more is lifted, the text after the locator starts with !, and missing-space-after-locator stands; the comment reads back as a !DAO!, so it cannot be written.",
+      "source": "review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "dao-datum-digits"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G!W1\"4e}2! hi"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.90551181102362, "comment": "!W12! hi"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "mic-e/two-spaces-after-the-locator-and-a-later-altitude",
+      "description": "Two spaces after the locator once a later altitude is lifted: the first is the locator's separator and the second the one leading delimiter the comment loses, so the comment is x.",
+      "source": "review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G\"4e}  x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.90551181102362, "comment": "x"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`\"4e}IO91/G x"
+    },
+    {
+      "id": "mic-e/telemetry-split-by-an-altitude-then-two-spaces",
+      "description": "As mic-e/telemetry-split-by-an-altitude-is-text, with two spaces before the comment: the bars and their contents stay comment text.",
+      "source": "review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "delimiters-at-the-start-of-free-text", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G|!:&0hl!Y[/>\"4e}='p|  x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "comment": "|!:&0hl!Y[/>='p|  x", "mic_e_message": "returning", "type_code": "`", "locator": "IO91"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "mic-e/two-spaces-after-the-locator-and-telemetry",
+      "description": "Two spaces after the locator once telemetry is lifted: the separator, then the one leading delimiter the comment loses, so the comment is x.",
+      "source": "review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G|!:&0'p|  x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "x"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`IO91/G x|!:&0'p|"
+    },
+    {
+      "id": "mic-e/locator-not-at-the-start-until-a-dao-is-lifted",
+      "description": "A locator after a !DAO! is not at the start of the status text as sent, so it is comment text, though lifting the !DAO! would put it first.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/!W12!Io91/G!W1"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.427350000000004, "longitude": -112.12903333333334, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "Io91/G!W1", "mic_e_message": "returning"},
+        "diagnostics": ["info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj//Io91/G!W1!W12!"
+    },
+    {
+      "id": "mic-e/locator-not-at-the-start-until-a-dao-and-telemetry-are-lifted",
+      "description": "A locator after a !DAO! and base-91 telemetry is comment text: lifting them does not move it to the start.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/!w3U!|!:&0'p|IO91SX/G!w3"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.4273663003663, "longitude": -112.12909523809525, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "dao": {"datum": "W", "precision": "base91"}, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "IO91SX/G!w3", "mic_e_message": "returning"},
+        "diagnostics": ["info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj//IO91SX/G!w3|!:&0'p|!w3U!"
+    },
+    {
+      "id": "mic-e/locator-straight-after-a-later-altitude-is-text",
+      "description": "A locator straight after a later Mic-E altitude, itself after a !DAO!, is comment text: a locator follows only an altitude at the start as sent.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/!w3U!abc}Io91/G!w3"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.4273663003663, "longitude": -112.12909523809525, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 1725606.9553805771, "dao": {"datum": "W", "precision": "base91"}, "comment": "Io91/G!w3", "mic_e_message": "returning"},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.4273663003663, "longitude": -112.12909523809525, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "dao": {"datum": "W", "precision": "base91"}, "comment": "abc}Io91/G!w3", "mic_e_message": "returning"}, "diagnostics": ["info:mic-e-missing-device-type"]},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/abc}/Io91/G!w3!w3U!"
+    },
+    {
+      "id": "mic-e/locator-not-straight-after-the-altitude-until-telemetry-is-lifted",
+      "description": "A locator after the leading altitude and base-91 telemetry is not straight after the altitude as sent, so it is comment text.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/\"4e}|!:&0'p|Io91/G\"4e"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "Io91/G\"4e", "mic_e_message": "returning"},
+        "diagnostics": ["info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/\"4e}/Io91/G\"4e|!:&0'p|"
+    },
+    {
+      "id": "mic-e/phg-after-a-locator-only-once-a-dao-is-lifted-is-late",
+      "description": "A PHG that follows the locator only once a !DAO! between them is lifted is a late one: data-extension-in-comment, and the locator's missing space stands.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-late-data-extension-is-the-first-well-formed-one"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/'IO91/G!W12!PHG3330RNG0001"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.427350000000004, "longitude": -112.12903333333334, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "RNG0001", "mic_e_message": "returning", "type_code": "'", "locator": "IO91"},
+        "diagnostics": ["warning:missing-space-after-locator", "warning:data-extension-in-comment"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/'IO91/G PHG3330RNG0001!W12!"
+    },
+    {
+      "id": "mic-e/rng-after-a-locator-only-once-telemetry-is-lifted-is-late",
+      "description": "An RNG that follows the locator only once base-91 telemetry between them is lifted is a late one.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-late-data-extension-is-the-first-well-formed-one"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/'IO91/G|!:&0'p|RNG0001"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "range_miles": 1, "telemetry": {"sequence": 25, "analog": [470, 625]}, "mic_e_message": "returning", "type_code": "'", "locator": "IO91"},
+        "diagnostics": ["warning:missing-space-after-locator", "warning:data-extension-in-comment"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/'IO91/G RNG0001|!:&0'p|"
+    },
+    {
+      "id": "mic-e/phg-after-a-locator-only-once-an-altitude-is-lifted-is-late",
+      "description": "A PHG that follows the locator only once a later altitude between them is lifted is a late one, and the text after the locator then starts with it, so the missing space stands.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-late-data-extension-is-the-first-well-formed-one"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/'IO91/G\"4e}PHG3330"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "mic_e_message": "returning", "type_code": "'", "locator": "IO91"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator", "warning:data-extension-in-comment"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/'\"4e}IO91/G PHG3330"
+    },
+    {
+      "id": "mic-e/phg-split-by-an-altitude-after-a-locator-is-text",
+      "description": "PH and G3330 either side of a later Mic-E altitude after the locator and its space are not a PHG; the comment is the text left, which written back would read as one.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-late-data-extension-is-the-first-well-formed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/'IO91/G PH\"4e}G3330  "},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "comment": "PHG3330  ", "mic_e_message": "returning", "type_code": "'", "locator": "IO91"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "PH\"4e}G3330  ", "mic_e_message": "returning", "type_code": "'", "locator": "IO91"}},
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "mic-e/strict-missing-space-when-an-altitude-would-take-locator-bytes",
+      "description": "Strict lifts the !DAO! and leaves /G} after the locator, but locator bytes are never part of an altitude, so no altitude is left across the !DAO!'s place and strict rejects by the locator's missing space.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/]IO91/G!w3U!}PHG5132="},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "]", "device_suffix": "=", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 471751.96850393695, "phg": {"power": 5, "height": 1, "gain": 3, "directivity": 2}, "comment": "!w"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator", "warning:data-extension-in-comment"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/]3U!}IO91/G PHG5132!w="
+    },
+    {
+      "id": "mic-e/strict-missing-space-when-the-altitude-left-needs-a-locator-byte",
+      "description": "Lenient takes the later altitude !\"e}, so the !DAO! is not one; strict lifts the !DAO!, and what is left before } needs a locator byte to be an altitude, so strict rejects by the missing space.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G!W12!\"e} x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "locator": "IO91", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": -32286.745406824142, "comment": "!W12 x"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`!\"e}IO91/G !W12 x"
+    },
+    {
+      "id": "mic-e/strict-missing-space-before-a-later-altitude-and-a-dao",
+      "description": "Strict reads the later altitude \"4e} as text and lifts the last !DAO!; the text after the locator starts with \", so strict rejects by the missing space.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`io91sx/G\"4e}!W12!!W12!}="},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.427350000000004, "longitude": -112.12903333333334, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "!W12!}=", "mic_e_message": "returning", "type_code": "`", "locator": "IO91SX"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`\"4e}IO91SX/G !W12!}=!W12!"
+    },
+    {
+      "id": "mic-e/strict-missing-space-before-a-later-altitude-and-telemetry",
+      "description": "Strict reads the later altitude as text and lifts the telemetry; the text after the locator starts with \", so strict rejects by the missing space.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/>IO91SX/G\"4e}hello|!:&0hl!Y[='p|}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "telemetry": {"sequence": 25, "analog": [470, 6536, 56, 5306, 625]}, "comment": "hello}", "mic_e_message": "returning", "type_code": ">", "locator": "IO91SX"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/>\"4e}IO91SX/G hello}|!:&0hl!Y[='p|"
+    },
+    {
+      "id": "mic-e/strict-missing-space-before-a-whole-altitude-and-telemetry",
+      "description": "Strict reads the later altitude as text and lifts the telemetry; the text after the locator starts with \", so strict rejects by the missing space.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/>IO91/G\"4\"4T}T}!W1|!:&0'p|}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 200.1312335958005, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "\"4T}!W1}", "mic_e_message": "returning", "type_code": ">", "locator": "IO91"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/>\"4T}IO91/G \"4T}!W1}|!:&0'p|"
+    },
+    {
+      "id": "mic-e/strict-missing-space-before-text-left-across-a-dao",
+      "description": "Strict lifts the !DAO!, and xab} across its place is not an altitude; the locator is followed by x, so strict rejects by the missing space.",
+      "source": "targeted Mic-E shapes (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/Gx!W12!ab}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": -13487.532808398948, "comment": "x!W12", "mic_e_message": "returning", "type_code": "`", "locator": "IO91"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`!ab}IO91/G x!W12"
+    },
+    {
+      "id": "mic-e/strict-reads-text-left-across-a-dao-without-a-locator",
+      "description": "No locator: strict reads the later altitude as text and lifts the !DAO!; abc} across its place is not an altitude, so strict reads the report.",
+      "source": "second-look review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x\"4e}ab!W12!c}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.427350000000004, "longitude": -112.12903333333334, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "xabc}", "mic_e_message": "returning", "type_code": "`"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.427350000000004, "longitude": -112.12903333333334, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "x\"4e}abc}", "mic_e_message": "returning", "type_code": "`"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`\"4e}xabc}!W12!"
+    },
+    {
+      "id": "mic-e/strict-reads-text-left-across-telemetry-after-a-locator-with-its-space",
+      "description": "The locator has its space; strict reads the later altitude as text and lifts the telemetry; llo} across its place is not an altitude, so strict reads the report.",
+      "source": "second-look review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order", "where-a-mic-e-locator-is-read", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G x\"4e}hello|!:&0hl!Y[='p|}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "telemetry": {"sequence": 25, "analog": [470, 6536, 56, 5306, 625]}, "comment": "xhello}", "mic_e_message": "returning", "type_code": "`", "locator": "IO91"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 25, "analog": [470, 6536, 56, 5306, 625]}, "comment": "x\"4e}hello}", "mic_e_message": "returning", "type_code": "`", "locator": "IO91"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`\"4e}IO91/G xhello}|!:&0hl!Y[='p|"
+    },
+    {
+      "id": "mic-e/strict-altitude-search-skips-a-phg-after-the-type-code",
+      "description": "Strict lifts the telemetry, leaving PHG3330} abc}: 330} would cross its place but uses the bytes of the PHG straight after the type code, which never form an altitude, and abc} is whole, so strict reads the report.",
+      "source": "second-look review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-packet-is-read-in-order"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`PHG3330|!:&0'p|} abc}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 1725606.9553805771, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "} ", "mic_e_message": "returning", "type_code": "`"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "} abc}", "mic_e_message": "returning", "type_code": "`"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`abc}PHG3330} |!:&0'p|"
+    },
+    {
+      "id": "mic-e/dao-is-read-once-0xff-padding-is-removed",
+      "description": "As sent means once 0xFF padding is removed: !W1, 0xFF, 2! is the !DAO! !W12!, lifted before the locator's space is judged.",
+      "source": "second-look review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "mic-e-0xff-padding-is-in-the-status-text"],
+      "input": {"tnc2_hex": "4E3043414C4C3E5333325556543A60285F666E224F6A2F60494F39312F47215731FF32212078"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.427350000000004, "longitude": -112.12903333333334, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "x", "mic_e_message": "returning", "type_code": "`", "locator": "IO91"},
+        "diagnostics": ["warning:kenwood-ff-padding"]
+      },
+      "strict": {"rejected_by": "kenwood-ff-padding"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`IO91/G x!W12!"
+    },
+    {
+      "id": "mic-e/dfs-straight-after-a-locator-missing-its-space",
+      "description": "A DFS straight after the locator is read where the separator belongs, as a PHG or RNG is: missing-space-after-locator, and no data-extension-in-comment.",
+      "source": "second-look review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/GDFS2360"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "dfs": {"strength": 2, "height": 3, "gain": 6, "directivity": 0}, "mic_e_message": "returning", "type_code": "`", "locator": "IO91"},
+        "diagnostics": ["warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`IO91/G DFS2360"
+    },
+    {
+      "id": "mic-e/phg-split-by-a-dao-after-a-locator-is-text",
+      "description": "PH and G3330 either side of a !DAO! after the locator and its space are not a PHG; the comment is the text left.",
+      "source": "second-look review of round 5 (2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G PH!W12!G3330 x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.427350000000004, "longitude": -112.12903333333334, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "dao": {"datum": "W", "precision": "thousandths"}, "comment": "PHG3330 x", "mic_e_message": "returning", "type_code": "`", "locator": "IO91"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "mic-e/phg-split-by-telemetry-is-text",
+      "description": "PH and G3330 either side of base-91 telemetry after the locator are not a PHG; the comment is the text left.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`IO91/G PH|!:&0'p|G3330 x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "PHG3330 x", "mic_e_message": "returning", "type_code": "`", "locator": "IO91"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "mic-e/altitude-split-by-a-mic-e-altitude-is-text",
+      "description": "/A=00 and 0123 either side of a later Mic-E altitude are not a /A= altitude; the comment is the text left.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x/A=00\"4e}0123"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "comment": "x/A=000123", "mic_e_message": "returning", "type_code": "`"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "x/A=00\"4e}0123", "mic_e_message": "returning", "type_code": "`"}},
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "mic-e/dao-split-by-telemetry-is-text",
+      "description": "Telemetry is found first, and !W1 and 2! either side of it are not a !DAO!.",
+      "source": "APRS12c ch. 6, ch. 13, ch. 18 (round 5, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "base-91-telemetry-and-dao"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x!W1|!:&0'p|2!"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "x!W12!", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "refused",
+      "reencode_refusal": "text-reads-as-field"
+    },
+    {
+      "id": "mic-e/frequency-after-a-slash-and-a-later-altitude",
+      "description": "Status text /\"4e}146.520MHz: once the later altitude is lifted, the frequency is at the start of the text left after one /, as in a position comment; strict leaves the altitude in the text, so the frequency is not at the start.",
+      "source": "differential fuzzing 2026-11-15",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"info": "`(_fn\"Oj/`/\"4e}146.520MHz T100 x", "destination": "S32UVT"},
+      "expect": {
+        "data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "x"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "type_code": "`", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "\"4e}146.520MHz T100 x"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`\"4e}146.520MHz T100 x"
+    },
+    {
+      "id": "mic-e/altitude-before-a-later-mic-e-altitude-it-overlaps",
+      "description": "The search for a later Mic-E altitude never uses the bytes of a whole /A=, so in x/A=000100} the altitude is 100 feet and 100} is not a Mic-E altitude; the comment is x}, lenient and strict alike.",
+      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x/A=000100}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x}", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=000100x}"
+    },
+    {
+      "id": "mic-e/later-mic-e-altitude-clear-of-an-altitude",
+      "description": "The later Mic-E altitude is the first run that uses no byte of a whole /A=: not 100}, which overlaps the /A=, but \"4e} after it, lifted with its warning; the /A= is the altitude.",
+      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x/A=000100}y\"4e}z"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x}yz", "mic_e_message": "returning", "type_code": "`"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x}y\"4e}z", "mic_e_message": "returning", "type_code": "`"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=000100x}yz"
+    },
+    {
+      "id": "mic-e/leading-mic-e-altitude-and-an-altitude",
+      "description": "A Mic-E altitude at the start of the status text is taken as before, and the /A= wins over it; with an altitude at the start no later one is looked for, so 100} is comment text. Written back, x} needs no space after the /A=, since 00x} overlaps it and is not a Mic-E altitude.",
+      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`\"4e}x/A=000100}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "comment": "x}", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=000100x}"
+    },
+    {
+      "id": "mic-e/altitude-inside-telemetry-is-telemetry",
+      "description": "Telemetry is located before a /A= in Mic-E status text as in every report: |!/A=000100| is a valid base-91 block, so the /A= is its bytes and there is no altitude.",
+      "source": "APRS12c ch. 6, ch. 10, ch. 13 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it", "base-91-telemetry-and-dao"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x|!/A=000100|"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 14, "analog": [2940, 1380, 1381, 1380]}, "comment": "x", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/later-mic-e-altitude-overlapping-a-five-digit-altitude-is-taken",
+      "description": "/A=00100 has five digits, so it is not a whole /A= but text, and 100} after it is a later Mic-E altitude: only the bytes of a whole /A= are kept out of the search.",
+      "source": "APRS12c ch. 6, ch. 10 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`x/A=00100}"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 406417.32283464563, "comment": "x/A=00", "mic_e_message": "returning", "type_code": "`"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "comment": "x/A=00100}", "mic_e_message": "returning", "type_code": "`"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`100}x/A=00"
+    },
+    {
+      "id": "mic-e/tone-after-an-altitude-after-a-frequency",
+      "description": "Status text 146.520MHz/A=000100 T100 x: the /A= between a frequency and its tone does not cut them off in Mic-E status text either.",
+      "source": "APRS12c ch. 6, ch. 18 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`146.520MHz/A=000100 T100 x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 100, "frequency": {"mhz": 146.52, "tone": "tone", "tone_value": 100}, "comment": "x", "mic_e_message": "returning", "type_code": "`"}
+      },
+      "strict": "same",
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`/A=000100146.520MHz T100 x"
+    },
+    {
+      "id": "mic-e/mic-e-altitude-between-a-frequency-and-its-tone-cuts-it-off",
+      "description": "A later Mic-E altitude between a frequency and its tone cuts them off, as anything but the /A= does: T100 is comment text. The one space after the frequency is judged on the text left, so it goes; strict leaves the altitude in the text.",
+      "source": "APRS12c ch. 10, ch. 18 (round 5 final pass, 2026-11-15)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/`146.520MHz\"4e} T100 x"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "frequency": {"mhz": 146.52}, "comment": "T100 x", "mic_e_message": "returning", "type_code": "`"},
+        "diagnostics": ["warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "frequency": {"mhz": 146.52}, "comment": "\"4e} T100 x", "mic_e_message": "returning", "type_code": "`"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/`\"4e}146.520MHzT100 x"
+    },
+    {
+      "id": "mic-e/second-altitude-is-text-written-after-a-slash",
+      "description": "The first whole /A= is the altitude and the second is text, its / dropped as the comment's delimiter; written back, the comment A=-00016} takes a / again, since straight after the first /A= its 016} would be a later Mic-E altitude, which the bytes of a whole /A= never are. A clean form exists, so it is written, not refused.",
+      "source": "differential fuzzing 2026-11-15 (round 5 final run)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/>/A=000123/A=-00016}^"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "mic_e_message": "returning", "type_code": ">", "device_suffix": "^", "altitude_feet": 123, "comment": "A=-00016}"}
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/second-altitude-after-a-late-phg-is-written-after-a-slash",
+      "description": "A late PHG, then the second /A= as text: written back, the PHG goes straight after the type code, the altitude after it, and the comment after a /, which keeps 016} inside a whole /A= rather than a later Mic-E altitude.",
+      "source": "differential fuzzing 2026-11-15 (round 5 final run)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/ /A=000123PHG3330/A=-00016}_%"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "mic_e_message": "returning", "type_code": " ", "altitude_feet": 123, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": "A=-00016}_%"},
+        "diagnostics": ["warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "mic_e_message": "returning", "type_code": " ", "altitude_feet": 123, "comment": "PHG3330/A=-00016}_%"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/ PHG3330/A=000123/A=-00016}_%"
+    },
+    {
+      "id": "mic-e/comment-starting-with-a-slash-after-an-altitude-takes-a-space",
+      "description": "The comment /x}^ after a /A= takes a space, not a /: written //x}^ its //x} would read back as a later Mic-E altitude, and the space is the only clean delimiter (Encoding: where the only clean form needs a separating space, the encoder writes it).",
+      "source": "differential fuzzing 2026-11-15 (round 5 final run)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text", "where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/'IO91/G \"4e} /PHG3330x/A=-00016}^"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "mic_e_message": "returning", "type_code": "'", "locator": "IO91", "altitude_feet": -16, "phg": {"power": 3, "height": 3, "gain": 3, "directivity": 0}, "comment": "/x}^"},
+        "diagnostics": ["warning:mic-e-altitude-not-first", "warning:data-extension-in-comment"]
+      },
+      "strict": {"data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "mic_e_message": "returning", "type_code": "'", "locator": "IO91", "altitude_feet": -16, "comment": "\"4e} /PHG3330x}^"}},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/'IO91/G PHG3330/A=-00016 /x}^"
+    },
+    {
+      "id": "mic-e/comment-starting-with-a-slash-after-a-locator-and-an-altitude-takes-a-space",
+      "description": "Io91/G//=/A=000100}_1: 100} overlaps a whole /A= and is not a Mic-E altitude, and the comment is /=}_1. Written back after the /A=, the comment takes a space, since //=} would be a later Mic-E altitude.",
+      "source": "differential fuzzing 2026-11-15 (round 5 final run)",
+      "authority": "interpretation",
+      "interpretations": ["a-a-altitude-wins-over-a-mic-e-or-compressed-one", "lifting-an-element-never-joins-the-text-either-side-of-it", "delimiters-at-the-start-of-free-text", "where-a-mic-e-locator-is-read"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/Io91/G//=/A=000100}_1"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "mic_e_message": "returning", "locator": "IO91", "altitude_feet": 100, "comment": "/=}_1"},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:missing-space-after-locator"]
+      },
+      "strict": {"rejected_by": "missing-space-after-locator"},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj/IO91/G /A=000100 /=}_1"
+    },
+    {
+      "id": "mic-e/phg-after-the-leading-altitude-takes-a-bar-before-telemetry",
+      "description": "A PHG straight after the leading altitude is read before telemetry is located: PHG1|14 is a PHG with height code | (codes run on through the ASCII table), so the first | is its byte and the text left has no telemetry block.",
+      "source": "review of the final pass 2026-11-15 (round 5)",
+      "authority": "interpretation",
+      "interpretations": ["lifting-an-element-never-joins-the-text-either-side-of-it", "base-91-telemetry-and-dao"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj/\"4e}PHG1|146.520MHz!!|"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "/j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "phg": {"power": 1, "height": 76, "gain": 1, "directivity": 4}, "comment": "6.520MHz!!|"},
+        "diagnostics": ["info:mic-e-missing-device-type"]
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "mic-e/comment-that-would-start-a-phg-after-the-altitude-takes-a-slash",
+      "description": "Status text /\"4e}PHG1|146.520MHz!!|: the later altitude and the telemetry |146.520MHz!!| are lifted and the comment is PHG1. Written back after the altitude bytes, PHG1|14 would read as a PHG with height code | and take the telemetry's first |, so the comment is written after a /.",
+      "source": "differential fuzzing 2026-11-15 (round 5 last run)",
+      "authority": "interpretation",
+      "interpretations": ["delimiters-at-the-start-of-free-text", "lifting-an-element-never-joins-the-text-either-side-of-it"],
+      "input": {"tnc2": "N0CALL>S32UVT:`(_fn\"Oj3/\"4e}PHG1|146.520MHz!!|"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "S32UVT"},
+        "data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "3j", "course_degrees": 251, "speed_knots": 20, "altitude_feet": 255.9055118110236, "telemetry": {"sequence": 1475, "analog": [1924, 1837, 1409, 3638, 0]}, "comment": "PHG1"},
+        "diagnostics": ["info:mic-e-missing-device-type", "warning:mic-e-altitude-not-first"]
+      },
+      "strict": {"data": {"type": "mic-e", "mic_e_message": "returning", "latitude": 33.42733333333334, "longitude": -112.129, "symbol": "3j", "course_degrees": 251, "speed_knots": 20, "telemetry": {"sequence": 1475, "analog": [1924, 1837, 1409, 3638, 0]}, "comment": "\"4e}PHG1"}, "diagnostics": ["info:mic-e-missing-device-type"]},
+      "reencode": "equivalent",
+      "canonical_info": "`(_fn\"Oj3\"4e}/PHG1|146.520MHz!!|"
+    },
+    {
+      "id": "mic-e/telemetry-before-text-with-bars",
+      "description": "Mic-E status text: telemetry followed by text with bars is the last valid block, as in any comment.",
+      "source": "aprs-vectors#32 (R27) 2026-11-16",
+      "authority": "interpretation",
+      "interpretations": ["base-91-telemetry-is-the-last-valid-block"],
+      "input": {"tnc2": "N83MZ>T2TQ5U,WA1PLE-4*:`c.l+@&'/'\"G:} KJ6TMS|!:&0'p| fw |1.2|"},
+      "expect": {"header": {"source": "N83MZ", "destination": "T2TQ5U", "path": ["WA1PLE-4*"]}, "data": {"type": "mic-e", "mic_e_message": "in-service", "type_code": "'", "latitude": 42.6925, "longitude": -71.31333333333333, "symbol": "/'", "course_degrees": 210, "speed_knots": 153, "altitude_feet": 5787.401574803149, "telemetry": {"sequence": 25, "analog": [470, 625]}, "comment": "KJ6TMS fw |1.2|"}},
+      "strict": "same"
+    },
+    {
+      "id": "mic-e/strict-stops-at-a-missing-locator-space-before-a-dao-on-ambiguity",
+      "description": "Strict reads the later altitude as text, so the !DAO! !w3U! would stand whole on an ambiguous position; but the locator's missing space is met first, where the locator is read, and strict stops there: one error, not dao-with-ambiguity too.",
+      "source": "differential fuzzing 2026-11-16 (R31)",
+      "authority": "interpretation",
+      "interpretations": ["where-a-mic-e-locator-is-read", "a-packet-is-read-in-order"],
+      "input": {"tnc2": "KJ5IMV-2>RYTWLZ,WIDE1-1,WIDE2-1,qAR,KJ5IMV:'{P\u001c\u001c\u001c\u001cj/]IO91/G!w3U!}Pi/\"4G}Graywolf/181.14.13"},
+      "expect": {"header": {"source": "KJ5IMV-2", "destination": "RYTWLZ", "path": ["WIDE1-1", "WIDE2-1", "qAR", "KJ5IMV"], "q_construct": {"construct": "qAR", "station": "KJ5IMV"}}, "data": {"type": "mic-e", "mic_e_message": "off-duty", "old_data": true, "type_code": "]", "locator": "IO91", "latitude": 29.791666666666668, "longitude": -95.875, "ambiguity": 2, "symbol": "/j", "speed_knots": 0, "altitude_feet": 471751.96850393695, "comment": "!wPi/\"4G}Graywolf/181.14.13"}, "diagnostics": ["warning:mic-e-altitude-not-first", "warning:missing-space-after-locator"]},
+      "strict": {"data": {"type": "unrecognized", "reason": "malformed"}, "diagnostics": ["error:missing-space-after-locator"]}
     }
   ]
 }
