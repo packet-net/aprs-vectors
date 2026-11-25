@@ -3292,6 +3292,24 @@
       "interpretations": ["an-encoder-reads-back-what-it-wrote"],
       "input": {"encode": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 51.5, "longitude": -0.5, "symbol": "/>", "speed_knots": 10, "comment": ">5}"}},
       "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/weather-software-and-unit-starting-like-a-field",
+      "description": "The software type t and unit 2h35 would be written t2h35, which reads back as weather-comment text: text-reads-as-field.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"encode": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"temperature_f": 77, "software": "t", "unit": "2h35"}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
+    },
+    {
+      "id": "encode/positionless-weather-software-and-unit-starting-like-a-field",
+      "description": "A positionless report's software type t and unit -5ab would be written t-5ab, which reads back as weather-comment text: text-reads-as-field.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["an-encoder-reads-back-what-it-wrote", "text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"encode": {"type": "weather", "timestamp": "10092345", "weather": {"temperature_f": 77, "software": "t", "unit": "-5ab"}}},
+      "expect": {"refused": true, "refusal": "text-reads-as-field"}
     }
   ]
 }
