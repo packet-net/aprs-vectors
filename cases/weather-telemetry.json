@@ -605,18 +605,18 @@
     },
     {
       "id": "weather/software-unit-that-would-read-as-fields",
-      "description": "h after the fields is read as the software type and 89b1 as the unit; written back, h89 would read as humidity, so an encoder refuses.",
+      "description": "h89b1 after the fields starts like a field (h then a digit), so it is weather-comment text, not the software type h and unit 89b1; an encoder refuses a weather comment.",
       "source": "APRS12c ch. 12 (differential fuzzing 2026-09-27)",
       "authority": "interpretation",
-      "interpretations": ["which-weather-field-a-letter-is"],
+      "interpretations": ["which-weather-field-a-letter-is", "text-after-the-weather-fields-that-starts-like-a-field"],
       "input": {"info": "@252330z5003.17N/02201.43E_210/000g00t050r000p000P000h800h89b1"},
       "expect": {
-        "data": {"type": "position", "timestamp": "252330z", "messaging": true, "latitude": 50.05283333333333, "longitude": 22.023833333333332, "symbol": "/_", "weather": {"wind_direction_degrees": 210, "wind_speed_mph": 0, "wind_gust_mph": 0, "temperature_f": 50, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0, "software": "h", "unit": "89b1"}},
-        "diagnostics": ["warning:non-standard-weather-field-width", "warning:non-standard-weather-field-width", "warning:out-of-range-value"]
+        "data": {"type": "position", "timestamp": "252330z", "messaging": true, "latitude": 50.05283333333333, "longitude": 22.023833333333332, "symbol": "/_", "weather": {"wind_direction_degrees": 210, "wind_speed_mph": 0, "wind_gust_mph": 0, "temperature_f": 50, "rain_1h_in": 0, "rain_24h_in": 0, "rain_midnight_in": 0}, "comment": "h89b1"},
+        "diagnostics": ["warning:non-standard-weather-field-width", "warning:non-standard-weather-field-width", "warning:out-of-range-value", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "non-standard-weather-field-width"},
       "reencode": "refused",
-      "reencode_refusal": "text-reads-as-field"
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "weather/snowfall-keeps-its-width-with-a-decimal-point",
@@ -1060,6 +1060,163 @@
       "input": {"info": "!4903.50N/07201.75W_090/005g010t058xRSW|!!!!|abc"},
       "expect": {
         "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "telemetry": {"sequence": 0, "analog": [0]}, "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 58}, "comment": "xRSWabc"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather-telemetry/repeated-temperature-after-short-pressure-is-a-comment",
+      "description": "A short pressure b100 then t2h35: the repeated t ends the fields, and t2h35 starts like a field (t then a digit), so it is weather-comment text, not the software type t and unit 2h35. The humidity h35 is not read.",
+      "source": "APRS-IS 2026-11-25",
+      "authority": "observed",
+      "interpretations": ["which-weather-field-a-letter-is", "text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "SR6WXP>AKLPRZ,SP6TK-11*,qAO,SP6PWT:!5038.00N/01747.00E_185/000g000t032r...p...P...b100t2h35"},
+      "expect": {
+        "header": {"source": "SR6WXP", "destination": "AKLPRZ", "path": ["SP6TK-11*", "qAO", "SP6PWT"], "q_construct": {"construct": "qAO", "station": "SP6PWT"}},
+        "data": {"type": "position", "latitude": 50.63333333333333, "longitude": 17.783333333333335, "symbol": "/_", "weather": {"wind_direction_degrees": 185, "wind_speed_mph": 0, "wind_gust_mph": 0, "temperature_f": 32, "pressure_mbar": 10}, "comment": "t2h35"},
+        "diagnostics": ["warning:non-standard-weather-field-width", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "non-standard-weather-field-width"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/repeated-field-then-text-starting-like-a-field",
+      "description": "t2h35 after the temperature: the repeated t ends the fields and the text starts like a field, so it is weather-comment text, not a software type and unit.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_090/005g010t077t2h35"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 77}, "comment": "t2h35"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/defined-letter-not-read-then-a-digit-is-text",
+      "description": "s12a: s is snowfall here and was not read (s12 is not a snowfall, which keeps its width), but a defined letter followed by a digit starts like a field, read or not, so it is text.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_090/005g010t077s12a"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 77}, "comment": "s12a"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/t-minus-digit-starts-like-a-field",
+      "description": "t-5ab: only t's value may start with -, and t then - and a digit starts like a temperature, so it is text.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_090/005g010t077t-5ab"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 77}, "comment": "t-5ab"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/t-minus-letter-is-a-software-type",
+      "description": "t-ab: - with no digit after it starts no value, so t is the software type and -ab the unit.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_090/005g010t077t-ab"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 77, "software": "t", "unit": "-ab"}},
+        "diagnostics": []
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "weather/defined-letter-then-a-letter-is-a-software-type",
+      "description": "hXYZ: h is a defined field letter, but no digit follows it, so it is the software type h and unit XYZ.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_090/005g010t077hXYZ"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 77, "software": "h", "unit": "XYZ"}},
+        "diagnostics": []
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "weather/undefined-letter-then-a-digit-is-a-software-type",
+      "description": "e1ab: e is no defined field and 1 is too short a run for an extra field, so it is the software type e and unit 1ab.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "N0CALL>APZ001:!4903.50N/07201.75W_090/005g010t077e1ab"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "position", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 77, "software": "e", "unit": "1ab"}},
+        "diagnostics": []
+      },
+      "strict": "same",
+      "reencode": "identical"
+    },
+    {
+      "id": "weather/positionless-text-starting-like-a-field",
+      "description": "A positionless report ending t2h35: the repeated t ends the fields, and the text starts like a field, so it is the comment.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "N0CALL>APZ001:_09251830c220s004g005t077t2h35"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "weather", "timestamp": "09251830", "weather": {"wind_direction_degrees": 220, "wind_speed_mph": 4, "wind_gust_mph": 5, "temperature_f": 77}, "comment": "t2h35"},
+        "diagnostics": ["info:obsolete-format", "warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/object-text-starting-like-a-field",
+      "description": "An object's weather ending t2h35: the text starts like a field, so it is the comment.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "N0CALL>APZ001:;LEADER   *092345z4903.50N/07201.75W_090/005g010t077t2h35"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "object", "name": "LEADER", "timestamp": "092345z", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 77}, "comment": "t2h35"},
+        "diagnostics": ["warning:weather-comment"]
+      },
+      "strict": {"rejected_by": "weather-comment"},
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
+    },
+    {
+      "id": "weather/item-text-starting-like-a-field",
+      "description": "An item's weather ending t2h35: the text starts like a field, so it is the comment.",
+      "source": "aprs-vectors#42 ruling 2026-11-25",
+      "authority": "interpretation",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
+      "input": {"tnc2": "N0CALL>APZ001:)AID#2!4903.50N/07201.75W_090/005g010t077t2h35"},
+      "expect": {
+        "header": {"source": "N0CALL", "destination": "APZ001"},
+        "data": {"type": "item", "name": "AID#2", "latitude": 49.05833333333333, "longitude": -72.02916666666667, "symbol": "/_", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 10, "temperature_f": 77}, "comment": "t2h35"},
         "diagnostics": ["warning:weather-comment"]
       },
       "strict": {"rejected_by": "weather-comment"},

@@ -242,17 +242,19 @@
     },
     {
       "id": "differential/weather-repeated-field-ends-fields",
-      "description": "A positionless weather report ending t2k: t was already read, so the fields end there, and t2k is the software type and unit.",
+      "description": "A positionless weather report ending t2k: t was already read, so the fields end there, and t2k starts like a field (t then a digit), so it is the comment, not a software type and unit.",
       "source": "APRS-IS 2026-09-25/26",
       "authority": "observed",
+      "interpretations": ["text-after-the-weather-fields-that-starts-like-a-field"],
       "input": {"tnc2": "N2XP-2>APTW14,TOMRVR*,WIDE1*,WIDE2-1,qAR,W2SRH:_09251912c090s005g007t061r003p000P006h73b10139t2k"},
       "expect": {
         "header": {"source": "N2XP-2", "destination": "APTW14", "path": ["TOMRVR*", "WIDE1*", "WIDE2-1", "qAR", "W2SRH"], "q_construct": {"construct": "qAR", "station": "W2SRH"}},
-        "data": {"type": "weather", "timestamp": "09251912", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 7, "temperature_f": 61, "rain_1h_in": 0.03, "rain_24h_in": 0, "rain_midnight_in": 0.06, "humidity_percent": 73, "pressure_mbar": 1013.9, "software": "t", "unit": "2k"}},
-        "diagnostics": ["warning:multiple-used-markers", "info:obsolete-format"]
+        "data": {"type": "weather", "timestamp": "09251912", "weather": {"wind_direction_degrees": 90, "wind_speed_mph": 5, "wind_gust_mph": 7, "temperature_f": 61, "rain_1h_in": 0.03, "rain_24h_in": 0, "rain_midnight_in": 0.06, "humidity_percent": 73, "pressure_mbar": 1013.9}, "comment": "t2k"},
+        "diagnostics": ["warning:multiple-used-markers", "info:obsolete-format", "warning:weather-comment"]
       },
       "strict": {"rejected_by": "multiple-used-markers", "header": true},
-      "reencode": "identical"
+      "reencode": "refused",
+      "reencode_refusal": "field-not-allowed"
     },
     {
       "id": "differential/weather-snowfall-keeps-its-width",

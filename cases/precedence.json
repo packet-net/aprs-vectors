@@ -1861,6 +1861,18 @@
       }
     },
     {
+      "id": "precedence/not-encodable-and-text-reads-as-field",
+      "description": "Two faults, an inner Mic-E report under the destination APZ001, not the one it computes (not-encodable) and comment text that reads as an altitude in the inner packet (text-reads-as-field): the refusal names not-encodable, which the Refusal reasons order puts first.",
+      "source": "README Refusal reasons (tools/precedence.py)",
+      "authority": "interpretation",
+      "interpretations": ["which-refusal-a-record-with-two-faults-gets"],
+      "input": {"encode": {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP*", "G4ABC*"], "data": {"type": "mic-e", "mic_e_message": "en-route", "latitude": 42.179, "longitude": -71.1985, "symbol": "/>", "course_degrees": 215, "speed_knots": 9, "comment": "/A=001234"}}}},
+      "expect": {
+        "refused": true,
+        "refusal": "not-encodable"
+      }
+    },
+    {
       "id": "strict-order/position-empty-destination-then-two-used-markers",
       "description": "Two tolerated defects, empty-destination and then multiple-used-markers: a lenient decoder reports both, and a strict one rejects the packet by empty-destination, which it meets first.",
       "source": "README The order of checks (tools/precedence.py)",
