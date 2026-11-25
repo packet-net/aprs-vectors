@@ -36,7 +36,7 @@ invalid-nmea + symbol-mismatch: no report has both: invalid-nmea is a fault only
 invalid-nmea + missing-field: no report has both: invalid-nmea is a fault only of nmea; missing-field only of capabilities, item, message, object, position, telemetry, weather
 invalid-nmea + text-reads-as-field: no report has both: invalid-nmea is a fault only of nmea; text-reads-as-field only of item, message, mic-e, object, position, status, weather
 # Codes the generator pairs with no other (each with the reason; a hand-written case may still carry one):
-not-encodable: undecoded data holds no other field, so it meets a second fault only inside a third-party packet, which Rust and Go cannot hold, so the generator makes no pairs with it; encode/nested-third-party-ending-in-undecoded-data pins the pair with invalid-third-party-header by hand
+not-encodable: an encode record holds it only inside a third-party packet: undecoded inner data, which Rust and Go cannot hold (encode/nested-third-party-ending-in-undecoded-data pins the pair with invalid-third-party-header by hand), or an inner Mic-E report under a destination it does not compute, which is the read-back's finding and loses to every rule check, so the generator pairs it only with text-reads-as-field, the other read-back finding (precedence/not-encodable-and-text-reads-as-field)
 invalid-address: needs a packet header, which an encode case does not give
 invalid-path: needs a packet header, which an encode case does not give
 ax25-cannot-carry: needs a packet header, which an encode case does not give

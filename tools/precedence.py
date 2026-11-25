@@ -45,7 +45,7 @@ ORDER = [
 
 # Codes the generator makes no pairs with, each for one reason (a hand-written case may still carry one).
 NO_CASE = {
-    "not-encodable": "undecoded data holds no other field, so it meets a second fault only inside a third-party packet, which Rust and Go cannot hold, so the generator makes no pairs with it; encode/nested-third-party-ending-in-undecoded-data pins the pair with invalid-third-party-header by hand",
+    "not-encodable": "an encode record holds it only inside a third-party packet: undecoded inner data, which Rust and Go cannot hold (encode/nested-third-party-ending-in-undecoded-data pins the pair with invalid-third-party-header by hand), or an inner Mic-E report under a destination it does not compute, which is the read-back's finding and loses to every rule check, so the generator pairs it only with text-reads-as-field, the other read-back finding (precedence/not-encodable-and-text-reads-as-field)",
     "invalid-address": "needs a packet header, which an encode case does not give",
     "invalid-path": "needs a packet header, which an encode case does not give",
     "ax25-cannot-carry": "needs a packet header, which an encode case does not give",
@@ -227,7 +227,8 @@ fault("information-field-too-long", "telemetry-names", "names of 300 characters"
 fault("information-field-too-long", "nmea", "a 300-character comment", {"comment": LONG})
 # Third-party: every report above, inside one, keeps its faults, and gains one in the inner header.
 # Not Mic-E: an inner Mic-E report's position is half in its destination, which the third-party
-# header gives as APZ001, so the record would contradict itself.
+# header gives as APZ001, so the record is not-encodable, the read-back's finding, which every rule
+# check comes before (its one pair is made by hand, HAND_PAIRS).
 for _name in [n for n in BASES if n != "mic-e"]:
     BASES["third-party-" + _name] = tp(_name)
 for _code, _base, _label, _patch in [f for f in FAULTS if f[1] != "mic-e"]:
@@ -263,6 +264,18 @@ def apply(data: dict, patch: dict) -> dict:
         else:
             node[keys[-1]] = copy.deepcopy(value)
     return d
+
+
+# Made by hand (not-encodable is in NO_CASE): an inner Mic-E report under a destination it does not
+# compute is not-encodable, and the Refusal reasons order puts it before text-reads-as-field.
+TP_MIC_E = {"type": "third-party", "packet": {"source": "N0CALL", "destination": "APZ001", "path": ["TCPIP*", "G4ABC*"],
+                                               "data": copy.deepcopy(BASES["mic-e"])}}
+HAND_PAIRS = [
+    ("not-encodable", "text-reads-as-field", "third-party-mic-e",
+     ("not-encodable", "third-party-mic-e", "an inner Mic-E report under the destination APZ001, not the one it computes", {}),
+     ("text-reads-as-field", "third-party-mic-e", "comment text that reads as an altitude in the inner packet",
+      {"packet.data.comment": "/A=001234"})),
+]
 
 
 def pairs():
@@ -334,7 +347,7 @@ def reason(a: str, b: str) -> str:
 
 
 def case_for(a: str, b: str, base: str, fa, fb) -> dict:
-    data = apply(apply(BASES[base], fa[3]), fb[3])
+    data = apply(apply(TP_MIC_E if base == "third-party-mic-e" else BASES[base], fa[3]), fb[3])
     return {
         "id": f"precedence/{a}-and-{b}",
         "description": f"Two faults, {fa[2]} ({a}) and {fb[2]} ({b}): the refusal names {a}, which the Refusal reasons order puts first.",
@@ -446,7 +459,7 @@ def decode_cases() -> list[dict]:
 
 def build() -> tuple[dict, list]:
     made, impossible = pairs()
-    cases = [case_for(*m) for m in made] + decode_cases()
+    cases = [case_for(*m) for m in made] + [case_for(*m) for m in HAND_PAIRS] + decode_cases()
     return {"cases": cases}, impossible
 
 
@@ -484,7 +497,7 @@ def main() -> int:
     text = dump(document)
     codes = [c for c in ORDER if c not in NO_CASE]
     excluded = (f"# Pairs of refusal codes with no case in cases/precedence.json, and why (written by tools/precedence.py).\n"
-                f"# {len(document['cases']) - len(decode_cases())} pair cases for {len(codes) * (len(codes) - 1) // 2} pairs of the "
+                f"# {len(document['cases']) - len(decode_cases()) - len(HAND_PAIRS)} pair cases for {len(codes) * (len(codes) - 1) // 2} pairs of the "
                 f"{len(codes)} codes an encode case can carry; {len(impossible)} pairs no record can hold:\n"
                 + "".join(f"{a} + {b}: {why}\n" for a, b, why in impossible)
                 + "# Codes the generator pairs with no other (each with the reason; a hand-written case may still carry one):\n"
